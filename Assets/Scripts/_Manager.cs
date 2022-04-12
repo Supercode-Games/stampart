@@ -26,6 +26,8 @@ public class _Manager : MonoBehaviour
 
     public AudioSource scrubberAudio;
 
+    public int currentLevel;
+
     private void Awake()
     {
         Agent = this;

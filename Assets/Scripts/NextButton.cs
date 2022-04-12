@@ -25,14 +25,17 @@ public class NextButton : MonoBehaviour
     public GameObject drillerClipper;
     public GameObject dirtClipper;
 
-    public MeshRenderer actualCutWood;
-    public GameObject cut_block;
+    public List<MeshRenderer> actualCutWood;
+    public List<GameObject> cut_block;
     public GameObject PlainTerrain;
 
     public GameObject paintPlane;
 
 
     public GameObject tapAndHold;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -119,10 +122,10 @@ public class NextButton : MonoBehaviour
                 paintPlane.SetActive(false);
                 driller.SetActive(false);
                 PlainTerrain.SetActive(false);
-                actualCutWood.enabled = true;
-                cut_block.SetActive(true);
+                actualCutWood[_Manager.Agent.currentLevel].enabled = true;
+                cut_block[_Manager.Agent.currentLevel].SetActive(true);
                 drillerClipper.SetActive(false);
-                cut_block.GetComponent<Animator>().Play("BlockAnimation", 0, 0);
+                cut_block[_Manager.Agent.currentLevel].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
                 Invoke("deactivateCutBlockAnim", 1.5f);
                 break;
 
@@ -153,17 +156,17 @@ public class NextButton : MonoBehaviour
 
         currentPhase = 4;
         button.SetActive(true);
-        cut_block.GetComponent<Animator>().enabled = false;
+        cut_block[_Manager.Agent.currentLevel].GetComponent<Animator>().enabled = false;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(actualCutWood!=null && actualCutWood.enabled)
+        if(actualCutWood[_Manager.Agent.currentLevel]!=null && actualCutWood[_Manager.Agent.currentLevel].enabled)
         {
 
-            actualCutWood.transform.Translate(Vector3.right * Time.deltaTime * 10f);
+            actualCutWood[_Manager.Agent.currentLevel].transform.Translate(Vector3.right * Time.deltaTime * 10f);
 
 
         }

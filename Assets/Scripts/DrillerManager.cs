@@ -13,7 +13,6 @@ public class DrillerManager : MonoBehaviour
 
     public List<string> animationNames;
 
-    public int currentAnimationIndex;
 
     public float speedOfAnimation;
 
@@ -37,6 +36,8 @@ public class DrillerManager : MonoBehaviour
     public GameObject tapAndHold;
 
     bool gameFinished;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -171,7 +172,7 @@ public class DrillerManager : MonoBehaviour
             x = Mathf.Clamp(t_ / 2f, 0f, 1f);
             x = x * x * (3 - 2 * x);
 
-            pencilAnimator.Play(animationNames[currentAnimationIndex], 0, x);
+            pencilAnimator.Play(animationNames[_Manager.Agent.currentLevel], 0, x);
 
             var targetPos = pencilAnimationObject.transform.position;
             targetPos.y = scrubber.transform.position.y;
@@ -208,7 +209,7 @@ public class DrillerManager : MonoBehaviour
     //    while (!reached)
     //    {
            
-    //        pencilAnimator.Play(animationNames[currentAnimationIndex], 0, x);
+    //        pencilAnimator.Play(animationNames[_Manager.Agent.currentLevel], 0, x);
 
     //        var targetPos = pencilAnimationObject.transform.position;
     //        targetPos.y = scrubber.transform.position.y;

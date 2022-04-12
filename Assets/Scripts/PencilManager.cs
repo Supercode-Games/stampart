@@ -9,7 +9,6 @@ public class PencilManager : MonoBehaviour
 
     public List<string> animationNames;
 
-    public int currentAnimationIndex;
 
     public float speedOfAnimation;
 
@@ -59,7 +58,7 @@ public class PencilManager : MonoBehaviour
             x = Mathf.Clamp(t / 2f, 0f, 1f);
             x = x * x * (3 - 2 * x);
 
-            pencilAnimator.Play(animationNames[currentAnimationIndex], 0, x);
+            pencilAnimator.Play(animationNames[_Manager.Agent.currentLevel], 0, x);
 
             var targetPos = pencilAnimationObject.transform.position;
             targetPos.y = yPos;

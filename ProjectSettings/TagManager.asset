@@ -7,6 +7,8 @@ TagManager:
   - vacumeCleaner
   - Pencil
   - PencilAnimator
+  - OaintedTex
+  - PaintedTex
   layers:
   - Default
   - TransparentFX
