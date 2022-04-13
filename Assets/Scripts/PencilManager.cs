@@ -49,8 +49,6 @@ public class PencilManager : MonoBehaviour
 
     IEnumerator pencilDrawAround()
     {
-
-
         var reached = false;
 
         while (!reached)
@@ -58,7 +56,7 @@ public class PencilManager : MonoBehaviour
             x = Mathf.Clamp(t / 2f, 0f, 1f);
             x = x * x * (3 - 2 * x);
 
-            pencilAnimator.Play(animationNames[_Manager.Agent.currentLevel], 0, x);
+            pencilAnimator.Play(animationNames[_Manager.currentLevel], 0, x);
 
             var targetPos = pencilAnimationObject.transform.position;
             targetPos.y = yPos;

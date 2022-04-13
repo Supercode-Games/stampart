@@ -26,7 +26,9 @@ public class _Manager : MonoBehaviour
 
     public AudioSource scrubberAudio;
 
-    public int currentLevel;
+    public static int currentLevel;
+
+    public Text levelIndicator;
 
     private void Awake()
     {
@@ -37,10 +39,26 @@ public class _Manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+      initialiseCurrentLevel();
       diggableWood.transform.rotation = Quaternion.Euler(90, 0, 0);
       diggableWood.transform.position -= new Vector3(12.5f * .5f, 0, 0);
       loadVibrationAndSounds();
 
+    }
+
+    void initialiseCurrentLevel()
+    {
+        currentLevel = PlayerPrefs.GetInt("current_level", 0);
+        levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
+    }
+    
+
+     void increaseLevel()
+    {
+        currentLevel++;
+        currentLevel = currentLevel % 5;
+        PlayerPrefs.SetInt("current_level", currentLevel);
     }
 
     public Vector3 pointOnPlane()

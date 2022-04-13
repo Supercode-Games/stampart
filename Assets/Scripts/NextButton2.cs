@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.NiceVibrations;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class NextButton2 : MonoBehaviour
@@ -26,10 +27,32 @@ public class NextButton2 : MonoBehaviour
     public GameObject paperAnim;
     public Animator blockAnim;
 
+   public int currentLevel;
+
+    public List<GameObject> levelPaintables;
+    public List<GameObject> paintSprays;
+
+
+    public Text levelIndicator;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
-        Invoke("activateButtonInvoke", 3f);
+        currentLevel = _Manager.currentLevel;
+        levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
+        levelPaintables[currentLevel].SetActive(true);
+        paintSprays[currentLevel].SetActive(true);
+        sprayCan = paintSprays[currentLevel];
+        Invoke("activateButtonInvoke", 5f);
+    }
+
+    void increaseLevel()
+    {
+        currentLevel++;
+        currentLevel = currentLevel % paintSprays.Count;
+        PlayerPrefs.SetInt("current_level", currentLevel);
     }
 
     // Update is called once per frame
@@ -103,7 +126,7 @@ public class NextButton2 : MonoBehaviour
 
     void stampRemove()
     {
-
+        increaseLevel();
         Camera.main.gameObject.GetComponent<AudioSource>().Play(0);
         finalUI.SetActive(true);
         FindObjectOfType<Camera>().gameObject.GetComponent<Animator>().Play("finalCamera", 0, 0);

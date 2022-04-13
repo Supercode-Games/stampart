@@ -122,10 +122,10 @@ public class NextButton : MonoBehaviour
                 paintPlane.SetActive(false);
                 driller.SetActive(false);
                 PlainTerrain.SetActive(false);
-                actualCutWood[_Manager.Agent.currentLevel].enabled = true;
-                cut_block[_Manager.Agent.currentLevel].SetActive(true);
+                actualCutWood[_Manager.currentLevel].enabled = true;
+                cut_block[_Manager.currentLevel].SetActive(true);
                 drillerClipper.SetActive(false);
-                cut_block[_Manager.Agent.currentLevel].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
+                cut_block[_Manager.currentLevel].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
                 Invoke("deactivateCutBlockAnim", 1.5f);
                 break;
 
@@ -144,6 +144,8 @@ public class NextButton : MonoBehaviour
     }
 
 
+    
+
     void makeVacumeMovable()
     {
 
@@ -156,17 +158,17 @@ public class NextButton : MonoBehaviour
 
         currentPhase = 4;
         button.SetActive(true);
-        cut_block[_Manager.Agent.currentLevel].GetComponent<Animator>().enabled = false;
+        cut_block[_Manager.currentLevel].GetComponent<Animator>().enabled = false;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(actualCutWood[_Manager.Agent.currentLevel]!=null && actualCutWood[_Manager.Agent.currentLevel].enabled)
+        if(actualCutWood[_Manager.currentLevel]!=null && actualCutWood[_Manager.currentLevel].enabled)
         {
 
-            actualCutWood[_Manager.Agent.currentLevel].transform.Translate(Vector3.right * Time.deltaTime * 10f);
+            actualCutWood[_Manager.currentLevel].transform.Translate(Vector3.right * Time.deltaTime * 10f);
 
 
         }
