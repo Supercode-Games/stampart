@@ -32,8 +32,12 @@ public class NextButton2 : MonoBehaviour
     public List<GameObject> levelPaintables;
     public List<GameObject> paintSprays;
 
+    public List<Texture> levelTexs;
+
 
     public Text levelIndicator;
+
+    public Material whiteMat;
 
 
 
@@ -43,7 +47,11 @@ public class NextButton2 : MonoBehaviour
         currentLevel = _Manager.currentLevel;
         levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
         levelPaintables[currentLevel].SetActive(true);
+
         paintSprays[currentLevel].SetActive(true);
+
+        whiteMat.mainTexture = currentLevel<levelTexs.Count ? levelTexs[currentLevel] : null;
+
         sprayCan = paintSprays[currentLevel];
         Invoke("activateButtonInvoke", 5f);
     }
