@@ -44,7 +44,8 @@ public class NextButton2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentLevel = _Manager.currentLevel;
+        //currentLevel = _Manager.currentLevel;
+        currentLevel = 0;
         levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
         levelPaintables[currentLevel].SetActive(true);
 

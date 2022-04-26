@@ -9,6 +9,7 @@ TagManager:
   - PencilAnimator
   - OaintedTex
   - PaintedTex
+  - ref
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - CarveParticle
   - Paintable
   - PP
-  - 
+  - Base
   - 
   - 
   - 

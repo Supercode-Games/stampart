@@ -19,6 +19,10 @@ public class NextButton : MonoBehaviour
     public GameObject pencil;
     public GameObject driller;
 
+    public GameObject driller2_manager;
+    public GameObject driller2_follower;
+
+
     public GameObject paintAddituve;
     public GameObject paintSubtractive;
 
@@ -86,6 +90,7 @@ public class NextButton : MonoBehaviour
 
                 }
                 pencil.SetActive(true);
+               
                 p3DHitBetween.gameObject.SetActive(true);
                 p3DHitBetween.enabled = true;
                 button.SetActive(false);
@@ -96,12 +101,16 @@ public class NextButton : MonoBehaviour
 
 
                 tapAndHold.SetActive(true);
-                driller.SetActive(true);
+
+                driller2_manager.SetActive(true);
+
+                driller2_follower.SetActive(true);
                 drillerClipper.SetActive(true);
 
+                FindObjectOfType<DrillerManager2>().loadPath();
                 pencil.GetComponentInChildren<MeshRenderer>().enabled = false;
                 pencil.GetComponent<PencilManager>().t = 0;
-                pencil.GetComponent<PencilManager>().speedOfAnimation = FindObjectOfType<DrillerManager>().speedOfAnimation;
+              //  pencil.GetComponent<PencilManager>().speedOfAnimation = FindObjectOfType<DrillerManager>().speedOfAnimation;
 
                 paintAddituve.GetComponent<PaintIn3D.P3dPaintSphere>().Color = Color.black;
                
@@ -111,7 +120,7 @@ public class NextButton : MonoBehaviour
                 // paintAddituve.SetActive(false);
                 // paintSubtractive.SetActive(true);
 
-                pencil.GetComponent<PencilManager>().startCor();
+                //pencil.GetComponent<PencilManager>().startCor();
                
                 button.SetActive(false);
 
@@ -144,6 +153,22 @@ public class NextButton : MonoBehaviour
     }
 
 
+    public void finishPhase1()
+    {
+        driller2_follower.SetActive(false);
+        driller2_manager.SetActive(false);
+        paintPlane.SetActive(false);
+        driller.SetActive(false);
+        PlainTerrain.SetActive(false);
+        actualCutWood[0].enabled = true;
+        cut_block[0].SetActive(true);
+        drillerClipper.SetActive(false);
+        cut_block[0].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
+        Invoke("deactivateCutBlockAnim", 1.5f);
+
+    }
+
+    
     
 
     void makeVacumeMovable()

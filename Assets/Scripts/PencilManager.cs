@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PathCreation;
 
 public class PencilManager : MonoBehaviour
 {
@@ -24,12 +25,18 @@ public class PencilManager : MonoBehaviour
 
     bool gameFinished;
 
+    public List<PathCreatorForShape> pathShapes;
+
+    PathCreator currentPath;
+    
+
     // Start is called before the first frame update
     void Start()
     {
         myAudio = GetComponent<AudioSource>();
         loadPencilAnimation();
-        StartCoroutine("pencilDrawAround");
+        StartCoroutine("pencilDrawPath");
+
 
     }
 
@@ -38,13 +45,16 @@ public class PencilManager : MonoBehaviour
 
         pencilAnimator = GameObject.FindGameObjectWithTag("PencilAnimator").GetComponent<Animator>();
         pencilAnimationObject = GameObject.FindGameObjectWithTag("Pencil");
+        currentPath = pathShapes[0].createPathShape();
+
 
     }
 
     public void startCor()
     {
-        StopCoroutine("pencilDrawAround");
-        StartCoroutine("pencilDrawAround");
+        
+        StopCoroutine("pencilDrawPath");
+        StartCoroutine("pencilDrawPath");
     }
 
     IEnumerator pencilDrawAround()
@@ -63,6 +73,36 @@ public class PencilManager : MonoBehaviour
             transform.position = targetPos;
 
             if(x>=1f)
+            {
+                reached = true;
+                gameFinished = true;
+                myAudio.Stop();
+                _Manager.Agent.stopVibration();
+
+            }
+
+            yield return null;
+
+        }
+
+
+    }
+
+    IEnumerator pencilDrawPath()
+    {
+        var reached = false;
+
+        while (!reached)
+        {
+            x = Mathf.Clamp(t / 2f, 0f, 1f);
+            x = x * x * (3 - 2 * x);
+            Vector3 point = currentPath.path.GetPointAtDistance(Mathf.Lerp(0, currentPath.path.length, x));
+
+            var targetPos = point;
+            targetPos.y = yPos;
+            transform.position = targetPos;
+
+            if (x >= 1f)
             {
                 reached = true;
                 gameFinished = true;
