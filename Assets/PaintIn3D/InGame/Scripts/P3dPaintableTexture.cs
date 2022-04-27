@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to make one texture on the attached Renderer paintable.
 	/// NOTE: If the texture or texture slot you want to paint is part of a shared material (e.g. prefab material), then I recommend you add the P3dMaterialCloner component to make it unique.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintableTexture")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Paintable Texture")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintableTexture")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Paintable Texture")]
 	public class P3dPaintableTexture : MonoBehaviour
 	{
 		public enum UndoRedoType
@@ -165,7 +166,7 @@ namespace PaintIn3D
 		/// <summary>If you want to paint a texture but don't want it to be applied to the specified material texture slot, then enable this.</summary>
 		public bool IsDummy { set { isDummy = value; } get { return isDummy; } } [SerializeField] private bool isDummy;
 
-		/// <summary>When you export this texture as a PNG asset, its GUID will be stored here so you can easily re-export it.</summary>
+		/// <summary>When you export this texture as a PNG asset from the in-editor painting window, the exported texture's GUID will be stored here so you can easily re-export it to the same file.</summary>
 		public string Output { set { output = value; } get { return output; } } [SerializeField] private string output;
 
 #if UNITY_EDITOR
@@ -238,6 +239,9 @@ namespace PaintIn3D
 
 		/// <summary>This stores all active and enabled instances in the open scenes.</summary>
 		public static LinkedList<P3dPaintableTexture> Instances { get { return instances; } } private static LinkedList<P3dPaintableTexture> instances = new LinkedList<P3dPaintableTexture>(); private LinkedListNode<P3dPaintableTexture> instancesNode;
+
+		private static int _Buffer     = Shader.PropertyToID("_Buffer");
+		private static int _BufferSize = Shader.PropertyToID("_BufferSize");
 
 		/// <summary>This lets you know if this texture is activated and ready for painting. Activation is controlled by the associated P3dPaintable component.</summary>
 		public bool Activated
@@ -499,46 +503,92 @@ namespace PaintIn3D
 			return default(Vector2);
 		}
 
-		private bool StatesContainCommands()
+		private bool StatesContainTextureOrCommands()
 		{
-			for (var i = 0; i <= stateIndex; i++)
+			if (stateIndex >= 0 && stateIndex < paintableStates.Count)
 			{
-				if (paintableStates[i].Commands.Count > 0)
+				for (var i = 0; i <= stateIndex; i++)
 				{
-					return true;
+					var paintableState = paintableStates[i];
+
+					if (paintableState.Texture != null || paintableState.Commands.Count > 0)
+					{
+						return true;
+					}
 				}
 			}
 
 			return false;
 		}
 
+		private bool LastStateWithTextureOr0(ref int startIndex)
+		{
+			for (var i = paintableStates.Count - 1; i >= 0; i--)
+			{
+				if (paintableStates[i].Texture != null)
+				{
+					startIndex = i;
+
+					return false;
+				}
+			}
+
+			startIndex = 0;
+
+			return true;
+		}
+
 		/// <summary>If this texture has local command copies stored, this method will rebuild the painted texture using these commands.
 		/// This is useful if you want to change the base <b>Texture/Color</b>, and then re-apply your paint.</summary>
-		public void RebuildFromCommands()
+		private void RebuildFromCommands()
 		{
-			if (StatesContainCommands() == true)
+			if (StatesContainTextureOrCommands() == true)
 			{
-				Clear(texture, color, false);
+				var startIndex = default(int);
+				var startBlank = LastStateWithTextureOr0(ref startIndex);
 
-				var localToWorldMatrix = transform.localToWorldMatrix;
+				if (startBlank == true)
+				{
+					Clear(texture, color, false);
+				}
 
-				for (var i = 0; i <= stateIndex; i++)
+				var posMatrix = transform.localToWorldMatrix;
+				var rotMatrix = Matrix4x4.Rotate(posMatrix.rotation);
+
+				for (var i = startIndex; i <= stateIndex; i++)
 				{
 					var paintableState = paintableStates[i];
-					var commandCount   = paintableState.Commands.Count;
 
-					for (var j = 0; j < commandCount; j++)
+					if (paintableState.Texture != null)
 					{
-						var worldCommand = paintableState.Commands[j].SpawnCopy();
+						Clear(paintableState.Texture, Color.white, false);
+					}
+					else
+					{
+						var commandCount = paintableState.Commands.Count;
 
-						worldCommand.Transform(localToWorldMatrix, localToWorldMatrix);
+						if (commandCount > 0)
+						{
+							// We need to sort the commands for each state separately rather than use ExecuteCommands, otherwise the added commands will get interwoven
+							paintableState.Commands.Sort(P3dCommand.Compare);
 
-						paintCommands.Add(worldCommand);
-						//AddCommand(worldCommand);
+							for (var j = 0; j < commandCount; j++)
+							{
+								var worldCommand = paintableState.Commands[j].SpawnCopy();
+
+								// Manually transform the command into world space with cached values
+								//var worldCommand = paintableState.Commands[j].SpawnCopyWorld(transform);
+								worldCommand.Transform(posMatrix, rotMatrix);
+
+								// Manually add the command, bypassing notifications etc
+								paintCommands.Add(worldCommand);
+								//AddCommand(worldCommand);
+							}
+						}
 					}
 				}
 
-				ExecuteCommands(false);
+				ExecuteCommands(false, false);
 			}
 			else
 			{
@@ -550,7 +600,13 @@ namespace PaintIn3D
 
 		private void AddState()
 		{
-			var paintableState = P3dPaintableState.Pop();
+			var paintableState       = P3dPaintableState.Pop();
+			var forceFullTextureCopy = false;
+
+			if (paintableStates.Count == 0 && saveLoad == SaveLoadType.Automatic)
+			{
+				forceFullTextureCopy = true;
+			}
 
 			switch (undoRedo)
 			{
@@ -562,7 +618,14 @@ namespace PaintIn3D
 
 				case UndoRedoType.LocalCommandCopy:
 				{
-					paintableState.Write(localCommands);
+					if (forceFullTextureCopy == true)
+					{
+						paintableState.Write(current, localCommands);
+					}
+					else
+					{
+						paintableState.Write(localCommands);
+					}
 
 					localCommands.Clear();
 				}
@@ -576,7 +639,16 @@ namespace PaintIn3D
 		{
 			for (var i = paintableStates.Count - 1; i >= stateIndex; i--)
 			{
-				paintableStates[i].Pool();
+				var paintableState = paintableStates[i];
+
+				if (i == stateIndex)
+				{
+					localCommands.AddRange(paintableState.Commands);
+
+					paintableState.Commands.Clear();
+				}
+
+				paintableState.Pool();
 
 				paintableStates.RemoveAt(i);
 			}
@@ -610,12 +682,12 @@ namespace PaintIn3D
 
 			if (activated == true)
 			{
-				copy = P3dHelper.GetReadableCopy(current);
+				copy = P3dCommon.GetReadableCopy(current);
 			}
 			else
 			{
 				var desc         = new RenderTextureDescriptor(width, height, format, 0);
-				var temp         = P3dHelper.GetRenderTexture(desc);
+				var temp         = P3dCommon.GetRenderTexture(desc);
 				var finalTexture = texture;
 
 				if (finalTexture == null && existing != ExistingType.Ignore)
@@ -627,9 +699,9 @@ namespace PaintIn3D
 
 				P3dCommandReplace.Blit(temp, finalTexture, color);
 
-				copy = P3dHelper.GetReadableCopy(temp);
+				copy = P3dCommon.GetReadableCopy(temp);
 
-				P3dHelper.ReleaseRenderTexture(temp);
+				P3dCommon.ReleaseRenderTexture(temp);
 			}
 
 			if (convertBack == true && conversion == ConversionType.Normal)
@@ -660,7 +732,7 @@ namespace PaintIn3D
 			{
 				var data = tempTexture.EncodeToPNG();
 
-				P3dHelper.Destroy(tempTexture);
+				CwHelper.Destroy(tempTexture);
 
 				return data;
 			}
@@ -736,7 +808,7 @@ namespace PaintIn3D
 					descriptor.width  = width;
 					descriptor.height = height;
 
-					var newCurrent = P3dHelper.GetRenderTexture(descriptor, current);
+					var newCurrent = P3dCommon.GetRenderTexture(descriptor, current);
 
 					if (copyContents == true)
 					{
@@ -745,7 +817,7 @@ namespace PaintIn3D
 						if (newCurrent.useMipMap == true) newCurrent.GenerateMips();
 					}
 
-					P3dHelper.ReleaseRenderTexture(current);
+					P3dCommon.ReleaseRenderTexture(current);
 
 					current = newCurrent;
 
@@ -768,7 +840,7 @@ namespace PaintIn3D
 		{
 			if (activated == true && string.IsNullOrEmpty(saveName) == false)
 			{
-				P3dHelper.SaveBytes(saveName, GetPngData());
+				P3dCommon.SaveBytes(saveName, GetPngData());
 			}
 		}
 
@@ -784,7 +856,7 @@ namespace PaintIn3D
 		{
 			if (activated == true)
 			{
-				LoadFromData(P3dHelper.LoadBytes(saveName));
+				LoadFromData(P3dCommon.LoadBytes(saveName));
 			}
 		}
 
@@ -806,7 +878,7 @@ namespace PaintIn3D
 					Clear(tempTexture, Color.white);
 				}
 
-				P3dHelper.Destroy(tempTexture);
+				CwHelper.Destroy(tempTexture);
 			}
 		}
 
@@ -832,13 +904,13 @@ namespace PaintIn3D
 		[ContextMenu("Clear Save")]
 		public void ClearSave()
 		{
-			P3dHelper.ClearSave(saveName);
+			P3dCommon.ClearSave(saveName);
 		}
 
 		/// <summary>This will clear save data with the specified save name.</summary>
 		public static void ClearSave(string saveName)
 		{
-			P3dHelper.ClearSave(saveName);
+			P3dCommon.ClearSave(saveName);
 		}
 
 		/// <summary>If you modified the slot material index, then call this to update the cached material.</summary>
@@ -847,7 +919,7 @@ namespace PaintIn3D
 		{
 			if (Paintable != null)
 			{
-				material    = P3dHelper.GetMaterial(paintable.CachedRenderer, slot.Index);
+				material    = P3dCommon.GetMaterial(paintable.CachedRenderer, slot.Index);
 				materialSet = true;
 			}
 			else
@@ -930,7 +1002,7 @@ namespace PaintIn3D
 						{
 							if (finalTexture != null)
 							{
-								desc.useMipMap = P3dHelper.HasMipMaps(finalTexture);
+								desc.useMipMap = P3dCommon.HasMipMaps(finalTexture);
 							}
 						}
 						else
@@ -938,7 +1010,7 @@ namespace PaintIn3D
 							desc.useMipMap = mipMaps == MipType.On;
 						}
 
-						current = P3dHelper.GetRenderTexture(desc);
+						current = P3dCommon.GetRenderTexture(desc);
 
 						if (filter == FilterType.Auto)
 						{
@@ -1035,8 +1107,8 @@ namespace PaintIn3D
 						material.SetTexture(slot.Name, oldTexture);
 					}
 
-					current = P3dHelper.ReleaseRenderTexture(current);
-					preview = P3dHelper.ReleaseRenderTexture(preview);
+					current = P3dCommon.ReleaseRenderTexture(current);
+					preview = P3dCommon.ReleaseRenderTexture(preview);
 				}
 
 				ClearCommands();
@@ -1089,8 +1161,8 @@ namespace PaintIn3D
 					Save();
 				}
 
-				P3dHelper.ReleaseRenderTexture(current);
-				P3dHelper.ReleaseRenderTexture(preview);
+				P3dCommon.ReleaseRenderTexture(current);
+				P3dCommon.ReleaseRenderTexture(preview);
 
 				ClearStates();
 			}
@@ -1169,7 +1241,7 @@ namespace PaintIn3D
 
 		/// <summary>This allows you to manually execute all commands in the paint stack.
 		/// This is useful if you need to modify the state of your object before the end of the frame.</summary>
-		public void ExecuteCommands(bool sendNotifications)
+		public void ExecuteCommands(bool sendNotifications, bool doSort)
 		{
 			if (activated == true)
 			{
@@ -1182,7 +1254,10 @@ namespace PaintIn3D
 					// Paint
 					if (paintCommands.Count > 0)
 					{
-						paintCommands.Sort(P3dCommand.Compare);
+						if (doSort == true)
+						{
+							paintCommands.Sort(P3dCommand.Compare);
+						}
 
 						ExecuteCommands(paintCommands, sendNotifications, current, ref preview);
 					}
@@ -1199,7 +1274,7 @@ namespace PaintIn3D
 
 						if (preview == null)
 						{
-							preview = P3dHelper.GetRenderTexture(current);
+							preview = P3dCommon.GetRenderTexture(current);
 						}
 
 						hidePreview = false;
@@ -1208,19 +1283,22 @@ namespace PaintIn3D
 
 						Graphics.Blit(current, preview);
 
-						previewCommands.Sort(P3dCommand.Compare);
+						if (doSort == true)
+						{
+							previewCommands.Sort(P3dCommand.Compare);
+						}
 
 						ExecuteCommands(previewCommands, sendNotifications, preview, ref swap);
 					}
 
-					P3dHelper.ReleaseRenderTexture(swap);
+					P3dCommon.ReleaseRenderTexture(swap);
 
 					RenderTexture.active = oldActive;
 				}
 
 				if (hidePreview == true)
 				{
-					preview = P3dHelper.ReleaseRenderTexture(preview);
+					preview = P3dCommon.ReleaseRenderTexture(preview);
 				}
 
 				if (isDummy == false && Material != null)
@@ -1256,27 +1334,27 @@ namespace PaintIn3D
 					}
 					else
 					{
-						preparedMesh = P3dHelper.GetQuadMesh();
+						preparedMesh = P3dCommon.GetQuadMesh();
 					}
 
 					//if (doubleBuffer == true)
 					{
 						if (swap == null)
 						{
-							swap = P3dHelper.GetRenderTexture(main);
+							swap = P3dCommon.GetRenderTexture(main);
 						}
 
 						P3dBlit.Texture(swap, preparedMesh, preparedSubmesh, main, preparedCoord);
 
-						commandMaterial.SetTexture(P3dShader._Buffer, swap);
-						commandMaterial.SetVector(P3dShader._BufferSize, new Vector2(swap.width, swap.height));
+						commandMaterial.SetTexture(_Buffer, swap);
+						commandMaterial.SetVector(_BufferSize, new Vector2(swap.width, swap.height));
 					}
 
 					command.Apply(commandMaterial);
 
 					RenderTexture.active = main;
 
-					P3dHelper.Draw(commandMaterial, command.Pass, preparedMesh, preparedMatrix, preparedSubmesh, preparedCoord);
+					P3dCommon.Draw(commandMaterial, command.Pass, preparedMesh, preparedMatrix, preparedSubmesh, preparedCoord);
 				}
 
 				command.Pool();
@@ -1305,7 +1383,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintableTexture_Editor : P3dEditor
+	public class P3dPaintableTexture_Editor : CwEditor
 	{
 		private static List<P3dPaintableTexture> tempPaintableTextures = new List<P3dPaintableTexture>();
 

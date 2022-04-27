@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This allows you to paint a decal at a hit point. Hit points will automatically be sent by any <b>P3dHit___</b> component on this GameObject, or its ancestors.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintDecal")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Paint Decal")]
-	public class P3dPaintDecal : MonoBehaviour, IHit, IHitPoint, IHitLine, IHitTriangle, IHitQuad, IHitCoord
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintDecal")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Paint Decal")]
+	public class P3dPaintDecal : MonoBehaviour, IHitPoint, IHitLine, IHitTriangle, IHitQuad, IHitCoord
 	{
 		/// <summary>Only the P3dModel/P3dPaintable GameObjects whose layers are within this mask will be eligible for painting.</summary>
 		public LayerMask Layers { set { layers = value; } get { return layers; } } [SerializeField] private LayerMask layers = -1;
@@ -127,16 +128,16 @@ namespace PaintIn3D
 		{
 			if (modifiers != null && modifiers.Count > 0)
 			{
-				P3dHelper.BeginSeed(seed);
+				CwHelper.BeginSeed(seed);
 					modifiers.ModifyPosition(ref position, preview, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 
 			P3dCommandDecal.Instance.SetState(preview, priority);
 			P3dCommandDecal.Instance.SetLocation(position);
 
 			var worldSize     = HandleHitCommon(preview, pressure, seed, rotation);
-			var worldRadius   = P3dHelper.GetRadius(worldSize);
+			var worldRadius   = P3dCommon.GetRadius(worldSize);
 			var worldPosition = position;
 
 			HandleMaskCommon(worldPosition);
@@ -145,14 +146,14 @@ namespace PaintIn3D
 		}
 
 		/// <summary>This method paints all pixels between the two specified points using the shape of a decal.</summary>
-		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation)
+		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation, bool clip)
 		{
 			P3dCommandDecal.Instance.SetState(preview, priority);
-			P3dCommandDecal.Instance.SetLocation(position, endPosition);
+			P3dCommandDecal.Instance.SetLocation(position, endPosition, clip: clip);
 
 			var worldSize     = HandleHitCommon(preview, pressure, seed, rotation);
-			var worldRadius   = P3dHelper.GetRadius(worldSize, position, endPosition);
-			var worldPosition = P3dHelper.GetPosition(position, endPosition);
+			var worldRadius   = P3dCommon.GetRadius(worldSize, position, endPosition);
+			var worldPosition = P3dCommon.GetPosition(position, endPosition);
 
 			HandleMaskCommon(worldPosition);
 
@@ -166,8 +167,8 @@ namespace PaintIn3D
 			P3dCommandDecal.Instance.SetLocation(positionA, positionB, positionC);
 
 			var worldSize     = HandleHitCommon(preview, pressure, seed, rotation);
-			var worldRadius   = P3dHelper.GetRadius(worldSize, positionA, positionB, positionC);
-			var worldPosition = P3dHelper.GetPosition(positionA, positionB, positionC);
+			var worldRadius   = P3dCommon.GetRadius(worldSize, positionA, positionB, positionC);
+			var worldPosition = P3dCommon.GetPosition(positionA, positionB, positionC);
 
 			HandleMaskCommon(worldPosition);
 
@@ -175,14 +176,14 @@ namespace PaintIn3D
 		}
 
 		/// <summary>This method paints all pixels between two pairs of points using the shape of a decal.</summary>
-		public void HandleHitQuad(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Vector3 position2, Vector3 endPosition2, Quaternion rotation)
+		public void HandleHitQuad(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Vector3 position2, Vector3 endPosition2, Quaternion rotation, bool clip)
 		{
 			P3dCommandDecal.Instance.SetState(preview, priority);
-			P3dCommandDecal.Instance.SetLocation(position, endPosition, position2, endPosition2);
+			P3dCommandDecal.Instance.SetLocation(position, endPosition, position2, endPosition2, clip: clip);
 
 			var worldSize     = HandleHitCommon(preview, pressure, seed, rotation);
-			var worldRadius   = P3dHelper.GetRadius(worldSize, position, endPosition, position2, endPosition2);
-			var worldPosition = P3dHelper.GetPosition(position, endPosition, position2, endPosition2);
+			var worldRadius   = P3dCommon.GetRadius(worldSize, position, endPosition, position2, endPosition2);
+			var worldPosition = P3dCommon.GetPosition(position, endPosition, position2, endPosition2);
 
 			HandleMaskCommon(worldPosition);
 
@@ -207,9 +208,9 @@ namespace PaintIn3D
 					{
 						var position = (Vector3)coord;
 
-						P3dHelper.BeginSeed(seed);
+						CwHelper.BeginSeed(seed);
 							modifiers.ModifyPosition(ref position, preview, pressure);
-						P3dHelper.EndSeed();
+						CwHelper.EndSeed();
 
 						coord = position;
 					}
@@ -241,7 +242,7 @@ namespace PaintIn3D
 
 			if (modifiers != null && modifiers.Count > 0)
 			{
-				P3dHelper.BeginSeed(seed);
+				CwHelper.BeginSeed(seed);
 					modifiers.ModifyColor(ref finalColor, preview, pressure);
 					modifiers.ModifyAngle(ref finalAngle, preview, pressure);
 					modifiers.ModifyOpacity(ref finalOpacity, preview, pressure);
@@ -249,11 +250,11 @@ namespace PaintIn3D
 					modifiers.ModifyScale(ref finalScale, preview, pressure);
 					modifiers.ModifyHardness(ref finalHardness, preview, pressure);
 					modifiers.ModifyTexture(ref finalTexture, preview, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 
-			var finalAspect = P3dHelper.GetAspect(shape, finalTexture);
-			var finalSize   = P3dHelper.ScaleAspect(finalScale * finalRadius, finalAspect);
+			var finalAspect = P3dCommon.GetAspect(shape, finalTexture);
+			var finalSize   = P3dCommon.ScaleAspect(finalScale * finalRadius, finalAspect);
 
 			P3dCommandDecal.Instance.SetShape(rotation, finalSize, finalAngle);
 
@@ -295,7 +296,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintDecal_Editor : P3dEditor
+	public class P3dPaintDecal_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

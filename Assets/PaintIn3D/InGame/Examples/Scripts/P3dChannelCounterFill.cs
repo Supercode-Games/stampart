@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component fills the attached UI Image based on the total amount of opaque pixels that have been painted in all active and enabled <b>P3dChannelCounter</b> components in the scene.</summary>
 	[RequireComponent(typeof(Image))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterFill")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Channel Counter Fill")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dChannelCounterFill")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Channel Counter Fill")]
 	public class P3dChannelCounterFill : MonoBehaviour
 	{
 		public enum ChannelType
@@ -67,7 +68,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dChannelCounterFill_Editor : P3dEditor
+	public class P3dChannelCounterFill_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

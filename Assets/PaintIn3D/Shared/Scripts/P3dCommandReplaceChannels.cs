@@ -25,6 +25,15 @@ namespace PaintIn3D
 
 		public override bool RequireMesh { get { return false; } }
 
+		private static int _TextureR = Shader.PropertyToID("_TextureR");
+		private static int _TextureG = Shader.PropertyToID("_TextureG");
+		private static int _TextureB = Shader.PropertyToID("_TextureB");
+		private static int _TextureA = Shader.PropertyToID("_TextureA");
+		private static int _ChannelR = Shader.PropertyToID("_ChannelR");
+		private static int _ChannelG = Shader.PropertyToID("_ChannelG");
+		private static int _ChannelB = Shader.PropertyToID("_ChannelB");
+		private static int _ChannelA = Shader.PropertyToID("_ChannelA");
+
 		static P3dCommandReplaceChannels()
 		{
 			BuildMaterial(ref cachedMaterial, ref cachedMaterialHash, "Hidden/Paint in 3D/Replace Channels");
@@ -36,7 +45,7 @@ namespace PaintIn3D
 
 			Instance.Apply(material);
 
-			P3dHelper.Blit(renderTexture, material, Instance.Pass);
+			P3dCommon.Blit(renderTexture, material, Instance.Pass);
 		}
 
 		public static void BlitFast(RenderTexture renderTexture, Texture textureR, Texture textureG, Texture textureB, Texture textureA, Vector4 channelR, Vector4 channelG, Vector4 channelB, Vector4 channelA)
@@ -52,14 +61,14 @@ namespace PaintIn3D
 		{
 			base.Apply(material);
 
-			material.SetTexture(P3dShader._TextureR, TextureR);
-			material.SetTexture(P3dShader._TextureG, TextureG);
-			material.SetTexture(P3dShader._TextureB, TextureB);
-			material.SetTexture(P3dShader._TextureA, TextureA);
-			material.SetVector(P3dShader._ChannelR, ChannelR);
-			material.SetVector(P3dShader._ChannelG, ChannelG);
-			material.SetVector(P3dShader._ChannelB, ChannelB);
-			material.SetVector(P3dShader._ChannelA, ChannelA);
+			material.SetTexture(_TextureR, TextureR);
+			material.SetTexture(_TextureG, TextureG);
+			material.SetTexture(_TextureB, TextureB);
+			material.SetTexture(_TextureA, TextureA);
+			material.SetVector(_ChannelR, ChannelR);
+			material.SetVector(_ChannelG, ChannelG);
+			material.SetVector(_ChannelB, ChannelB);
+			material.SetVector(_ChannelA, ChannelA);
 		}
 
 		public override void Pool()

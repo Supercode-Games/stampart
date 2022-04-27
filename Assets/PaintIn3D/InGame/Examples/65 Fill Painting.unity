@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44950086, g: 0.49649626, b: 0.5591468, a: 1}
+  m_IndirectSpecularColor: {r: 0.18362683, g: 0.22787625, b: 0.29804856, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -189,7 +189,10 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
+    modifiers: []
     modifierDatas: []
+  references:
+    version: 1
 --- !u!114 &155367016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +209,8 @@ MonoBehaviour:
   layers:
     serializedVersion: 2
     m_Bits: 4294967291
-  key: 323
+  requiredButtons: 1
+  requiredKey: 0
   guiLayers:
     serializedVersion: 2
     m_Bits: 32
@@ -215,9 +219,10 @@ MonoBehaviour:
   normalDirection: 0
   normalRelativeTo: 0
   customTransform: {fileID: 0}
-  offset: 0
+  normalOffset: 0
+  mouseOffset: 0
   touchOffset: 0
-  storeStates: 0
+  storeStates: 1
   showPreview: 1
   priority: 0
   frequency: 5
@@ -455,6 +460,8 @@ MonoBehaviour:
   localMaskTexture: {fileID: 0}
   localMaskChannel: 0
   shaderKeyword: 
+  hash:
+    v: 0
   isDummy: 0
   output: 
   activated: 0
@@ -491,7 +498,8 @@ MonoBehaviour:
   paintable: {fileID: 0}
   includeScale: 1
   useMesh: 0
-  hash: 0
+  hash:
+    v: 0
   activation: 0
   baseScale: {x: 0, y: 0, z: 0}
   otherRenderers: []
@@ -555,17 +563,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
       propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224255497419961894, guid: f43c82fa79085354ba883fd6d09728bc,
@@ -692,21 +705,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5.68
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f43c82fa79085354ba883fd6d09728bc, type: 3}

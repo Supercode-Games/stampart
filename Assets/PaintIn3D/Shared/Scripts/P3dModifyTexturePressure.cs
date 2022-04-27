@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -12,30 +13,13 @@ namespace PaintIn3D
 		public static string Title = "Pressure";
 
 		/// <summary>The painting texture will be changed to this.</summary>
-		public Texture Texture { set { texture = value; } get { return texture; } } [System.NonSerialized] private Texture texture;
+		public Texture Texture { set { texture = value; } get { return texture; } } [SerializeField] private Texture texture;
 
 		/// <summary>The paint pressure must be at least this value.</summary>
 		public float PressureMin { set { pressureMin = value; } get { return pressureMin; } } [SerializeField] private float pressureMin = 0.5f;
 
 		/// <summary>The paint pressure must be at most this value.</summary>
 		public float PressureMax { set { pressureMax = value; } get { return pressureMax; } } [SerializeField] private float pressureMax = 1.0f;
-
-		public override void SetObjects(Object[] objects)
-		{
-			if (objects != null && objects.Length > 0)
-			{
-				texture = objects[0] as Texture;
-			}
-		}
-
-		public override List<Object> GetObjects()
-		{
-			tempObjects.Clear();
-
-			tempObjects.Add(texture);
-
-			return tempObjects;
-		}
 
 		protected override void OnModifyTexture(ref Texture currentTexture, float pressure)
 		{
@@ -48,7 +32,7 @@ namespace PaintIn3D
 #if UNITY_EDITOR
 		public override void DrawEditorLayout()
 		{
-			texture = (Texture)UnityEditor.EditorGUI.ObjectField(P3dEditor.Reserve(18), new GUIContent("Texture", "The painting texture will be changed to this."), texture, typeof(Texture), true);
+			texture = (Texture)UnityEditor.EditorGUI.ObjectField(CwEditor.Reserve(18), new GUIContent("Texture", "The painting texture will be changed to this."), texture, typeof(Texture), true);
 			pressureMin = UnityEditor.EditorGUILayout.FloatField(new GUIContent("Pressure Min", "The paint pressure must be at least this value."), pressureMin);
 			pressureMax = UnityEditor.EditorGUILayout.FloatField(new GUIContent("Pressure Max", "The paint pressure must be at most this value."), pressureMax);
 		}

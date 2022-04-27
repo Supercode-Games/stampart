@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Unity.Collections;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -35,9 +36,6 @@ namespace PaintIn3D
 		private P3dReader currentReader;
 
 		[SerializeField]
-		private bool currentDirty = true;
-
-		[SerializeField]
 		protected NativeArray<Color32> currentPixels;
 
 		/// <summary>This will be true after Register is successfully called.</summary>
@@ -49,10 +47,20 @@ namespace PaintIn3D
 			}
 		}
 
-		/// <summary>This will manually mark the counter as being dirty and update it later.</summary>
-		public void MarkDirty()
+		public P3dReader CurrentReader
 		{
-			currentDirty = true;
+			get
+			{
+				return currentReader;
+			}
+		}
+
+		public void MarkCurrentReaderAsDirty()
+		{
+			if (currentReader != null)
+			{
+				currentReader.MarkAsDirty();
+			}
 		}
 
 		/// <summary>This forces the specified P3dPaintableTexture to be registered.</summary>
@@ -92,7 +100,6 @@ namespace PaintIn3D
 		protected virtual void OnEnable()
 		{
 			Register();
-			MarkDirty();
 
 			if (currentReader != null)
 			{
@@ -134,12 +141,13 @@ namespace PaintIn3D
 
 			cooldown -= Time.deltaTime;
 
+			if (currentReader.Dirty)
+
 			if (cooldown <= 0.0f && currentReader.Requested == false && registeredPaintableTexture != null && registeredPaintableTexture.Activated == true)
 			{
-				if (P3dReader.NeedsUpdating(currentReader, currentPixels, registeredPaintableTexture.Current, downsampleSteps) == true || currentDirty == true)
+				if (P3dReader.NeedsUpdating(currentReader, currentPixels, registeredPaintableTexture.Current, downsampleSteps) == true)
 				{
-					cooldown     = interval;
-					currentDirty = false;
+					cooldown = interval;
 
 					currentReader.Request(registeredPaintableTexture.Current, downsampleSteps, async);
 				}
@@ -171,7 +179,7 @@ namespace PaintIn3D
 		{
 			if (preview == false)
 			{
-				currentDirty = true;
+				MarkCurrentReaderAsDirty();
 			}
 		}
 
@@ -186,7 +194,7 @@ namespace PaintIn3D
 	using TARGET = P3dPaintableTextureMonitor;
 
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintableTextureMonitor_Editor : P3dEditor
+	public class P3dPaintableTextureMonitor_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

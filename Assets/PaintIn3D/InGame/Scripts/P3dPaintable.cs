@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -9,8 +10,8 @@ namespace PaintIn3D
 	/// To actually paint your object, you must also add at least one <b>P3dPaintableTexture</b> component to specify which texture you want to paint.</summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Renderer))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintable")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Paintable")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintable")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Paintable")]
 	public class P3dPaintable : P3dModel
 	{
 		public enum ActivationType
@@ -81,7 +82,7 @@ namespace PaintIn3D
 
 				paintableTexture.Deactivate();
 
-				P3dHelper.Destroy(paintableTexture);
+				CwHelper.Destroy(paintableTexture);
 			}
 
 			var materialCloners = GetComponents<P3dMaterialCloner>();
@@ -92,10 +93,10 @@ namespace PaintIn3D
 
 				materialCloner.Deactivate();
 
-				P3dHelper.Destroy(materialCloner);
+				CwHelper.Destroy(materialCloner);
 			}
 
-			P3dHelper.Destroy(this);
+			CwHelper.Destroy(this);
 		}
 
 		/// <summary>This will scale the specified width and height values based on the current BaseScale setting.</summary>
@@ -277,7 +278,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintable_Editor : P3dEditor
+	public class P3dPaintable_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
@@ -314,14 +315,14 @@ namespace PaintIn3D
 
 			if (Button("Analyze Mesh") == true)
 			{
-				if (tgt.Prepared == true)
-				{
-					P3dMeshAnalysis.OpenWith(tgt.PreparedMesh);
-				}
-				else
-				{
-					P3dMeshAnalysis.OpenWith(tgt.gameObject);
-				}
+				P3dMeshAnalysis.OpenWith(tgt.gameObject, tgt.PreparedMesh);
+			}
+
+			var mesh = P3dCommon.GetMesh(tgt.gameObject, tgt.PreparedMesh);
+
+			if (mesh != null && mesh.isReadable == false)
+			{
+				Error("You must set the Read/Write Enabled setting in this object's Mesh import settings.");
 			}
 
 			Separator();

@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to perform an event when the specified <b>P3dColorCounter</b> instances are painted a specific amount.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dColorCounterEvent")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Color Counter Event")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dColorCounterEvent")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Color Counter Event")]
 	public class P3dColorCounterEvent : MonoBehaviour
 	{
 		/// <summary>This allows you to specify the counters that will be used.
@@ -88,7 +89,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dColorCounterEvent_Editor : P3dEditor
+	public class P3dColorCounterEvent_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

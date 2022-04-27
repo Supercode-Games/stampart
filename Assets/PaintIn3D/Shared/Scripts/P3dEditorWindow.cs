@@ -1,12 +1,12 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This is the base class for all Paint in 3D editor windows.</summary>
-	public class P3dEditorWindow : EditorWindow
+	public class CwEditorWindow : EditorWindow
 	{
 		[SerializeField]
 		private Vector2 mousePosition;
@@ -34,7 +34,7 @@ namespace PaintIn3D
 
 		protected virtual void OnGUI()
 		{
-			P3dEditor.ClearStacks();
+			CwEditor.ClearStacks();
 
 			scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 			{

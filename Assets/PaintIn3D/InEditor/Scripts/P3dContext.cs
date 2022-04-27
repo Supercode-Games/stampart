@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace PaintIn3D
 {
-	public class P3dContext : MonoBehaviour
+	public class P3dContext
 	{
 		[MenuItem("CONTEXT/MeshRenderer/Make Paintable (Paint in 3D)", true)]
 		private static bool MeshRendererMakePaintableValidate(MenuCommand menuCommand)

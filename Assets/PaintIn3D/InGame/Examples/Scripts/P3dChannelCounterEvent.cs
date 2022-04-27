@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to perform an event when the specified <b>P3dChannelCounter</b> instances are painted a specific amount.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterEvent")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Channel Counter Event")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dChannelCounterEvent")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Channel Counter Event")]
 	public class P3dChannelCounterEvent : MonoBehaviour
 	{
 		public enum ChannelType
@@ -104,7 +105,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dChannelCounterEvent_Editor : P3dEditor
+	public class P3dChannelCounterEvent_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

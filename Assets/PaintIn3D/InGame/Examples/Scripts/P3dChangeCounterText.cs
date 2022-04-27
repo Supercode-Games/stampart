@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component will output the total pixels for the specified team to a UI Text component.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChangeCounterText")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Change Counter Text")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dChangeCounterText")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Change Counter Text")]
 	public class P3dChangeCounterText : MonoBehaviour
 	{
 		[System.Serializable] public class StringEvent : UnityEvent<string> {}
@@ -42,7 +43,7 @@ namespace PaintIn3D
 			}
 
 			var final   = format;
-			var percent = P3dHelper.RatioToPercentage(P3dHelper.Divide(count, total), decimalPlaces);
+			var percent = P3dCommon.RatioToPercentage(CwHelper.Divide(count, total), decimalPlaces);
 
 			final = final.Replace("{TOTAL}", total.ToString());
 			final = final.Replace("{COUNT}", count.ToString());
@@ -64,7 +65,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dChangeCounterText_Editor : P3dEditor
+	public class P3dChangeCounterText_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

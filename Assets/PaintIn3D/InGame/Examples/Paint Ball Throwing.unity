@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44950086, g: 0.49649626, b: 0.5591468, a: 1}
+  m_IndirectSpecularColor: {r: 0.18230188, g: 0.22486997, b: 0.28911617, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -146,6 +146,11 @@ PrefabInstance:
     - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
         type: 3}
       propertyPath: target
+      value: 
+      objectReference: {fileID: 1527115990}
+    - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
+        type: 3}
+      propertyPath: isolateTarget
       value: 
       objectReference: {fileID: 1527115990}
     - target: {fileID: 8923318066386266065, guid: b9af208301e449844baf83517b961df7,
@@ -5214,6 +5219,11 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 175706454}
+    - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
+        type: 3}
+      propertyPath: isolateTarget
+      value: 
+      objectReference: {fileID: 175706454}
     - target: {fileID: 8923318066386266065, guid: b9af208301e449844baf83517b961df7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5558,10 +5568,19 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!1 &301415206
 GameObject:
   m_ObjectHideFlags: 0
@@ -10290,6 +10309,11 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 155367014}
+    - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
+        type: 3}
+      propertyPath: isolateTarget
+      value: 
+      objectReference: {fileID: 155367014}
     - target: {fileID: 8923318066386266065, guid: b9af208301e449844baf83517b961df7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10589,6 +10613,11 @@ PrefabInstance:
     - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
         type: 3}
       propertyPath: target
+      value: 
+      objectReference: {fileID: 1407300166}
+    - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
+        type: 3}
+      propertyPath: isolateTarget
       value: 
       objectReference: {fileID: 1407300166}
     - target: {fileID: 8923318066386266065, guid: b9af208301e449844baf83517b961df7,
@@ -15636,10 +15665,19 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!1 &1119769951
 GameObject:
   m_ObjectHideFlags: 0
@@ -20410,6 +20448,11 @@ PrefabInstance:
     - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
         type: 3}
       propertyPath: target
+      value: 
+      objectReference: {fileID: 1208821190}
+    - target: {fileID: 8923318066386266064, guid: b9af208301e449844baf83517b961df7,
+        type: 3}
+      propertyPath: isolateTarget
       value: 
       objectReference: {fileID: 1208821190}
     - target: {fileID: 8923318066386266065, guid: b9af208301e449844baf83517b961df7,
@@ -25378,17 +25421,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
       propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224255497419961894, guid: f43c82fa79085354ba883fd6d09728bc,
@@ -25515,21 +25563,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5.68
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f43c82fa79085354ba883fd6d09728bc, type: 3}
@@ -25870,10 +25903,19 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!1 &1527115989
 GameObject:
   m_ObjectHideFlags: 0
@@ -26007,6 +26049,8 @@ MonoBehaviour:
   localMaskTexture: {fileID: 0}
   localMaskChannel: 0
   shaderKeyword: 
+  hash:
+    v: 0
   isDummy: 0
   output: 
   activated: 0
@@ -26043,7 +26087,8 @@ MonoBehaviour:
   paintable: {fileID: 0}
   includeScale: 1
   useMesh: 0
-  hash: 0
+  hash:
+    v: 0
   activation: 0
   baseScale: {x: 0, y: 0, z: 0}
   otherRenderers: []
@@ -26149,7 +26194,7 @@ MonoBehaviour:
   async: 1
   downsampleSteps: 3
   registeredPaintableTexture: {fileID: 1561515826}
-  cooldown: -358.84204
+  cooldown: -516.07074
   currentReader:
     requested: 0
     buffer: {fileID: 0}
@@ -26160,6 +26205,7 @@ MonoBehaviour:
     tempTexture: {fileID: 0}
   currentDirty: 1
   maskMesh: {fileID: 0}
+  maskSubmesh: 0
   maskTexture: {fileID: 0}
   maskChannel: 3
   total: 0
@@ -26394,10 +26440,19 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!1 &1781361736
 GameObject:
   m_ObjectHideFlags: 0
@@ -26475,7 +26530,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1781361736}
   m_LocalRotation: {x: 0.04583292, y: 0.95065993, z: -0.17105076, w: 0.25472862}
-  m_LocalPosition: {x: -3.28, y: 3, z: 5.68}
+  m_LocalPosition: {x: -3.28, y: 4, z: 5.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -26780,10 +26835,19 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!1 &1946903638
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@
 #include "P3dMasking.cginc"
 #include "P3dBlendModes.cginc"
 #include "P3dExtrusions.cginc"
+#include "P3dOverlap.cginc"
 
 float4    _Coord;
 float4    _Channels;
@@ -33,7 +34,6 @@ struct v2f
 	float3 position : TEXCOORD1;
 	float3 tile     : TEXCOORD2;
 	float3 weights  : TEXCOORD3;
-	//float3 mirrors  : COLOR;
 	float3 mask     : TEXCOORD4;
 };
 
@@ -58,18 +58,40 @@ void Vert(a2v i, out v2f o)
 	o.mask = mul(_MaskMatrix, worldPos).xyz;
 	o.weights = pow(abs(worldNormal), _TileTransition);
 	o.weights /= o.weights.x + o.weights.y + o.weights.z;
-	//o.mirrors = worldNormal > 0.0f;
 #if UNITY_UV_STARTS_AT_TOP
 	o.vertex.y = -o.vertex.y;
 #endif
+}
+
+float GetStrength(float distance)
+{
+	float strength = 1.0f;
+	strength -= pow(saturate(distance), _Hardness);
+	strength *= _Opacity;
+	return strength;
+}
+
+float GetStrength(v2f i, float distance)
+{
+	float strength = GetStrength(distance);
+	#if P3D_LINE_CLIP || P3D_LINE_QUAD
+		#if P3D_LINE_CLIP
+			float3 f_position = i.position - _Position;
+		#elif P3D_LINE_QUAD
+			float3 f_position = i.position - GetClosestPosition_Edge(_Position, _EndPosition, i.position);
+		#endif
+		float f_strength = GetStrength(length(f_position));
+
+		return GetOverlapStrength(strength, f_strength);
+	#else
+		return strength;
+	#endif
 }
 
 void Frag(v2f i, out f2g o)
 {
 	float3 position = i.position - GetClosestPosition(i.position);
 	float  distance = length(position);
-	float  strength = 1.0f;
-	float4 color    = _Color;
 
 	// You can remove this to improve performance if you don't care about overlapping UV support
 	if (distance > 1.0f)
@@ -77,8 +99,8 @@ void Frag(v2f i, out f2g o)
 		discard;
 	}
 
-	// Fade distance
-	strength -= pow(saturate(distance), _Hardness);
+	float  strength = GetStrength(i, distance);
+	float4 color    = _Color;
 
 	// Fade mask
 	strength *= GetMask(i.mask);
@@ -87,16 +109,10 @@ void Frag(v2f i, out f2g o)
 	strength *= GetLocalMask(i.texcoord);
 
 	// Mix in tiling
-	//float2 coordX = lerp(float2( i.tile.y, i.tile.z), float2(-i.tile.y, i.tile.z), i.mirrors.x);
-	//float2 coordY = lerp(float2(-i.tile.x, i.tile.z),  i.tile.xz, i.mirrors.y);
-	//float2 coordZ = lerp(-i.tile.xy, float2(-i.tile.x, i.tile.y), i.mirrors.z);
-	//float4 textureX = tex2D(_TileTexture, coordX) * i.weights.x;
-	//float4 textureY = tex2D(_TileTexture, coordY) * i.weights.y;
-	//float4 textureZ = tex2D(_TileTexture, coordZ) * i.weights.z;
 	float4 textureX = tex2D(_TileTexture, i.tile.yz) * i.weights.x;
 	float4 textureY = tex2D(_TileTexture, i.tile.xz) * i.weights.y;
 	float4 textureZ = tex2D(_TileTexture, i.tile.xy) * i.weights.z;
 	color *= lerp(float4(1.0f, 1.0f, 1.0f, 1.0f), textureX + textureY + textureZ, _TileOpacity);
 
-	o.color = Blend(color, strength * _Opacity, i.texcoord, _Channels);
+	o.color = Blend(color, strength, i.texcoord, _Channels);
 }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4448028, g: 0.48844087, b: 0.5417206, a: 1}
+  m_IndirectSpecularColor: {r: 0.11479913, g: 0.11976613, b: 0.105761796, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -145,12 +145,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
-      propertyPath: m_SizeDelta.x
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
-      propertyPath: m_SizeDelta.y
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224552809178886476, guid: f43c82fa79085354ba883fd6d09728bc,
@@ -305,18 +310,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.04583292
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.95065993
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.17105076
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.25472862
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.231944
+      value: -3.17
       objectReference: {fileID: 0}
     - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.1949925
+      value: 3.42
       objectReference: {fileID: 0}
     - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.8987741
+      value: 5.95
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f43c82fa79085354ba883fd6d09728bc, type: 3}
@@ -455,6 +480,8 @@ MonoBehaviour:
   localMaskTexture: {fileID: 0}
   localMaskChannel: 0
   shaderKeyword: 
+  hash:
+    v: 0
   isDummy: 0
   output: 
   activated: 0
@@ -491,7 +518,8 @@ MonoBehaviour:
   paintable: {fileID: 0}
   includeScale: 1
   useMesh: 0
-  hash: 0
+  hash:
+    v: 0
   activation: 0
   baseScale: {x: 0, y: 0, z: 0}
   otherRenderers: []
@@ -767,7 +795,8 @@ MonoBehaviour:
   layers:
     serializedVersion: 2
     m_Bits: 4294967291
-  key: 323
+  requiredButtons: 33
+  requiredKey: 0
   guiLayers:
     serializedVersion: 2
     m_Bits: 32
@@ -776,7 +805,8 @@ MonoBehaviour:
   normalDirection: 1
   normalRelativeTo: 0
   customTransform: {fileID: 0}
-  offset: 0
+  normalOffset: 0
+  mouseOffset: 0
   touchOffset: 0
   storeStates: 0
   showPreview: 0
@@ -787,6 +817,7 @@ MonoBehaviour:
     hitSpacing: 0
     hitLimit: 30
     connectHits: 1
+    clipConnected: 0
 --- !u!4 &2116151261
 Transform:
   m_ObjectHideFlags: 0
@@ -844,7 +875,15 @@ MonoBehaviour:
   tileOpacity: 3
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0

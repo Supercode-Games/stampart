@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to rotate the current <b>Transform</b>.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dRotate")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Rotate")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dRotate")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Rotate")]
 	public class P3dRotate : MonoBehaviour
 	{
 		/// <summary>This allows you to set the coordinate space the movement will use.</summary>
@@ -28,7 +29,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dRotate_Editor : P3dEditor
+	public class P3dRotate_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

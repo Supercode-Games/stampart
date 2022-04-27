@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -36,39 +37,39 @@ namespace PaintIn3D
 
 				EditorGUILayout.Separator();
 
-				P3dEditor.BeginLabelWidth(100);
+				CwEditor.BeginLabelWidth(100);
 					DrawRadius();
-				P3dEditor.EndLabelWidth();
+				CwEditor.EndLabelWidth();
 
 				EditorGUILayout.Separator();
 
-				P3dEditor.BeginLabelWidth(100);
+				CwEditor.BeginLabelWidth(100);
 					DrawColor();
-				P3dEditor.EndLabelWidth();
+				CwEditor.EndLabelWidth();
 
 				EditorGUILayout.Separator();
 
-				P3dEditor.BeginLabelWidth(100);
+				CwEditor.BeginLabelWidth(100);
 					DrawAngle();
-				P3dEditor.EndLabelWidth();
+				CwEditor.EndLabelWidth();
 
 				EditorGUILayout.Separator();
 
-				P3dEditor.BeginLabelWidth(100);
+				CwEditor.BeginLabelWidth(100);
 					DrawTiling();
-				P3dEditor.EndLabelWidth();
+				CwEditor.EndLabelWidth();
 
 				EditorGUILayout.Separator();
 
-				P3dEditor.BeginLabelWidth(100);
+				CwEditor.BeginLabelWidth(100);
 					DrawNormal();
-				P3dEditor.EndLabelWidth();
+				CwEditor.EndLabelWidth();
 
 				EditorGUILayout.Separator();
 
-				P3dEditor.BeginLabelWidth(100);
+				CwEditor.BeginLabelWidth(100);
 					DrawModifiers();
-				P3dEditor.EndLabelWidth();
+				CwEditor.EndLabelWidth();
 			GUILayout.EndScrollView();
 
 			GUILayout.FlexibleSpace();
@@ -93,7 +94,7 @@ namespace PaintIn3D
 				}
 				else
 				{
-					if (P3dEditor.HelpButton("You must select the Paint in 3D tool from the top left tools menu to paint.", MessageType.Warning, "Select", 50) == true)
+					if (CwEditor.HelpButton("You must select the Paint in 3D tool from the top left tools menu to paint.", MessageType.Warning, "Select", 50) == true)
 					{
 						P3dSceneTool.SelectThisTool();
 					}
@@ -176,7 +177,7 @@ namespace PaintIn3D
 				}
 				else
 				{
-					P3dHelper.SelectAndPing(Settings.CurrentTool);
+					CwHelper.SelectAndPing(Settings.CurrentTool);
 				}
 			}
 
@@ -188,7 +189,7 @@ namespace PaintIn3D
 				}
 				else
 				{
-					P3dHelper.SelectAndPing(Settings.CurrentMaterial);
+					CwHelper.SelectAndPing(Settings.CurrentMaterial);
 				}
 			}
 
@@ -200,7 +201,7 @@ namespace PaintIn3D
 				}
 				else
 				{
-					P3dHelper.SelectAndPing(Settings.CurrentShape);
+					CwHelper.SelectAndPing(Settings.CurrentShape);
 				}
 			}
 		}

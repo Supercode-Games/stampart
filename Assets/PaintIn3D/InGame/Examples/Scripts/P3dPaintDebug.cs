@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to debug hit points into the <b>Scene</b> tab. Hit points will automatically be sent by any <b>P3dHit___</b> component on this GameObject, or its ancestors.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintDebug")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Paint Debug")]
-	public class P3dPaintDebug : MonoBehaviour, IHit, IHitPoint, IHitLine, IHitTriangle, IHitQuad
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintDebug")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Paint Debug")]
+	public class P3dPaintDebug : MonoBehaviour, IHitPoint, IHitLine, IHitTriangle, IHitQuad
 	{
 		/// <summary>The color of the debug.</summary>
 		public Color Color { set { color = value; } get { return color; } } [SerializeField] private Color color = Color.white;
@@ -26,7 +27,7 @@ namespace PaintIn3D
 			Debug.DrawLine(position, back, tint, duration);
 		}
 
-		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation)
+		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation, bool clip)
 		{
 			var tint = GetColor(preview, pressure, color);
 
@@ -48,7 +49,7 @@ namespace PaintIn3D
 			Debug.DrawLine(positionC, positionA, tint, duration);
 		}
 
-		public void HandleHitQuad(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Vector3 position2, Vector3 endPosition2, Quaternion rotation)
+		public void HandleHitQuad(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Vector3 position2, Vector3 endPosition2, Quaternion rotation, bool clip)
 		{
 			var tint = GetColor(preview, pressure, color);
 
@@ -103,7 +104,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintDebug_Editor : P3dEditor
+	public class P3dPaintDebug_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

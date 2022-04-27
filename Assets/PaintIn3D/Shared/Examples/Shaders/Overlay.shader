@@ -1,6 +1,7 @@
 // Upgrade NOTE: replaced 'defined FOG_COMBINED_WITH_WORLD_POS' with 'defined (FOG_COMBINED_WITH_WORLD_POS)'
 // Upgrade NOTE: replaced 'glstate_matrix_projection' with 'UNITY_MATRIX_P'
 
+//<HASH>-445334014</HASH>
 ////////////////////////////////////////
 // Generated with Better Shaders
 //
@@ -28,6 +29,10 @@ Shader "Paint in 3D/Overlay"
 	_GlossMapScale("Smoothness", Range(0,1)) = 1
 	_Emission("Emission", Color) = (0,0,0)
 	[Toggle(_USE_UV2)] _UseUV2("Use Second UV", Float) = 0
+
+
+    [Header(UNITY FOG)]
+    [Toggle(DISABLEFOG)] _CW_DisableFog("	Disable", Float) = 0
 
 
    }
@@ -71,8 +76,12 @@ ZWrite Off ColorMask RGB
          #include "UnityPBSLighting.cginc"
          #include "AutoLight.cginc"
          #define SHADER_PASS SHADERPASS_FORWARD
+         #define _PASSFORWARD 1
 
          
+
+
+    #pragma shader_feature_local DISABLEFOG    
 
 
    #define _STANDARD 1
@@ -1142,6 +1151,7 @@ ZWrite Off ColorMask RGB
 
 
 
+#define _USINGTEXCOORD1 1
 
 
          // data across stages, stripped like the above.
@@ -1151,31 +1161,64 @@ ZWrite Off ColorMask RGB
             float3 worldPos : TEXCOORD0;
             float3 worldNormal : TEXCOORD1;
             float4 worldTangent : TEXCOORD2;
-             float4 texcoord0 : TEXCCOORD3;
-             float4 texcoord1 : TEXCCOORD4;
-            // float4 texcoord2 : TEXCCOORD5;
-            // float4 texcoord3 : TEXCCOORD6;
+             float4 texcoord0 : TEXCOORD3;
+             float4 texcoord1 : TEXCOORD4;
+            // float4 texcoord2 : TEXCOORD5;
+            // #if %TEXCOORD3REQUIREKEY%
+            // float4 texcoord3 : TEXCOORD6;
+            // #endif
+
+            // #if %SCREENPOSREQUIREKEY%
             // float4 screenPos : TEXCOORD7;
-            // float4 vertexColor : COLOR;
+            // #endif
+
             float4 lmap : TEXCOORD8;
             #if UNITY_SHOULD_SAMPLE_SH
                half3 sh : TEXCOORD9; // SH
             #endif
             #ifdef LIGHTMAP_ON
                UNITY_LIGHTING_COORDS(10,11)
+               UNITY_FOG_COORDS(12)
             #else
                UNITY_FOG_COORDS(10)
                UNITY_SHADOW_COORDS(11)
             #endif
 
-            // float4 extraV2F0 : TEXCOORD12;
-            // float4 extraV2F1 : TEXCOORD13;
-            // float4 extraV2F2 : TEXCOORD14;
-            // float4 extraV2F3 : TEXCOORD15;
-            // float4 extraV2F4 : TEXCOORD16;
-            // float4 extraV2F5 : TEXCOORD17;
-            // float4 extraV2F6 : TEXCOORD18;
-            // float4 extraV2F7 : TEXCOORD19;
+            // #if %VERTEXCOLORREQUIREKEY%
+            // float4 vertexColor : COLOR;
+            // #endif
+
+            // #if %EXTRAV2F0REQUIREKEY%
+            // float4 extraV2F0 : TEXCOORD13;
+            // #endif
+
+            // #if %EXTRAV2F1REQUIREKEY%
+            // float4 extraV2F1 : TEXCOORD14;
+            // #endif
+
+            // #if %EXTRAV2F2REQUIREKEY%
+            // float4 extraV2F2 : TEXCOORD15;
+            // #endif
+
+            // #if %EXTRAV2F3REQUIREKEY%
+            // float4 extraV2F3 : TEXCOORD16;
+            // #endif
+
+            // #if %EXTRAV2F4REQUIREKEY%
+            // float4 extraV2F4 : TEXCOORD17;
+            // #endif
+
+            // #if %EXTRAV2F5REQUIREKEY%
+            // float4 extraV2F5 : TEXCOORD18;
+            // #endif
+
+            // #if %EXTRAV2F6REQUIREKEY%
+            // float4 extraV2F6 : TEXCOORD19;
+            // #endif
+
+            // #if %EXTRAV2F7REQUIREKEY%
+            // float4 extraV2F7 : TEXCOORD20;
+            // #endif
 
 
             UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -1207,6 +1250,22 @@ ZWrite Off ColorMask RGB
                half Anisotropy;
                half IridescenceMask;
                half IridescenceThickness;
+               int DiffusionProfileHash;
+               float SpecularAAThreshold;
+               float SpecularAAScreenSpaceVariance;
+               // requires _OVERRIDE_BAKEDGI to be defined, but is mapped in all pipelines
+               float3 DiffuseGI;
+               float3 BackDiffuseGI;
+               float3 SpecularGI;
+               // requires _OVERRIDE_SHADOWMASK to be defines
+               float4 ShadowMask;
+            };
+
+            // Data the user declares in blackboard blocks
+            struct Blackboard
+            {
+                
+                float blackboardDummyData;
             };
 
             // data the user might need, this will grow to be big. But easy to strip
@@ -1234,6 +1293,7 @@ ZWrite Off ColorMask RGB
                float4 screenPos;
 
                float4 vertexColor;
+               bool isFrontFace;
 
                float4 extraV2F0;
                float4 extraV2F1;
@@ -1245,6 +1305,7 @@ ZWrite Off ColorMask RGB
                float4 extraV2F7;
 
                float3x3 TBNMatrix;
+               Blackboard blackboard;
             };
 
             struct VertexData
@@ -1256,12 +1317,38 @@ ZWrite Off ColorMask RGB
                float3 normal : NORMAL;
                float4 tangent : TANGENT;
                float4 texcoord0 : TEXCOORD0;
-               float4 texcoord1 : TEXCOORD1;
-               float4 texcoord2 : TEXCOORD2;
-               // float4 texcoord3 : TEXCOORD3;
-               // float4 vertexColor : COLOR;
 
-               #if _HDRP && (_PASSMOTIONVECTOR || (_PASSFORWARD && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
+               // optimize out mesh coords when not in use by user or lighting system
+               #if _URP && (_USINGTEXCOORD1 || _PASSMETA || _PASSFORWARD || _PASSGBUFFER)
+                  float4 texcoord1 : TEXCOORD1;
+               #endif
+
+               #if _URP && (_USINGTEXCOORD2 || _PASSMETA || ((_PASSFORWARD || _PASSGBUFFER) && defined(DYNAMICLIGHTMAP_ON)))
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+               #if _STANDARD && (_USINGTEXCOORD1 || (_PASSMETA || ((_PASSFORWARD || _PASSGBUFFER || _PASSFORWARDADD) && LIGHTMAP_ON)))
+                  float4 texcoord1 : TEXCOORD1;
+               #endif
+               #if _STANDARD && (_USINGTEXCOORD2 || (_PASSMETA || ((_PASSFORWARD || _PASSGBUFFER) && DYNAMICLIGHTMAP_ON)))
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+
+               #if _HDRP
+                  float4 texcoord1 : TEXCOORD1;
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+               // #if %TEXCOORD3REQUIREKEY%
+               // float4 texcoord3 : TEXCOORD3;
+               // #endif
+
+               // #if %VERTEXCOLORREQUIREKEY%
+               // float4 vertexColor : COLOR;
+               // #endif
+
+               #if _HDRP && (_PASSMOTIONVECTOR || ((_PASSFORWARD || _PASSUNLIT) && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
                   float3 previousPositionOS : TEXCOORD4; // Contain previous transform position (in case of skinning for example)
                   #if defined (_ADD_PRECOMPUTED_VELOCITY)
                      float3 precomputedVelocity    : TEXCOORD5; // Add Precomputed Velocity (Alembic computes velocities on runtime side).
@@ -1279,23 +1366,51 @@ ZWrite Off ColorMask RGB
                float4 texcoord0 : TEXCOORD0;
                float4 texcoord1 : TEXCOORD1;
                float4 texcoord2 : TEXCOORD2;
+
+               // #if %TEXCOORD3REQUIREKEY%
                // float4 texcoord3 : TEXCOORD3;
+               // #endif
+
+               // #if %VERTEXCOLORREQUIREKEY%
                // float4 vertexColor : COLOR;
+               // #endif
 
-               
-               // float4 extraV2F0 : TEXCOORD4;
-               // float4 extraV2F1 : TEXCOORD5;
-               // float4 extraV2F2 : TEXCOORD6;
-               // float4 extraV2F3 : TEXCOORD7;
-               // float4 extraV2F4 : TEXCOORD8;
-               // float4 extraV2F5 : TEXCOORD9;
-               // float4 extraV2F6 : TEXCOORD10;
-               // float4 extraV2F7 : TEXCOORD11;
+               // #if %EXTRAV2F0REQUIREKEY%
+               // float4 extraV2F0 : TEXCOORD5;
+               // #endif
 
-               #if _HDRP && (_PASSMOTIONVECTOR || (_PASSFORWARD && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
-                  float3 previousPositionOS : TEXCOORD12; // Contain previous transform position (in case of skinning for example)
+               // #if %EXTRAV2F1REQUIREKEY%
+               // float4 extraV2F1 : TEXCOORD6;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
+               // float4 extraV2F2 : TEXCOORD7;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
+               // float4 extraV2F3 : TEXCOORD8;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // float4 extraV2F4 : TEXCOORD9;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // float4 extraV2F5 : TEXCOORD10;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // float4 extraV2F6 : TEXCOORD11;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // float4 extraV2F7 : TEXCOORD12;
+               // #endif
+
+               #if _HDRP && (_PASSMOTIONVECTOR || ((_PASSFORWARD || _PASSUNLIT) && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
+                  float3 previousPositionOS : TEXCOORD13; // Contain previous transform position (in case of skinning for example)
                   #if defined (_ADD_PRECOMPUTED_VELOCITY)
-                     float3 precomputedVelocity : TEXCOORD13;
+                     float3 precomputedVelocity : TEXCOORD14;
                   #endif
                #endif
 
@@ -1313,6 +1428,8 @@ ZWrite Off ColorMask RGB
                float4 extraV2F5;
                float4 extraV2F6;
                float4 extraV2F7;
+               Blackboard blackboard;
+               float4 time;
             };
 
 
@@ -1344,6 +1461,17 @@ ZWrite Off ColorMask RGB
                  #define UNITY_SAMPLE_TEX2D_SAMPLER_LOD(tex,samplertex,coord,lod) tex2D (tex,coord,0,lod)
               #endif
 
+               #undef UNITY_MATRIX_M
+               #undef UNITY_MATRIX_I_M
+               #undef UNITY_MATRIX_V
+               #undef UNITY_MATRIX_I_V
+               #undef UNITY_MATRIX_P
+               #undef UNITY_MATRIX_VP
+               #undef UNITY_MATRIX_MV
+               #undef UNITY_MATRIX_T_MV
+               #undef UNITY_MATRIX_IT_MV
+               #undef UNITY_MATRIX_MVP
+
                #define UNITY_MATRIX_M     unity_ObjectToWorld
                #define UNITY_MATRIX_I_M   unity_WorldToObject
                #define UNITY_MATRIX_V     unity_MatrixV
@@ -1369,13 +1497,14 @@ ZWrite Off ColorMask RGB
 
             #if _GRABPASSUSED
                #if _STANDARD
-                  sampler2D %GRABTEXTURE%;
+                  TEXTURE2D(%GRABTEXTURE%);
+                  SAMPLER(sampler_%GRABTEXTURE%);
                #endif
 
                half3 GetSceneColor(float2 uv)
                {
                   #if _STANDARD
-                     return tex2D(%GRABTEXTURE%, uv).rgb;
+                     return SAMPLE_TEXTURE2D(%GRABTEXTURE%, sampler_%GRABTEXTURE%, uv).rgb;
                   #else
                      return SHADERGRAPH_SAMPLE_SCENE_COLOR(uv);
                   #endif
@@ -1383,9 +1512,9 @@ ZWrite Off ColorMask RGB
             #endif
 
 
-
+      
             #if _STANDARD
-               sampler2D _CameraDepthTexture;
+               UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
                float GetSceneDepth(float2 uv) { return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv); }
                float GetLinear01Depth(float2 uv) { return Linear01Depth(GetSceneDepth(uv)); }
                float GetLinearEyeDepth(float2 uv) { return LinearEyeDepth(GetSceneDepth(uv)); } 
@@ -1406,11 +1535,23 @@ ZWrite Off ColorMask RGB
                return wpos;
             }
 
+            #if _HDRP
+            float3 ObjectToWorldSpacePosition(float3 pos)
+            {
+               return GetAbsolutePositionWS(TransformObjectToWorld(pos));
+            }
+            #else
+            float3 ObjectToWorldSpacePosition(float3 pos)
+            {
+               return TransformObjectToWorld(pos);
+            }
+            #endif
+
             #if _STANDARD
-               sampler2D _CameraDepthNormalsTexture;
+               UNITY_DECLARE_SCREENSPACE_TEXTURE(_CameraDepthNormalsTexture);
                float3 GetSceneNormal(float2 uv, float3 worldSpaceViewDir)
                {
-                  float4 depthNorms = tex2D(_CameraDepthNormalsTexture, uv);
+                  float4 depthNorms = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_CameraDepthNormalsTexture, uv);
                   float3 norms = DecodeViewNormalStereo(depthNorms);
                   norms = mul((float3x3)UNITY_MATRIX_V, norms) * 0.5 + 0.5;
                   return norms;
@@ -1469,13 +1610,37 @@ ZWrite Off ColorMask RGB
                    // Note neutral texture like "bump" is (0, 0, 1, 1) to work with both plain RGB normal and DXT5nm/BC5
                    packednormal.x *= packednormal.w;
                  #endif
-                   fixed3 normal;
+                   half3 normal;
                    normal.xy = (packednormal.xy * 2 - 1) * scale;
                    normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
                    return normal;
                }	
 
              #endif
+
+
+            void GetSun(out float3 lightDir, out float3 color)
+            {
+               lightDir = float3(0.5, 0.5, 0);
+               color = 1;
+               #if _HDRP
+                  if (_DirectionalLightCount > 0)
+                  {
+                     DirectionalLightData light = _DirectionalLightDatas[0];
+                     lightDir = -light.forward.xyz;
+                     color = light.color;
+                  }
+               #elif _STANDARD
+			         lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                  color = _LightColor0.rgb;
+               #elif _URP
+	               Light light = GetMainLight();
+	               lightDir = light.direction;
+	               color = light.color;
+               #endif
+            }
+
+
             
          
 	float4 _Color;
@@ -1484,6 +1649,8 @@ ZWrite Off ColorMask RGB
 	float  _GlossMapScale;
 	float3 _Emission;
 	float  _UseUV2;
+
+
 
 
 
@@ -1501,12 +1668,12 @@ ZWrite Off ColorMask RGB
 	TEXTURE2D(_EmissionMap);
 	SAMPLER(sampler_EmissionMap);
 
-	void Ext_ModifyVertex0(inout VertexData v, inout ExtraV2F d)
+	void Ext_ModifyVertex0 (inout VertexData v, inout ExtraV2F d)
 	{
 		v.texcoord0 = lerp(v.texcoord0, v.texcoord1, _UseUV2);
 	}
 
-	void Ext_SurfaceFunction0(inout Surface o, ShaderData d)
+	void Ext_SurfaceFunction0 (inout Surface o, ShaderData d)
 	{
 		float4 texMain = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, d.texcoord0);
 		float4 bump    = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, d.texcoord0);
@@ -1521,6 +1688,8 @@ ZWrite Off ColorMask RGB
 		o.Emission   = glow.rgb * _Emission;
 		o.Alpha      = texMain.a * _Color.a;
 	}
+
+
 
 
 
@@ -1547,12 +1716,29 @@ ZWrite Off ColorMask RGB
                  // Ext_SurfaceFunction17(l, d);
                  // Ext_SurfaceFunction18(l, d);
 		           // Ext_SurfaceFunction19(l, d);
-                 l.Normal.y *= -1;
+                 // Ext_SurfaceFunction20(l, d);
+                 // Ext_SurfaceFunction21(l, d);
+                 // Ext_SurfaceFunction22(l, d);
+                 // Ext_SurfaceFunction23(l, d);
+                 // Ext_SurfaceFunction24(l, d);
+                 // Ext_SurfaceFunction25(l, d);
+                 // Ext_SurfaceFunction26(l, d);
+                 // Ext_SurfaceFunction27(l, d);
+                 // Ext_SurfaceFunction28(l, d);
+		           // Ext_SurfaceFunction29(l, d);
             }
 
-            void ChainModifyVertex(inout VertexData v, inout VertexToPixel v2p)
+            void ChainModifyVertex(inout VertexData v, inout VertexToPixel v2p, float4 time)
             {
-                 ExtraV2F d = (ExtraV2F)0;
+                 ExtraV2F d;
+                 
+                 ZERO_INITIALIZE(ExtraV2F, d);
+                 ZERO_INITIALIZE(Blackboard, d.blackboard);
+                 // due to motion vectors in HDRP, we need to use the last
+                 // time in certain spots. So if you are going to use _Time to adjust vertices,
+                 // you need to use this time or motion vectors will break. 
+                 d.time = time;
+
                    Ext_ModifyVertex0(v, d);
                  // Ext_ModifyVertex1(v, d);
                  // Ext_ModifyVertex2(v, d);
@@ -1573,28 +1759,89 @@ ZWrite Off ColorMask RGB
                  // Ext_ModifyVertex17(v, d);
                  // Ext_ModifyVertex18(v, d);
                  // Ext_ModifyVertex19(v, d);
-		
+                 // Ext_ModifyVertex20(v, d);
+                 // Ext_ModifyVertex21(v, d);
+                 // Ext_ModifyVertex22(v, d);
+                 // Ext_ModifyVertex23(v, d);
+                 // Ext_ModifyVertex24(v, d);
+                 // Ext_ModifyVertex25(v, d);
+                 // Ext_ModifyVertex26(v, d);
+                 // Ext_ModifyVertex27(v, d);
+                 // Ext_ModifyVertex28(v, d);
+                 // Ext_ModifyVertex29(v, d);
+
+
+                 // #if %EXTRAV2F0REQUIREKEY%
                  // v2p.extraV2F0 = d.extraV2F0;
+                 // #endif
+
+                 // #if %EXTRAV2F1REQUIREKEY%
                  // v2p.extraV2F1 = d.extraV2F1;
+                 // #endif
+
+                 // #if %EXTRAV2F2REQUIREKEY%
                  // v2p.extraV2F2 = d.extraV2F2;
+                 // #endif
+
+                 // #if %EXTRAV2F3REQUIREKEY%
                  // v2p.extraV2F3 = d.extraV2F3;
+                 // #endif
+
+                 // #if %EXTRAV2F4REQUIREKEY%
                  // v2p.extraV2F4 = d.extraV2F4;
+                 // #endif
+
+                 // #if %EXTRAV2F5REQUIREKEY%
                  // v2p.extraV2F5 = d.extraV2F5;
+                 // #endif
+
+                 // #if %EXTRAV2F6REQUIREKEY%
                  // v2p.extraV2F6 = d.extraV2F6;
+                 // #endif
+
+                 // #if %EXTRAV2F7REQUIREKEY%
                  // v2p.extraV2F7 = d.extraV2F7;
+                 // #endif
             }
 
             void ChainModifyTessellatedVertex(inout VertexData v, inout VertexToPixel v2p)
             {
-               ExtraV2F d = (ExtraV2F)0;
+               ExtraV2F d;
+               ZERO_INITIALIZE(ExtraV2F, d);
+               ZERO_INITIALIZE(Blackboard, d.blackboard);
+
+               // #if %EXTRAV2F0REQUIREKEY%
                // d.extraV2F0 = v2p.extraV2F0;
+               // #endif
+
+               // #if %EXTRAV2F1REQUIREKEY%
                // d.extraV2F1 = v2p.extraV2F1;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
                // d.extraV2F2 = v2p.extraV2F2;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
                // d.extraV2F3 = v2p.extraV2F3;
-               // d.extraV2F0 = v2p.extraV2F4;
-               // d.extraV2F1 = v2p.extraV2F5;
-               // d.extraV2F2 = v2p.extraV2F6;
-               // d.extraV2F3 = v2p.extraV2F7;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // d.extraV2F4 = v2p.extraV2F4;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // d.extraV2F5 = v2p.extraV2F5;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // d.extraV2F6 = v2p.extraV2F6;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // d.extraV2F7 = v2p.extraV2F7;
+               // #endif
+
 
                // Ext_ModifyTessellatedVertex0(v, d);
                // Ext_ModifyTessellatedVertex1(v, d);
@@ -1616,15 +1863,48 @@ ZWrite Off ColorMask RGB
                // Ext_ModifyTessellatedVertex17(v, d);
                // Ext_ModifyTessellatedVertex18(v, d);
                // Ext_ModifyTessellatedVertex19(v, d);
+               // Ext_ModifyTessellatedVertex20(v, d);
+               // Ext_ModifyTessellatedVertex21(v, d);
+               // Ext_ModifyTessellatedVertex22(v, d);
+               // Ext_ModifyTessellatedVertex23(v, d);
+               // Ext_ModifyTessellatedVertex24(v, d);
+               // Ext_ModifyTessellatedVertex25(v, d);
+               // Ext_ModifyTessellatedVertex26(v, d);
+               // Ext_ModifyTessellatedVertex27(v, d);
+               // Ext_ModifyTessellatedVertex28(v, d);
+               // Ext_ModifyTessellatedVertex29(v, d);
 
+               // #if %EXTRAV2F0REQUIREKEY%
                // v2p.extraV2F0 = d.extraV2F0;
+               // #endif
+
+               // #if %EXTRAV2F1REQUIREKEY%
                // v2p.extraV2F1 = d.extraV2F1;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
                // v2p.extraV2F2 = d.extraV2F2;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
                // v2p.extraV2F3 = d.extraV2F3;
-               // v2p.extraV2F0 = d.extraV2F4;
-               // v2p.extraV2F1 = d.extraV2F5;
-               // v2p.extraV2F2 = d.extraV2F6;
-               // v2p.extraV2F3 = d.extraV2F7;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // v2p.extraV2F4 = d.extraV2F4;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // v2p.extraV2F5 = d.extraV2F5;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // v2p.extraV2F6 = d.extraV2F6;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // v2p.extraV2F7 = d.extraV2F7;
+               // #endif
             }
 
             void ChainFinalColorForward(inout Surface l, inout ShaderData d, inout half4 color)
@@ -1649,6 +1929,16 @@ ZWrite Off ColorMask RGB
                //  Ext_FinalColorForward17(l, d, color);
                //  Ext_FinalColorForward18(l, d, color);
                //  Ext_FinalColorForward19(l, d, color);
+               //  Ext_FinalColorForward20(l, d, color);
+               //  Ext_FinalColorForward21(l, d, color);
+               //  Ext_FinalColorForward22(l, d, color);
+               //  Ext_FinalColorForward23(l, d, color);
+               //  Ext_FinalColorForward24(l, d, color);
+               //  Ext_FinalColorForward25(l, d, color);
+               //  Ext_FinalColorForward26(l, d, color);
+               //  Ext_FinalColorForward27(l, d, color);
+               //  Ext_FinalColorForward28(l, d, color);
+               //  Ext_FinalColorForward29(l, d, color);
             }
 
             void ChainFinalGBufferStandard(inout Surface s, inout ShaderData d, inout half4 GBuffer0, inout half4 GBuffer1, inout half4 GBuffer2, inout half4 outEmission, inout half4 outShadowMask)
@@ -1673,13 +1963,27 @@ ZWrite Off ColorMask RGB
                //  Ext_FinalGBufferStandard17(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
                //  Ext_FinalGBufferStandard18(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
                //  Ext_FinalGBufferStandard19(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard20(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard21(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard22(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard23(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard24(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard25(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard26(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard27(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard28(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard29(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
             }
 
 
 
          
 
-         ShaderData CreateShaderData(VertexToPixel i)
+         ShaderData CreateShaderData(VertexToPixel i
+                  #if NEED_FACING
+                     , bool facing
+                  #endif
+         )
          {
             ShaderData d = (ShaderData)0;
             d.clipPos = i.pos;
@@ -1688,38 +1992,72 @@ ZWrite Off ColorMask RGB
             d.worldSpaceNormal = normalize(i.worldNormal);
             d.worldSpaceTangent = normalize(i.worldTangent.xyz);
             d.tangentSign = i.worldTangent.w;
-            float3 bitangent = cross(i.worldTangent.xyz, i.worldNormal) * i.worldTangent.w;
+            float3 bitangent = cross(i.worldTangent.xyz, i.worldNormal) * d.tangentSign * -1;
             
 
             d.TBNMatrix = float3x3(d.worldSpaceTangent, bitangent, d.worldSpaceNormal);
             d.worldSpaceViewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
+
             d.tangentSpaceViewDir = mul(d.TBNMatrix, d.worldSpaceViewDir);
              d.texcoord0 = i.texcoord0;
              d.texcoord1 = i.texcoord1;
             // d.texcoord2 = i.texcoord2;
+
+            // #if %TEXCOORD3REQUIREKEY%
             // d.texcoord3 = i.texcoord3;
+            // #endif
+
+            // d.isFrontFace = facing;
+            // #if %VERTEXCOLORREQUIREKEY%
             // d.vertexColor = i.vertexColor;
+            // #endif
 
             // these rarely get used, so we back transform them. Usually will be stripped.
             #if _HDRP
-                // d.localSpacePosition = mul(unity_WorldToObject, float4(GetCameraRelativePositionWS(i.worldPos), 1));
+                // d.localSpacePosition = mul(unity_WorldToObject, float4(GetCameraRelativePositionWS(i.worldPos), 1)).xyz;
             #else
-                // d.localSpacePosition = mul(unity_WorldToObject, float4(i.worldPos, 1));
+                // d.localSpacePosition = mul(unity_WorldToObject, float4(i.worldPos, 1)).xyz;
             #endif
-            // d.localSpaceNormal = normalize(mul(unity_WorldToObject, i.worldNormal));
-            // d.localSpaceTangent = normalize(mul(unity_WorldToObject, i.worldTangent.xyz));
+            // d.localSpaceNormal = normalize(mul((float3x3)unity_WorldToObject, i.worldNormal));
+            // d.localSpaceTangent = normalize(mul((float3x3)unity_WorldToObject, i.worldTangent.xyz));
 
+            // #if %SCREENPOSREQUIREKEY%
             // d.screenPos = i.screenPos;
             // d.screenUV = (i.screenPos.xy / i.screenPos.w);
+            // #endif
 
+
+            // #if %EXTRAV2F0REQUIREKEY%
             // d.extraV2F0 = i.extraV2F0;
+            // #endif
+
+            // #if %EXTRAV2F1REQUIREKEY%
             // d.extraV2F1 = i.extraV2F1;
+            // #endif
+
+            // #if %EXTRAV2F2REQUIREKEY%
             // d.extraV2F2 = i.extraV2F2;
+            // #endif
+
+            // #if %EXTRAV2F3REQUIREKEY%
             // d.extraV2F3 = i.extraV2F3;
+            // #endif
+
+            // #if %EXTRAV2F4REQUIREKEY%
             // d.extraV2F4 = i.extraV2F4;
+            // #endif
+
+            // #if %EXTRAV2F5REQUIREKEY%
             // d.extraV2F5 = i.extraV2F5;
+            // #endif
+
+            // #if %EXTRAV2F6REQUIREKEY%
             // d.extraV2F6 = i.extraV2F6;
+            // #endif
+
+            // #if %EXTRAV2F7REQUIREKEY%
             // d.extraV2F7 = i.extraV2F7;
+            // #endif
 
             return d;
          }
@@ -1735,16 +2073,26 @@ ZWrite Off ColorMask RGB
            UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
 #if !_TESSELLATION_ON
-           ChainModifyVertex(v, o);
+           ChainModifyVertex(v, o, _Time);
 #endif
 
            o.pos = UnityObjectToClipPos(v.vertex);
             o.texcoord0 = v.texcoord0;
             o.texcoord1 = v.texcoord1;
            // o.texcoord2 = v.texcoord2;
+
+           // #if %TEXCOORD3REQUIREKEY%
            // o.texcoord3 = v.texcoord3;
+           // #endif
+
+           // #if %VERTEXCOLORREQUIREKEY%
            // o.vertexColor = v.vertexColor;
+           // #endif
+
+           // #if %SCREENPOSREQUIREKEY%
            // o.screenPos = ComputeScreenPos(o.pos);
+           // #endif
+
            o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
            o.worldNormal = UnityObjectToWorldNormal(v.normal);
            o.worldTangent.xyz = UnityObjectToWorldDir(v.tangent.xyz);
@@ -1792,6 +2140,9 @@ ZWrite Off ColorMask RGB
          #ifdef _DEPTHOFFSET_ON
               , out float outputDepth : SV_Depth
          #endif
+         #if NEED_FACING
+            , bool facing : SV_IsFrontFace
+         #endif
          ) : SV_Target
          {
            UNITY_SETUP_INSTANCE_ID(IN);
@@ -1804,7 +2155,11 @@ ZWrite Off ColorMask RGB
              UNITY_EXTRACT_FOG(IN);
            #endif
 
-           ShaderData d = CreateShaderData(IN);
+           ShaderData d = CreateShaderData(IN
+              #if NEED_FACING
+                 , facing
+              #endif
+           );
            Surface l = (Surface)0;
 
 
@@ -1871,7 +2226,11 @@ ZWrite Off ColorMask RGB
            o.Albedo = l.Albedo;
            o.Emission = l.Emission;
            o.Alpha = l.Alpha;
-           o.Normal = normalize(TangentToWorldSpace(d, l.Normal));
+           #if _WORLDSPACENORMAL
+              o.Normal = l.Normal;
+           #else
+              o.Normal = normalize(TangentToWorldSpace(d, l.Normal));
+           #endif
 
             fixed4 c = 0;
             // Setup lighting environment
@@ -1911,26 +2270,47 @@ ZWrite Off ColorMask RGB
                giInput.probePosition[1] = unity_SpecCube1_ProbePosition;
             #endif
 
-            #if _BDRF3 || _SIMPLELIT
+            
 
+            #if defined(_OVERRIDE_SHADOWMASK)
+               float4 mulColor = saturate(dot(l.ShadowMask, unity_OcclusionMaskSelector));
+               gi.light.color = mulColor;
+               giInput.light.color = mulColor;
+            #endif
+
+            #if _UNLIT
+              c.rgb = l.Albedo;
+              c.a = l.Alpha;
+            #elif _BDRF3 || _SIMPLELIT
                LightingBlinnPhong_GI(o, giInput, gi);
+               #if defined(_OVERRIDE_BAKEDGI)
+                  gi.indirect.diffuse = l.DiffuseGI;
+                  gi.indirect.specular = l.SpecularGI;
+               #endif
                c += LightingBlinnPhong (o, d.worldSpaceViewDir, gi);
-
-
             #elif _USESPECULAR || _USESPECULARWORKFLOW || _SPECULARFROMMETALLIC
                LightingStandardSpecular_GI(o, giInput, gi);
+               #if defined(_OVERRIDE_BAKEDGI)
+                  gi.indirect.diffuse = l.DiffuseGI;
+                  gi.indirect.specular = l.SpecularGI;
+               #endif
                c += LightingStandardSpecular (o, d.worldSpaceViewDir, gi);
             #else
                LightingStandard_GI(o, giInput, gi);
+               #if defined(_OVERRIDE_BAKEDGI)
+                  gi.indirect.diffuse = l.DiffuseGI;
+                  gi.indirect.specular = l.SpecularGI;
+               #endif
                c += LightingStandard (o, d.worldSpaceViewDir, gi);
             #endif
 
-            c.rgb += o.Emission;
+           c.rgb += o.Emission;
 
            ChainFinalColorForward(l, d, c);
 
-           UNITY_APPLY_FOG(_unity_fogCoord, c); // apply fog
-           
+           #if !DISABLEFOG
+            UNITY_APPLY_FOG(_unity_fogCoord, c); // apply fog
+           #endif
            
 
            return c;
@@ -1979,6 +2359,14 @@ ZWrite Off ColorMask RGB
          #include "AutoLight.cginc"
 
          
+
+         #define _PASSFORWARD 1
+         #define _PASSFORWARDADD 1
+
+         
+
+
+    #pragma shader_feature_local DISABLEFOG    
 
 
    #define _STANDARD 1
@@ -3048,6 +3436,7 @@ ZWrite Off ColorMask RGB
 
 
 
+#define _USINGTEXCOORD1 1
 
 
          // data across stages, stripped like the above.
@@ -3057,24 +3446,57 @@ ZWrite Off ColorMask RGB
             float3 worldPos : TEXCOORD0;
             float3 worldNormal : TEXCOORD1;
             float4 worldTangent : TEXCOORD2;
-             float4 texcoord0 : TEXCCOORD3;
-             float4 texcoord1 : TEXCCOORD4;
-            // float4 texcoord2 : TEXCCOORD5;
-            // float4 texcoord3 : TEXCCOORD6;
+             float4 texcoord0 : TEXCOORD3;
+             float4 texcoord1 : TEXCOORD4;
+            // float4 texcoord2 : TEXCOORD5;
+
+            // #if %TEXCOORD3REQUIREKEY%
+            // float4 texcoord3 : TEXCOORD6;
+            // #endif
+            
+            // #if %SCREENPOSREQUIREKEY%
             // float4 screenPos : TEXCOORD7;
-            // float4 vertexColor : COLOR;
+            // #endif
 
             UNITY_LIGHTING_COORDS(8,9)
             UNITY_FOG_COORDS(10)
 
+            
+            // #if %VERTEXCOLORREQUIREKEY%
+            // float4 vertexColor : COLOR;
+            // #endif
+
+            // #if %EXTRAV2F0REQUIREKEY%
             // float4 extraV2F0 : TEXCOORD11;
+            // #endif
+
+            // #if %EXTRAV2F1REQUIREKEY%
             // float4 extraV2F1 : TEXCOORD12;
+            // #endif
+
+            // #if %EXTRAV2F2REQUIREKEY%
             // float4 extraV2F2 : TEXCOORD13;
+            // #endif
+
+            // #if %EXTRAV2F3REQUIREKEY%
             // float4 extraV2F3 : TEXCOORD14;
+            // #endif
+
+            // #if %EXTRAV2F4REQUIREKEY%
             // float4 extraV2F4 : TEXCOORD15;
+            // #endif
+
+            // #if %EXTRAV2F5REQUIREKEY%
             // float4 extraV2F5 : TEXCOORD16;
+            // #endif
+
+            // #if %EXTRAV2F6REQUIREKEY%
             // float4 extraV2F6 : TEXCOORD17;
+            // #endif
+
+            // #if %EXTRAV2F7REQUIREKEY%
             // float4 extraV2F7 : TEXCOORD18;
+            // #endif
 
             UNITY_VERTEX_INPUT_INSTANCE_ID
             UNITY_VERTEX_OUTPUT_STEREO
@@ -3106,6 +3528,22 @@ ZWrite Off ColorMask RGB
                half Anisotropy;
                half IridescenceMask;
                half IridescenceThickness;
+               int DiffusionProfileHash;
+               float SpecularAAThreshold;
+               float SpecularAAScreenSpaceVariance;
+               // requires _OVERRIDE_BAKEDGI to be defined, but is mapped in all pipelines
+               float3 DiffuseGI;
+               float3 BackDiffuseGI;
+               float3 SpecularGI;
+               // requires _OVERRIDE_SHADOWMASK to be defines
+               float4 ShadowMask;
+            };
+
+            // Data the user declares in blackboard blocks
+            struct Blackboard
+            {
+                
+                float blackboardDummyData;
             };
 
             // data the user might need, this will grow to be big. But easy to strip
@@ -3133,6 +3571,7 @@ ZWrite Off ColorMask RGB
                float4 screenPos;
 
                float4 vertexColor;
+               bool isFrontFace;
 
                float4 extraV2F0;
                float4 extraV2F1;
@@ -3144,6 +3583,7 @@ ZWrite Off ColorMask RGB
                float4 extraV2F7;
 
                float3x3 TBNMatrix;
+               Blackboard blackboard;
             };
 
             struct VertexData
@@ -3155,12 +3595,38 @@ ZWrite Off ColorMask RGB
                float3 normal : NORMAL;
                float4 tangent : TANGENT;
                float4 texcoord0 : TEXCOORD0;
-               float4 texcoord1 : TEXCOORD1;
-               float4 texcoord2 : TEXCOORD2;
-               // float4 texcoord3 : TEXCOORD3;
-               // float4 vertexColor : COLOR;
 
-               #if _HDRP && (_PASSMOTIONVECTOR || (_PASSFORWARD && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
+               // optimize out mesh coords when not in use by user or lighting system
+               #if _URP && (_USINGTEXCOORD1 || _PASSMETA || _PASSFORWARD || _PASSGBUFFER)
+                  float4 texcoord1 : TEXCOORD1;
+               #endif
+
+               #if _URP && (_USINGTEXCOORD2 || _PASSMETA || ((_PASSFORWARD || _PASSGBUFFER) && defined(DYNAMICLIGHTMAP_ON)))
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+               #if _STANDARD && (_USINGTEXCOORD1 || (_PASSMETA || ((_PASSFORWARD || _PASSGBUFFER || _PASSFORWARDADD) && LIGHTMAP_ON)))
+                  float4 texcoord1 : TEXCOORD1;
+               #endif
+               #if _STANDARD && (_USINGTEXCOORD2 || (_PASSMETA || ((_PASSFORWARD || _PASSGBUFFER) && DYNAMICLIGHTMAP_ON)))
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+
+               #if _HDRP
+                  float4 texcoord1 : TEXCOORD1;
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+               // #if %TEXCOORD3REQUIREKEY%
+               // float4 texcoord3 : TEXCOORD3;
+               // #endif
+
+               // #if %VERTEXCOLORREQUIREKEY%
+               // float4 vertexColor : COLOR;
+               // #endif
+
+               #if _HDRP && (_PASSMOTIONVECTOR || ((_PASSFORWARD || _PASSUNLIT) && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
                   float3 previousPositionOS : TEXCOORD4; // Contain previous transform position (in case of skinning for example)
                   #if defined (_ADD_PRECOMPUTED_VELOCITY)
                      float3 precomputedVelocity    : TEXCOORD5; // Add Precomputed Velocity (Alembic computes velocities on runtime side).
@@ -3178,23 +3644,51 @@ ZWrite Off ColorMask RGB
                float4 texcoord0 : TEXCOORD0;
                float4 texcoord1 : TEXCOORD1;
                float4 texcoord2 : TEXCOORD2;
+
+               // #if %TEXCOORD3REQUIREKEY%
                // float4 texcoord3 : TEXCOORD3;
+               // #endif
+
+               // #if %VERTEXCOLORREQUIREKEY%
                // float4 vertexColor : COLOR;
+               // #endif
 
-               
-               // float4 extraV2F0 : TEXCOORD4;
-               // float4 extraV2F1 : TEXCOORD5;
-               // float4 extraV2F2 : TEXCOORD6;
-               // float4 extraV2F3 : TEXCOORD7;
-               // float4 extraV2F4 : TEXCOORD8;
-               // float4 extraV2F5 : TEXCOORD9;
-               // float4 extraV2F6 : TEXCOORD10;
-               // float4 extraV2F7 : TEXCOORD11;
+               // #if %EXTRAV2F0REQUIREKEY%
+               // float4 extraV2F0 : TEXCOORD5;
+               // #endif
 
-               #if _HDRP && (_PASSMOTIONVECTOR || (_PASSFORWARD && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
-                  float3 previousPositionOS : TEXCOORD12; // Contain previous transform position (in case of skinning for example)
+               // #if %EXTRAV2F1REQUIREKEY%
+               // float4 extraV2F1 : TEXCOORD6;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
+               // float4 extraV2F2 : TEXCOORD7;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
+               // float4 extraV2F3 : TEXCOORD8;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // float4 extraV2F4 : TEXCOORD9;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // float4 extraV2F5 : TEXCOORD10;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // float4 extraV2F6 : TEXCOORD11;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // float4 extraV2F7 : TEXCOORD12;
+               // #endif
+
+               #if _HDRP && (_PASSMOTIONVECTOR || ((_PASSFORWARD || _PASSUNLIT) && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
+                  float3 previousPositionOS : TEXCOORD13; // Contain previous transform position (in case of skinning for example)
                   #if defined (_ADD_PRECOMPUTED_VELOCITY)
-                     float3 precomputedVelocity : TEXCOORD13;
+                     float3 precomputedVelocity : TEXCOORD14;
                   #endif
                #endif
 
@@ -3212,6 +3706,8 @@ ZWrite Off ColorMask RGB
                float4 extraV2F5;
                float4 extraV2F6;
                float4 extraV2F7;
+               Blackboard blackboard;
+               float4 time;
             };
 
 
@@ -3243,6 +3739,17 @@ ZWrite Off ColorMask RGB
                  #define UNITY_SAMPLE_TEX2D_SAMPLER_LOD(tex,samplertex,coord,lod) tex2D (tex,coord,0,lod)
               #endif
 
+               #undef UNITY_MATRIX_M
+               #undef UNITY_MATRIX_I_M
+               #undef UNITY_MATRIX_V
+               #undef UNITY_MATRIX_I_V
+               #undef UNITY_MATRIX_P
+               #undef UNITY_MATRIX_VP
+               #undef UNITY_MATRIX_MV
+               #undef UNITY_MATRIX_T_MV
+               #undef UNITY_MATRIX_IT_MV
+               #undef UNITY_MATRIX_MVP
+
                #define UNITY_MATRIX_M     unity_ObjectToWorld
                #define UNITY_MATRIX_I_M   unity_WorldToObject
                #define UNITY_MATRIX_V     unity_MatrixV
@@ -3268,13 +3775,14 @@ ZWrite Off ColorMask RGB
 
             #if _GRABPASSUSED
                #if _STANDARD
-                  sampler2D %GRABTEXTURE%;
+                  TEXTURE2D(%GRABTEXTURE%);
+                  SAMPLER(sampler_%GRABTEXTURE%);
                #endif
 
                half3 GetSceneColor(float2 uv)
                {
                   #if _STANDARD
-                     return tex2D(%GRABTEXTURE%, uv).rgb;
+                     return SAMPLE_TEXTURE2D(%GRABTEXTURE%, sampler_%GRABTEXTURE%, uv).rgb;
                   #else
                      return SHADERGRAPH_SAMPLE_SCENE_COLOR(uv);
                   #endif
@@ -3282,9 +3790,9 @@ ZWrite Off ColorMask RGB
             #endif
 
 
-
+      
             #if _STANDARD
-               sampler2D _CameraDepthTexture;
+               UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
                float GetSceneDepth(float2 uv) { return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv); }
                float GetLinear01Depth(float2 uv) { return Linear01Depth(GetSceneDepth(uv)); }
                float GetLinearEyeDepth(float2 uv) { return LinearEyeDepth(GetSceneDepth(uv)); } 
@@ -3305,11 +3813,23 @@ ZWrite Off ColorMask RGB
                return wpos;
             }
 
+            #if _HDRP
+            float3 ObjectToWorldSpacePosition(float3 pos)
+            {
+               return GetAbsolutePositionWS(TransformObjectToWorld(pos));
+            }
+            #else
+            float3 ObjectToWorldSpacePosition(float3 pos)
+            {
+               return TransformObjectToWorld(pos);
+            }
+            #endif
+
             #if _STANDARD
-               sampler2D _CameraDepthNormalsTexture;
+               UNITY_DECLARE_SCREENSPACE_TEXTURE(_CameraDepthNormalsTexture);
                float3 GetSceneNormal(float2 uv, float3 worldSpaceViewDir)
                {
-                  float4 depthNorms = tex2D(_CameraDepthNormalsTexture, uv);
+                  float4 depthNorms = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_CameraDepthNormalsTexture, uv);
                   float3 norms = DecodeViewNormalStereo(depthNorms);
                   norms = mul((float3x3)UNITY_MATRIX_V, norms) * 0.5 + 0.5;
                   return norms;
@@ -3368,13 +3888,37 @@ ZWrite Off ColorMask RGB
                    // Note neutral texture like "bump" is (0, 0, 1, 1) to work with both plain RGB normal and DXT5nm/BC5
                    packednormal.x *= packednormal.w;
                  #endif
-                   fixed3 normal;
+                   half3 normal;
                    normal.xy = (packednormal.xy * 2 - 1) * scale;
                    normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
                    return normal;
                }	
 
              #endif
+
+
+            void GetSun(out float3 lightDir, out float3 color)
+            {
+               lightDir = float3(0.5, 0.5, 0);
+               color = 1;
+               #if _HDRP
+                  if (_DirectionalLightCount > 0)
+                  {
+                     DirectionalLightData light = _DirectionalLightDatas[0];
+                     lightDir = -light.forward.xyz;
+                     color = light.color;
+                  }
+               #elif _STANDARD
+			         lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                  color = _LightColor0.rgb;
+               #elif _URP
+	               Light light = GetMainLight();
+	               lightDir = light.direction;
+	               color = light.color;
+               #endif
+            }
+
+
             
          
 	float4 _Color;
@@ -3383,6 +3927,8 @@ ZWrite Off ColorMask RGB
 	float  _GlossMapScale;
 	float3 _Emission;
 	float  _UseUV2;
+
+
 
 
 
@@ -3400,12 +3946,12 @@ ZWrite Off ColorMask RGB
 	TEXTURE2D(_EmissionMap);
 	SAMPLER(sampler_EmissionMap);
 
-	void Ext_ModifyVertex0(inout VertexData v, inout ExtraV2F d)
+	void Ext_ModifyVertex0 (inout VertexData v, inout ExtraV2F d)
 	{
 		v.texcoord0 = lerp(v.texcoord0, v.texcoord1, _UseUV2);
 	}
 
-	void Ext_SurfaceFunction0(inout Surface o, ShaderData d)
+	void Ext_SurfaceFunction0 (inout Surface o, ShaderData d)
 	{
 		float4 texMain = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, d.texcoord0);
 		float4 bump    = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, d.texcoord0);
@@ -3420,6 +3966,8 @@ ZWrite Off ColorMask RGB
 		o.Emission   = glow.rgb * _Emission;
 		o.Alpha      = texMain.a * _Color.a;
 	}
+
+
 
 
 
@@ -3446,12 +3994,29 @@ ZWrite Off ColorMask RGB
                  // Ext_SurfaceFunction17(l, d);
                  // Ext_SurfaceFunction18(l, d);
 		           // Ext_SurfaceFunction19(l, d);
-                 l.Normal.y *= -1;
+                 // Ext_SurfaceFunction20(l, d);
+                 // Ext_SurfaceFunction21(l, d);
+                 // Ext_SurfaceFunction22(l, d);
+                 // Ext_SurfaceFunction23(l, d);
+                 // Ext_SurfaceFunction24(l, d);
+                 // Ext_SurfaceFunction25(l, d);
+                 // Ext_SurfaceFunction26(l, d);
+                 // Ext_SurfaceFunction27(l, d);
+                 // Ext_SurfaceFunction28(l, d);
+		           // Ext_SurfaceFunction29(l, d);
             }
 
-            void ChainModifyVertex(inout VertexData v, inout VertexToPixel v2p)
+            void ChainModifyVertex(inout VertexData v, inout VertexToPixel v2p, float4 time)
             {
-                 ExtraV2F d = (ExtraV2F)0;
+                 ExtraV2F d;
+                 
+                 ZERO_INITIALIZE(ExtraV2F, d);
+                 ZERO_INITIALIZE(Blackboard, d.blackboard);
+                 // due to motion vectors in HDRP, we need to use the last
+                 // time in certain spots. So if you are going to use _Time to adjust vertices,
+                 // you need to use this time or motion vectors will break. 
+                 d.time = time;
+
                    Ext_ModifyVertex0(v, d);
                  // Ext_ModifyVertex1(v, d);
                  // Ext_ModifyVertex2(v, d);
@@ -3472,28 +4037,89 @@ ZWrite Off ColorMask RGB
                  // Ext_ModifyVertex17(v, d);
                  // Ext_ModifyVertex18(v, d);
                  // Ext_ModifyVertex19(v, d);
-		
+                 // Ext_ModifyVertex20(v, d);
+                 // Ext_ModifyVertex21(v, d);
+                 // Ext_ModifyVertex22(v, d);
+                 // Ext_ModifyVertex23(v, d);
+                 // Ext_ModifyVertex24(v, d);
+                 // Ext_ModifyVertex25(v, d);
+                 // Ext_ModifyVertex26(v, d);
+                 // Ext_ModifyVertex27(v, d);
+                 // Ext_ModifyVertex28(v, d);
+                 // Ext_ModifyVertex29(v, d);
+
+
+                 // #if %EXTRAV2F0REQUIREKEY%
                  // v2p.extraV2F0 = d.extraV2F0;
+                 // #endif
+
+                 // #if %EXTRAV2F1REQUIREKEY%
                  // v2p.extraV2F1 = d.extraV2F1;
+                 // #endif
+
+                 // #if %EXTRAV2F2REQUIREKEY%
                  // v2p.extraV2F2 = d.extraV2F2;
+                 // #endif
+
+                 // #if %EXTRAV2F3REQUIREKEY%
                  // v2p.extraV2F3 = d.extraV2F3;
+                 // #endif
+
+                 // #if %EXTRAV2F4REQUIREKEY%
                  // v2p.extraV2F4 = d.extraV2F4;
+                 // #endif
+
+                 // #if %EXTRAV2F5REQUIREKEY%
                  // v2p.extraV2F5 = d.extraV2F5;
+                 // #endif
+
+                 // #if %EXTRAV2F6REQUIREKEY%
                  // v2p.extraV2F6 = d.extraV2F6;
+                 // #endif
+
+                 // #if %EXTRAV2F7REQUIREKEY%
                  // v2p.extraV2F7 = d.extraV2F7;
+                 // #endif
             }
 
             void ChainModifyTessellatedVertex(inout VertexData v, inout VertexToPixel v2p)
             {
-               ExtraV2F d = (ExtraV2F)0;
+               ExtraV2F d;
+               ZERO_INITIALIZE(ExtraV2F, d);
+               ZERO_INITIALIZE(Blackboard, d.blackboard);
+
+               // #if %EXTRAV2F0REQUIREKEY%
                // d.extraV2F0 = v2p.extraV2F0;
+               // #endif
+
+               // #if %EXTRAV2F1REQUIREKEY%
                // d.extraV2F1 = v2p.extraV2F1;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
                // d.extraV2F2 = v2p.extraV2F2;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
                // d.extraV2F3 = v2p.extraV2F3;
-               // d.extraV2F0 = v2p.extraV2F4;
-               // d.extraV2F1 = v2p.extraV2F5;
-               // d.extraV2F2 = v2p.extraV2F6;
-               // d.extraV2F3 = v2p.extraV2F7;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // d.extraV2F4 = v2p.extraV2F4;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // d.extraV2F5 = v2p.extraV2F5;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // d.extraV2F6 = v2p.extraV2F6;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // d.extraV2F7 = v2p.extraV2F7;
+               // #endif
+
 
                // Ext_ModifyTessellatedVertex0(v, d);
                // Ext_ModifyTessellatedVertex1(v, d);
@@ -3515,15 +4141,48 @@ ZWrite Off ColorMask RGB
                // Ext_ModifyTessellatedVertex17(v, d);
                // Ext_ModifyTessellatedVertex18(v, d);
                // Ext_ModifyTessellatedVertex19(v, d);
+               // Ext_ModifyTessellatedVertex20(v, d);
+               // Ext_ModifyTessellatedVertex21(v, d);
+               // Ext_ModifyTessellatedVertex22(v, d);
+               // Ext_ModifyTessellatedVertex23(v, d);
+               // Ext_ModifyTessellatedVertex24(v, d);
+               // Ext_ModifyTessellatedVertex25(v, d);
+               // Ext_ModifyTessellatedVertex26(v, d);
+               // Ext_ModifyTessellatedVertex27(v, d);
+               // Ext_ModifyTessellatedVertex28(v, d);
+               // Ext_ModifyTessellatedVertex29(v, d);
 
+               // #if %EXTRAV2F0REQUIREKEY%
                // v2p.extraV2F0 = d.extraV2F0;
+               // #endif
+
+               // #if %EXTRAV2F1REQUIREKEY%
                // v2p.extraV2F1 = d.extraV2F1;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
                // v2p.extraV2F2 = d.extraV2F2;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
                // v2p.extraV2F3 = d.extraV2F3;
-               // v2p.extraV2F0 = d.extraV2F4;
-               // v2p.extraV2F1 = d.extraV2F5;
-               // v2p.extraV2F2 = d.extraV2F6;
-               // v2p.extraV2F3 = d.extraV2F7;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // v2p.extraV2F4 = d.extraV2F4;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // v2p.extraV2F5 = d.extraV2F5;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // v2p.extraV2F6 = d.extraV2F6;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // v2p.extraV2F7 = d.extraV2F7;
+               // #endif
             }
 
             void ChainFinalColorForward(inout Surface l, inout ShaderData d, inout half4 color)
@@ -3548,6 +4207,16 @@ ZWrite Off ColorMask RGB
                //  Ext_FinalColorForward17(l, d, color);
                //  Ext_FinalColorForward18(l, d, color);
                //  Ext_FinalColorForward19(l, d, color);
+               //  Ext_FinalColorForward20(l, d, color);
+               //  Ext_FinalColorForward21(l, d, color);
+               //  Ext_FinalColorForward22(l, d, color);
+               //  Ext_FinalColorForward23(l, d, color);
+               //  Ext_FinalColorForward24(l, d, color);
+               //  Ext_FinalColorForward25(l, d, color);
+               //  Ext_FinalColorForward26(l, d, color);
+               //  Ext_FinalColorForward27(l, d, color);
+               //  Ext_FinalColorForward28(l, d, color);
+               //  Ext_FinalColorForward29(l, d, color);
             }
 
             void ChainFinalGBufferStandard(inout Surface s, inout ShaderData d, inout half4 GBuffer0, inout half4 GBuffer1, inout half4 GBuffer2, inout half4 outEmission, inout half4 outShadowMask)
@@ -3572,13 +4241,27 @@ ZWrite Off ColorMask RGB
                //  Ext_FinalGBufferStandard17(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
                //  Ext_FinalGBufferStandard18(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
                //  Ext_FinalGBufferStandard19(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard20(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard21(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard22(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard23(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard24(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard25(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard26(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard27(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard28(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard29(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
             }
 
 
          
          
 
-         ShaderData CreateShaderData(VertexToPixel i)
+         ShaderData CreateShaderData(VertexToPixel i
+                  #if NEED_FACING
+                     , bool facing
+                  #endif
+         )
          {
             ShaderData d = (ShaderData)0;
             d.clipPos = i.pos;
@@ -3587,38 +4270,72 @@ ZWrite Off ColorMask RGB
             d.worldSpaceNormal = normalize(i.worldNormal);
             d.worldSpaceTangent = normalize(i.worldTangent.xyz);
             d.tangentSign = i.worldTangent.w;
-            float3 bitangent = cross(i.worldTangent.xyz, i.worldNormal) * i.worldTangent.w;
+            float3 bitangent = cross(i.worldTangent.xyz, i.worldNormal) * d.tangentSign * -1;
             
 
             d.TBNMatrix = float3x3(d.worldSpaceTangent, bitangent, d.worldSpaceNormal);
             d.worldSpaceViewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
+
             d.tangentSpaceViewDir = mul(d.TBNMatrix, d.worldSpaceViewDir);
              d.texcoord0 = i.texcoord0;
              d.texcoord1 = i.texcoord1;
             // d.texcoord2 = i.texcoord2;
+
+            // #if %TEXCOORD3REQUIREKEY%
             // d.texcoord3 = i.texcoord3;
+            // #endif
+
+            // d.isFrontFace = facing;
+            // #if %VERTEXCOLORREQUIREKEY%
             // d.vertexColor = i.vertexColor;
+            // #endif
 
             // these rarely get used, so we back transform them. Usually will be stripped.
             #if _HDRP
-                // d.localSpacePosition = mul(unity_WorldToObject, float4(GetCameraRelativePositionWS(i.worldPos), 1));
+                // d.localSpacePosition = mul(unity_WorldToObject, float4(GetCameraRelativePositionWS(i.worldPos), 1)).xyz;
             #else
-                // d.localSpacePosition = mul(unity_WorldToObject, float4(i.worldPos, 1));
+                // d.localSpacePosition = mul(unity_WorldToObject, float4(i.worldPos, 1)).xyz;
             #endif
-            // d.localSpaceNormal = normalize(mul(unity_WorldToObject, i.worldNormal));
-            // d.localSpaceTangent = normalize(mul(unity_WorldToObject, i.worldTangent.xyz));
+            // d.localSpaceNormal = normalize(mul((float3x3)unity_WorldToObject, i.worldNormal));
+            // d.localSpaceTangent = normalize(mul((float3x3)unity_WorldToObject, i.worldTangent.xyz));
 
+            // #if %SCREENPOSREQUIREKEY%
             // d.screenPos = i.screenPos;
             // d.screenUV = (i.screenPos.xy / i.screenPos.w);
+            // #endif
 
+
+            // #if %EXTRAV2F0REQUIREKEY%
             // d.extraV2F0 = i.extraV2F0;
+            // #endif
+
+            // #if %EXTRAV2F1REQUIREKEY%
             // d.extraV2F1 = i.extraV2F1;
+            // #endif
+
+            // #if %EXTRAV2F2REQUIREKEY%
             // d.extraV2F2 = i.extraV2F2;
+            // #endif
+
+            // #if %EXTRAV2F3REQUIREKEY%
             // d.extraV2F3 = i.extraV2F3;
+            // #endif
+
+            // #if %EXTRAV2F4REQUIREKEY%
             // d.extraV2F4 = i.extraV2F4;
+            // #endif
+
+            // #if %EXTRAV2F5REQUIREKEY%
             // d.extraV2F5 = i.extraV2F5;
+            // #endif
+
+            // #if %EXTRAV2F6REQUIREKEY%
             // d.extraV2F6 = i.extraV2F6;
+            // #endif
+
+            // #if %EXTRAV2F7REQUIREKEY%
             // d.extraV2F7 = i.extraV2F7;
+            // #endif
 
             return d;
          }
@@ -3634,16 +4351,26 @@ ZWrite Off ColorMask RGB
            UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
 #if !_TESSELLATION_ON
-           ChainModifyVertex(v, o);
+           ChainModifyVertex(v, o, _Time);
 #endif
 
            o.pos = UnityObjectToClipPos(v.vertex);
             o.texcoord0 = v.texcoord0;
             o.texcoord1 = v.texcoord1;
            // o.texcoord2 = v.texcoord2;
+
+           // #if %TEXCOORD3REQUIREKEY%
            // o.texcoord3 = v.texcoord3;
+           // #endif
+
+           // #if %VERTEXCOLORREQUIREKEY%
            // o.vertexColor = v.vertexColor;
+           // #endif
+
+           // #if %SCREENPOSREQUIREKEY%
            // o.screenPos = ComputeScreenPos(o.pos);
+           // #endif
+
            o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
            o.worldNormal = UnityObjectToWorldNormal(v.normal);
            o.worldTangent.xyz = UnityObjectToWorldDir(v.tangent.xyz);
@@ -3663,6 +4390,9 @@ ZWrite Off ColorMask RGB
          #ifdef _DEPTHOFFSET_ON
               , out float outputDepth : SV_Depth
          #endif
+         #if NEED_FACING
+            , bool facing : SV_IsFrontFace
+         #endif
          ) : SV_Target
          {
            UNITY_SETUP_INSTANCE_ID(IN);
@@ -3678,7 +4408,11 @@ ZWrite Off ColorMask RGB
 
 
 
-           ShaderData d = CreateShaderData(IN);
+           ShaderData d = CreateShaderData(IN
+              #if NEED_FACING
+                 , facing
+              #endif
+           );
            Surface l = (Surface)0;
 
 
@@ -3739,7 +4473,12 @@ ZWrite Off ColorMask RGB
            o.Albedo = l.Albedo;
            o.Emission = l.Emission;
            o.Alpha = l.Alpha;
-           o.Normal = normalize(TangentToWorldSpace(d, l.Normal));
+
+           #if _WORLDSPACENORMAL
+              o.Normal = l.Normal;
+           #else
+              o.Normal = normalize(TangentToWorldSpace(d, l.Normal));
+           #endif
 
 
 
@@ -3755,6 +4494,11 @@ ZWrite Off ColorMask RGB
            gi.light.dir = lightDir;
            gi.light.color *= atten;
 
+           #if defined(_OVERRIDE_SHADOWMASK)
+               float4 mulColor = saturate(dot(l.ShadowMask, unity_OcclusionMaskSelector));
+               gi.light.color = mulColor;
+            #endif
+
            #if _USESPECULAR
               c += LightingStandardSpecular (o, worldViewDir, gi);
            #elif _BDRF3 || _SIMPLELIT
@@ -3766,8 +4510,9 @@ ZWrite Off ColorMask RGB
 
            ChainFinalColorForward(l, d, c);
 
-           UNITY_APPLY_FOG(_unity_fogCoord, c); // apply fog
-
+           #if !DISABLEFOG
+            UNITY_APPLY_FOG(_unity_fogCoord, c); // apply fog
+           #endif
            #if !_ALPHABLEND_ON
               UNITY_OPAQUE_ALPHA(c.a);
            #endif
@@ -3814,7 +4559,12 @@ ZWrite Off ColorMask RGB
          #include "UnityPBSLighting.cginc"
          #include "UnityMetaPass.cginc"
 
+         #define _PASSMETA 1
+
          
+
+
+    #pragma shader_feature_local DISABLEFOG    
 
 
    #define _STANDARD 1
@@ -4884,7 +5634,10 @@ ZWrite Off ColorMask RGB
 
 
 
+#define _USINGTEXCOORD1 1
 
+
+         
 
          // data across stages, stripped like the above.
          struct VertexToPixel
@@ -4893,25 +5646,59 @@ ZWrite Off ColorMask RGB
             float3 worldPos : TEXCOORD0;
             float3 worldNormal : TEXCOORD1;
             float4 worldTangent : TEXCOORD2;
-             float4 texcoord0 : TEXCCOORD3;
-             float4 texcoord1 : TEXCCOORD4;
-            // float4 texcoord2 : TEXCCOORD5;
-            // float4 texcoord3 : TEXCCOORD6;
+             float4 texcoord0 : TEXCOORD3;
+             float4 texcoord1 : TEXCOORD4;
+            // float4 texcoord2 : TEXCOORD5;
+
+            // #if %TEXCOORD3REQUIREKEY%
+            // float4 texcoord3 : TEXCOORD6;
+            // #endif
+
+            // #if %SCREENPOSREQUIREKEY%
             // float4 screenPos : TEXCOORD7;
-            // float4 vertexColor : COLOR;
+            // #endif
+
             #ifdef EDITOR_VISUALIZATION
               float2 vizUV : TEXCOORD8;
               float4 lightCoord : TEXCOORD9;
             #endif
 
+            
+            // #if %VERTEXCOLORREQUIREKEY%
+            // float4 vertexColor : COLOR;
+            // #endif
+
+            // #if %EXTRAV2F0REQUIREKEY%
             // float4 extraV2F0 : TEXCOORD10;
+            // #endif
+
+            // #if %EXTRAV2F1REQUIREKEY%
             // float4 extraV2F1 : TEXCOORD11;
+            // #endif
+
+            // #if %EXTRAV2F2REQUIREKEY%
             // float4 extraV2F2 : TEXCOORD12;
+            // #endif
+
+            // #if %EXTRAV2F3REQUIREKEY%
             // float4 extraV2F3 : TEXCOORD13;
+            // #endif
+
+            // #if %EXTRAV2F4REQUIREKEY%
             // float4 extraV2F4 : TEXCOORD14;
+            // #endif
+
+            // #if %EXTRAV2F5REQUIREKEY%
             // float4 extraV2F5 : TEXCOORD15;
+            // #endif
+
+            // #if %EXTRAV2F6REQUIREKEY%
             // float4 extraV2F6 : TEXCOORD16;
+            // #endif
+
+            // #if %EXTRAV2F7REQUIREKEY%
             // float4 extraV2F7 : TEXCOORD17;
+            // #endif
 
 
             UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -4943,6 +5730,22 @@ ZWrite Off ColorMask RGB
                half Anisotropy;
                half IridescenceMask;
                half IridescenceThickness;
+               int DiffusionProfileHash;
+               float SpecularAAThreshold;
+               float SpecularAAScreenSpaceVariance;
+               // requires _OVERRIDE_BAKEDGI to be defined, but is mapped in all pipelines
+               float3 DiffuseGI;
+               float3 BackDiffuseGI;
+               float3 SpecularGI;
+               // requires _OVERRIDE_SHADOWMASK to be defines
+               float4 ShadowMask;
+            };
+
+            // Data the user declares in blackboard blocks
+            struct Blackboard
+            {
+                
+                float blackboardDummyData;
             };
 
             // data the user might need, this will grow to be big. But easy to strip
@@ -4970,6 +5773,7 @@ ZWrite Off ColorMask RGB
                float4 screenPos;
 
                float4 vertexColor;
+               bool isFrontFace;
 
                float4 extraV2F0;
                float4 extraV2F1;
@@ -4981,6 +5785,7 @@ ZWrite Off ColorMask RGB
                float4 extraV2F7;
 
                float3x3 TBNMatrix;
+               Blackboard blackboard;
             };
 
             struct VertexData
@@ -4992,12 +5797,38 @@ ZWrite Off ColorMask RGB
                float3 normal : NORMAL;
                float4 tangent : TANGENT;
                float4 texcoord0 : TEXCOORD0;
-               float4 texcoord1 : TEXCOORD1;
-               float4 texcoord2 : TEXCOORD2;
-               // float4 texcoord3 : TEXCOORD3;
-               // float4 vertexColor : COLOR;
 
-               #if _HDRP && (_PASSMOTIONVECTOR || (_PASSFORWARD && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
+               // optimize out mesh coords when not in use by user or lighting system
+               #if _URP && (_USINGTEXCOORD1 || _PASSMETA || _PASSFORWARD || _PASSGBUFFER)
+                  float4 texcoord1 : TEXCOORD1;
+               #endif
+
+               #if _URP && (_USINGTEXCOORD2 || _PASSMETA || ((_PASSFORWARD || _PASSGBUFFER) && defined(DYNAMICLIGHTMAP_ON)))
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+               #if _STANDARD && (_USINGTEXCOORD1 || (_PASSMETA || ((_PASSFORWARD || _PASSGBUFFER || _PASSFORWARDADD) && LIGHTMAP_ON)))
+                  float4 texcoord1 : TEXCOORD1;
+               #endif
+               #if _STANDARD && (_USINGTEXCOORD2 || (_PASSMETA || ((_PASSFORWARD || _PASSGBUFFER) && DYNAMICLIGHTMAP_ON)))
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+
+               #if _HDRP
+                  float4 texcoord1 : TEXCOORD1;
+                  float4 texcoord2 : TEXCOORD2;
+               #endif
+
+               // #if %TEXCOORD3REQUIREKEY%
+               // float4 texcoord3 : TEXCOORD3;
+               // #endif
+
+               // #if %VERTEXCOLORREQUIREKEY%
+               // float4 vertexColor : COLOR;
+               // #endif
+
+               #if _HDRP && (_PASSMOTIONVECTOR || ((_PASSFORWARD || _PASSUNLIT) && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
                   float3 previousPositionOS : TEXCOORD4; // Contain previous transform position (in case of skinning for example)
                   #if defined (_ADD_PRECOMPUTED_VELOCITY)
                      float3 precomputedVelocity    : TEXCOORD5; // Add Precomputed Velocity (Alembic computes velocities on runtime side).
@@ -5015,23 +5846,51 @@ ZWrite Off ColorMask RGB
                float4 texcoord0 : TEXCOORD0;
                float4 texcoord1 : TEXCOORD1;
                float4 texcoord2 : TEXCOORD2;
+
+               // #if %TEXCOORD3REQUIREKEY%
                // float4 texcoord3 : TEXCOORD3;
+               // #endif
+
+               // #if %VERTEXCOLORREQUIREKEY%
                // float4 vertexColor : COLOR;
+               // #endif
 
-               
-               // float4 extraV2F0 : TEXCOORD4;
-               // float4 extraV2F1 : TEXCOORD5;
-               // float4 extraV2F2 : TEXCOORD6;
-               // float4 extraV2F3 : TEXCOORD7;
-               // float4 extraV2F4 : TEXCOORD8;
-               // float4 extraV2F5 : TEXCOORD9;
-               // float4 extraV2F6 : TEXCOORD10;
-               // float4 extraV2F7 : TEXCOORD11;
+               // #if %EXTRAV2F0REQUIREKEY%
+               // float4 extraV2F0 : TEXCOORD5;
+               // #endif
 
-               #if _HDRP && (_PASSMOTIONVECTOR || (_PASSFORWARD && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
-                  float3 previousPositionOS : TEXCOORD12; // Contain previous transform position (in case of skinning for example)
+               // #if %EXTRAV2F1REQUIREKEY%
+               // float4 extraV2F1 : TEXCOORD6;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
+               // float4 extraV2F2 : TEXCOORD7;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
+               // float4 extraV2F3 : TEXCOORD8;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // float4 extraV2F4 : TEXCOORD9;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // float4 extraV2F5 : TEXCOORD10;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // float4 extraV2F6 : TEXCOORD11;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // float4 extraV2F7 : TEXCOORD12;
+               // #endif
+
+               #if _HDRP && (_PASSMOTIONVECTOR || ((_PASSFORWARD || _PASSUNLIT) && defined(_WRITE_TRANSPARENT_MOTION_VECTOR)))
+                  float3 previousPositionOS : TEXCOORD13; // Contain previous transform position (in case of skinning for example)
                   #if defined (_ADD_PRECOMPUTED_VELOCITY)
-                     float3 precomputedVelocity : TEXCOORD13;
+                     float3 precomputedVelocity : TEXCOORD14;
                   #endif
                #endif
 
@@ -5049,6 +5908,8 @@ ZWrite Off ColorMask RGB
                float4 extraV2F5;
                float4 extraV2F6;
                float4 extraV2F7;
+               Blackboard blackboard;
+               float4 time;
             };
 
 
@@ -5080,6 +5941,17 @@ ZWrite Off ColorMask RGB
                  #define UNITY_SAMPLE_TEX2D_SAMPLER_LOD(tex,samplertex,coord,lod) tex2D (tex,coord,0,lod)
               #endif
 
+               #undef UNITY_MATRIX_M
+               #undef UNITY_MATRIX_I_M
+               #undef UNITY_MATRIX_V
+               #undef UNITY_MATRIX_I_V
+               #undef UNITY_MATRIX_P
+               #undef UNITY_MATRIX_VP
+               #undef UNITY_MATRIX_MV
+               #undef UNITY_MATRIX_T_MV
+               #undef UNITY_MATRIX_IT_MV
+               #undef UNITY_MATRIX_MVP
+
                #define UNITY_MATRIX_M     unity_ObjectToWorld
                #define UNITY_MATRIX_I_M   unity_WorldToObject
                #define UNITY_MATRIX_V     unity_MatrixV
@@ -5105,13 +5977,14 @@ ZWrite Off ColorMask RGB
 
             #if _GRABPASSUSED
                #if _STANDARD
-                  sampler2D %GRABTEXTURE%;
+                  TEXTURE2D(%GRABTEXTURE%);
+                  SAMPLER(sampler_%GRABTEXTURE%);
                #endif
 
                half3 GetSceneColor(float2 uv)
                {
                   #if _STANDARD
-                     return tex2D(%GRABTEXTURE%, uv).rgb;
+                     return SAMPLE_TEXTURE2D(%GRABTEXTURE%, sampler_%GRABTEXTURE%, uv).rgb;
                   #else
                      return SHADERGRAPH_SAMPLE_SCENE_COLOR(uv);
                   #endif
@@ -5119,9 +5992,9 @@ ZWrite Off ColorMask RGB
             #endif
 
 
-
+      
             #if _STANDARD
-               sampler2D _CameraDepthTexture;
+               UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
                float GetSceneDepth(float2 uv) { return SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv); }
                float GetLinear01Depth(float2 uv) { return Linear01Depth(GetSceneDepth(uv)); }
                float GetLinearEyeDepth(float2 uv) { return LinearEyeDepth(GetSceneDepth(uv)); } 
@@ -5142,11 +6015,23 @@ ZWrite Off ColorMask RGB
                return wpos;
             }
 
+            #if _HDRP
+            float3 ObjectToWorldSpacePosition(float3 pos)
+            {
+               return GetAbsolutePositionWS(TransformObjectToWorld(pos));
+            }
+            #else
+            float3 ObjectToWorldSpacePosition(float3 pos)
+            {
+               return TransformObjectToWorld(pos);
+            }
+            #endif
+
             #if _STANDARD
-               sampler2D _CameraDepthNormalsTexture;
+               UNITY_DECLARE_SCREENSPACE_TEXTURE(_CameraDepthNormalsTexture);
                float3 GetSceneNormal(float2 uv, float3 worldSpaceViewDir)
                {
-                  float4 depthNorms = tex2D(_CameraDepthNormalsTexture, uv);
+                  float4 depthNorms = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_CameraDepthNormalsTexture, uv);
                   float3 norms = DecodeViewNormalStereo(depthNorms);
                   norms = mul((float3x3)UNITY_MATRIX_V, norms) * 0.5 + 0.5;
                   return norms;
@@ -5205,13 +6090,37 @@ ZWrite Off ColorMask RGB
                    // Note neutral texture like "bump" is (0, 0, 1, 1) to work with both plain RGB normal and DXT5nm/BC5
                    packednormal.x *= packednormal.w;
                  #endif
-                   fixed3 normal;
+                   half3 normal;
                    normal.xy = (packednormal.xy * 2 - 1) * scale;
                    normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
                    return normal;
                }	
 
              #endif
+
+
+            void GetSun(out float3 lightDir, out float3 color)
+            {
+               lightDir = float3(0.5, 0.5, 0);
+               color = 1;
+               #if _HDRP
+                  if (_DirectionalLightCount > 0)
+                  {
+                     DirectionalLightData light = _DirectionalLightDatas[0];
+                     lightDir = -light.forward.xyz;
+                     color = light.color;
+                  }
+               #elif _STANDARD
+			         lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                  color = _LightColor0.rgb;
+               #elif _URP
+	               Light light = GetMainLight();
+	               lightDir = light.direction;
+	               color = light.color;
+               #endif
+            }
+
+
             
          
 	float4 _Color;
@@ -5220,6 +6129,8 @@ ZWrite Off ColorMask RGB
 	float  _GlossMapScale;
 	float3 _Emission;
 	float  _UseUV2;
+
+
 
 
 
@@ -5237,12 +6148,12 @@ ZWrite Off ColorMask RGB
 	TEXTURE2D(_EmissionMap);
 	SAMPLER(sampler_EmissionMap);
 
-	void Ext_ModifyVertex0(inout VertexData v, inout ExtraV2F d)
+	void Ext_ModifyVertex0 (inout VertexData v, inout ExtraV2F d)
 	{
 		v.texcoord0 = lerp(v.texcoord0, v.texcoord1, _UseUV2);
 	}
 
-	void Ext_SurfaceFunction0(inout Surface o, ShaderData d)
+	void Ext_SurfaceFunction0 (inout Surface o, ShaderData d)
 	{
 		float4 texMain = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, d.texcoord0);
 		float4 bump    = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, d.texcoord0);
@@ -5257,6 +6168,8 @@ ZWrite Off ColorMask RGB
 		o.Emission   = glow.rgb * _Emission;
 		o.Alpha      = texMain.a * _Color.a;
 	}
+
+
 
 
 
@@ -5283,12 +6196,29 @@ ZWrite Off ColorMask RGB
                  // Ext_SurfaceFunction17(l, d);
                  // Ext_SurfaceFunction18(l, d);
 		           // Ext_SurfaceFunction19(l, d);
-                 l.Normal.y *= -1;
+                 // Ext_SurfaceFunction20(l, d);
+                 // Ext_SurfaceFunction21(l, d);
+                 // Ext_SurfaceFunction22(l, d);
+                 // Ext_SurfaceFunction23(l, d);
+                 // Ext_SurfaceFunction24(l, d);
+                 // Ext_SurfaceFunction25(l, d);
+                 // Ext_SurfaceFunction26(l, d);
+                 // Ext_SurfaceFunction27(l, d);
+                 // Ext_SurfaceFunction28(l, d);
+		           // Ext_SurfaceFunction29(l, d);
             }
 
-            void ChainModifyVertex(inout VertexData v, inout VertexToPixel v2p)
+            void ChainModifyVertex(inout VertexData v, inout VertexToPixel v2p, float4 time)
             {
-                 ExtraV2F d = (ExtraV2F)0;
+                 ExtraV2F d;
+                 
+                 ZERO_INITIALIZE(ExtraV2F, d);
+                 ZERO_INITIALIZE(Blackboard, d.blackboard);
+                 // due to motion vectors in HDRP, we need to use the last
+                 // time in certain spots. So if you are going to use _Time to adjust vertices,
+                 // you need to use this time or motion vectors will break. 
+                 d.time = time;
+
                    Ext_ModifyVertex0(v, d);
                  // Ext_ModifyVertex1(v, d);
                  // Ext_ModifyVertex2(v, d);
@@ -5309,28 +6239,89 @@ ZWrite Off ColorMask RGB
                  // Ext_ModifyVertex17(v, d);
                  // Ext_ModifyVertex18(v, d);
                  // Ext_ModifyVertex19(v, d);
-		
+                 // Ext_ModifyVertex20(v, d);
+                 // Ext_ModifyVertex21(v, d);
+                 // Ext_ModifyVertex22(v, d);
+                 // Ext_ModifyVertex23(v, d);
+                 // Ext_ModifyVertex24(v, d);
+                 // Ext_ModifyVertex25(v, d);
+                 // Ext_ModifyVertex26(v, d);
+                 // Ext_ModifyVertex27(v, d);
+                 // Ext_ModifyVertex28(v, d);
+                 // Ext_ModifyVertex29(v, d);
+
+
+                 // #if %EXTRAV2F0REQUIREKEY%
                  // v2p.extraV2F0 = d.extraV2F0;
+                 // #endif
+
+                 // #if %EXTRAV2F1REQUIREKEY%
                  // v2p.extraV2F1 = d.extraV2F1;
+                 // #endif
+
+                 // #if %EXTRAV2F2REQUIREKEY%
                  // v2p.extraV2F2 = d.extraV2F2;
+                 // #endif
+
+                 // #if %EXTRAV2F3REQUIREKEY%
                  // v2p.extraV2F3 = d.extraV2F3;
+                 // #endif
+
+                 // #if %EXTRAV2F4REQUIREKEY%
                  // v2p.extraV2F4 = d.extraV2F4;
+                 // #endif
+
+                 // #if %EXTRAV2F5REQUIREKEY%
                  // v2p.extraV2F5 = d.extraV2F5;
+                 // #endif
+
+                 // #if %EXTRAV2F6REQUIREKEY%
                  // v2p.extraV2F6 = d.extraV2F6;
+                 // #endif
+
+                 // #if %EXTRAV2F7REQUIREKEY%
                  // v2p.extraV2F7 = d.extraV2F7;
+                 // #endif
             }
 
             void ChainModifyTessellatedVertex(inout VertexData v, inout VertexToPixel v2p)
             {
-               ExtraV2F d = (ExtraV2F)0;
+               ExtraV2F d;
+               ZERO_INITIALIZE(ExtraV2F, d);
+               ZERO_INITIALIZE(Blackboard, d.blackboard);
+
+               // #if %EXTRAV2F0REQUIREKEY%
                // d.extraV2F0 = v2p.extraV2F0;
+               // #endif
+
+               // #if %EXTRAV2F1REQUIREKEY%
                // d.extraV2F1 = v2p.extraV2F1;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
                // d.extraV2F2 = v2p.extraV2F2;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
                // d.extraV2F3 = v2p.extraV2F3;
-               // d.extraV2F0 = v2p.extraV2F4;
-               // d.extraV2F1 = v2p.extraV2F5;
-               // d.extraV2F2 = v2p.extraV2F6;
-               // d.extraV2F3 = v2p.extraV2F7;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // d.extraV2F4 = v2p.extraV2F4;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // d.extraV2F5 = v2p.extraV2F5;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // d.extraV2F6 = v2p.extraV2F6;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // d.extraV2F7 = v2p.extraV2F7;
+               // #endif
+
 
                // Ext_ModifyTessellatedVertex0(v, d);
                // Ext_ModifyTessellatedVertex1(v, d);
@@ -5352,15 +6343,48 @@ ZWrite Off ColorMask RGB
                // Ext_ModifyTessellatedVertex17(v, d);
                // Ext_ModifyTessellatedVertex18(v, d);
                // Ext_ModifyTessellatedVertex19(v, d);
+               // Ext_ModifyTessellatedVertex20(v, d);
+               // Ext_ModifyTessellatedVertex21(v, d);
+               // Ext_ModifyTessellatedVertex22(v, d);
+               // Ext_ModifyTessellatedVertex23(v, d);
+               // Ext_ModifyTessellatedVertex24(v, d);
+               // Ext_ModifyTessellatedVertex25(v, d);
+               // Ext_ModifyTessellatedVertex26(v, d);
+               // Ext_ModifyTessellatedVertex27(v, d);
+               // Ext_ModifyTessellatedVertex28(v, d);
+               // Ext_ModifyTessellatedVertex29(v, d);
 
+               // #if %EXTRAV2F0REQUIREKEY%
                // v2p.extraV2F0 = d.extraV2F0;
+               // #endif
+
+               // #if %EXTRAV2F1REQUIREKEY%
                // v2p.extraV2F1 = d.extraV2F1;
+               // #endif
+
+               // #if %EXTRAV2F2REQUIREKEY%
                // v2p.extraV2F2 = d.extraV2F2;
+               // #endif
+
+               // #if %EXTRAV2F3REQUIREKEY%
                // v2p.extraV2F3 = d.extraV2F3;
-               // v2p.extraV2F0 = d.extraV2F4;
-               // v2p.extraV2F1 = d.extraV2F5;
-               // v2p.extraV2F2 = d.extraV2F6;
-               // v2p.extraV2F3 = d.extraV2F7;
+               // #endif
+
+               // #if %EXTRAV2F4REQUIREKEY%
+               // v2p.extraV2F4 = d.extraV2F4;
+               // #endif
+
+               // #if %EXTRAV2F5REQUIREKEY%
+               // v2p.extraV2F5 = d.extraV2F5;
+               // #endif
+
+               // #if %EXTRAV2F6REQUIREKEY%
+               // v2p.extraV2F6 = d.extraV2F6;
+               // #endif
+
+               // #if %EXTRAV2F7REQUIREKEY%
+               // v2p.extraV2F7 = d.extraV2F7;
+               // #endif
             }
 
             void ChainFinalColorForward(inout Surface l, inout ShaderData d, inout half4 color)
@@ -5385,6 +6409,16 @@ ZWrite Off ColorMask RGB
                //  Ext_FinalColorForward17(l, d, color);
                //  Ext_FinalColorForward18(l, d, color);
                //  Ext_FinalColorForward19(l, d, color);
+               //  Ext_FinalColorForward20(l, d, color);
+               //  Ext_FinalColorForward21(l, d, color);
+               //  Ext_FinalColorForward22(l, d, color);
+               //  Ext_FinalColorForward23(l, d, color);
+               //  Ext_FinalColorForward24(l, d, color);
+               //  Ext_FinalColorForward25(l, d, color);
+               //  Ext_FinalColorForward26(l, d, color);
+               //  Ext_FinalColorForward27(l, d, color);
+               //  Ext_FinalColorForward28(l, d, color);
+               //  Ext_FinalColorForward29(l, d, color);
             }
 
             void ChainFinalGBufferStandard(inout Surface s, inout ShaderData d, inout half4 GBuffer0, inout half4 GBuffer1, inout half4 GBuffer2, inout half4 outEmission, inout half4 outShadowMask)
@@ -5409,13 +6443,27 @@ ZWrite Off ColorMask RGB
                //  Ext_FinalGBufferStandard17(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
                //  Ext_FinalGBufferStandard18(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
                //  Ext_FinalGBufferStandard19(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard20(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard21(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard22(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard23(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard24(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard25(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard26(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard27(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard28(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
+               //  Ext_FinalGBufferStandard29(s, d, GBuffer0, GBuffer1, GBuffer2, outEmission, outShadowMask);
             }
 
 
 
          
 
-         ShaderData CreateShaderData(VertexToPixel i)
+         ShaderData CreateShaderData(VertexToPixel i
+                  #if NEED_FACING
+                     , bool facing
+                  #endif
+         )
          {
             ShaderData d = (ShaderData)0;
             d.clipPos = i.pos;
@@ -5424,38 +6472,72 @@ ZWrite Off ColorMask RGB
             d.worldSpaceNormal = normalize(i.worldNormal);
             d.worldSpaceTangent = normalize(i.worldTangent.xyz);
             d.tangentSign = i.worldTangent.w;
-            float3 bitangent = cross(i.worldTangent.xyz, i.worldNormal) * i.worldTangent.w;
+            float3 bitangent = cross(i.worldTangent.xyz, i.worldNormal) * d.tangentSign * -1;
             
 
             d.TBNMatrix = float3x3(d.worldSpaceTangent, bitangent, d.worldSpaceNormal);
             d.worldSpaceViewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
+
             d.tangentSpaceViewDir = mul(d.TBNMatrix, d.worldSpaceViewDir);
              d.texcoord0 = i.texcoord0;
              d.texcoord1 = i.texcoord1;
             // d.texcoord2 = i.texcoord2;
+
+            // #if %TEXCOORD3REQUIREKEY%
             // d.texcoord3 = i.texcoord3;
+            // #endif
+
+            // d.isFrontFace = facing;
+            // #if %VERTEXCOLORREQUIREKEY%
             // d.vertexColor = i.vertexColor;
+            // #endif
 
             // these rarely get used, so we back transform them. Usually will be stripped.
             #if _HDRP
-                // d.localSpacePosition = mul(unity_WorldToObject, float4(GetCameraRelativePositionWS(i.worldPos), 1));
+                // d.localSpacePosition = mul(unity_WorldToObject, float4(GetCameraRelativePositionWS(i.worldPos), 1)).xyz;
             #else
-                // d.localSpacePosition = mul(unity_WorldToObject, float4(i.worldPos, 1));
+                // d.localSpacePosition = mul(unity_WorldToObject, float4(i.worldPos, 1)).xyz;
             #endif
-            // d.localSpaceNormal = normalize(mul(unity_WorldToObject, i.worldNormal));
-            // d.localSpaceTangent = normalize(mul(unity_WorldToObject, i.worldTangent.xyz));
+            // d.localSpaceNormal = normalize(mul((float3x3)unity_WorldToObject, i.worldNormal));
+            // d.localSpaceTangent = normalize(mul((float3x3)unity_WorldToObject, i.worldTangent.xyz));
 
+            // #if %SCREENPOSREQUIREKEY%
             // d.screenPos = i.screenPos;
             // d.screenUV = (i.screenPos.xy / i.screenPos.w);
+            // #endif
 
+
+            // #if %EXTRAV2F0REQUIREKEY%
             // d.extraV2F0 = i.extraV2F0;
+            // #endif
+
+            // #if %EXTRAV2F1REQUIREKEY%
             // d.extraV2F1 = i.extraV2F1;
+            // #endif
+
+            // #if %EXTRAV2F2REQUIREKEY%
             // d.extraV2F2 = i.extraV2F2;
+            // #endif
+
+            // #if %EXTRAV2F3REQUIREKEY%
             // d.extraV2F3 = i.extraV2F3;
+            // #endif
+
+            // #if %EXTRAV2F4REQUIREKEY%
             // d.extraV2F4 = i.extraV2F4;
+            // #endif
+
+            // #if %EXTRAV2F5REQUIREKEY%
             // d.extraV2F5 = i.extraV2F5;
+            // #endif
+
+            // #if %EXTRAV2F6REQUIREKEY%
             // d.extraV2F6 = i.extraV2F6;
+            // #endif
+
+            // #if %EXTRAV2F7REQUIREKEY%
             // d.extraV2F7 = i.extraV2F7;
+            // #endif
 
             return d;
          }
@@ -5471,8 +6553,9 @@ ZWrite Off ColorMask RGB
             UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
 #if !_TESSELLATION_ON
-           ChainModifyVertex(v, o);
+           ChainModifyVertex(v, o, _Time);
 #endif
+
 
             o.pos = UnityMetaVertexPosition(v.vertex, v.texcoord1.xy, v.texcoord2.xy, unity_LightmapST, unity_DynamicLightmapST);
             #ifdef EDITOR_VISUALIZATION
@@ -5491,9 +6574,19 @@ ZWrite Off ColorMask RGB
              o.texcoord0 = v.texcoord0;
              o.texcoord1 = v.texcoord1;
             // o.texcoord2 = v.texcoord2;
+
+            // #if %TEXCOORD3REQUIREKEY%
             // o.texcoord3 = v.texcoord3;
+            // #endif
+
+            // #if %VERTEXCOLORREQUIREKEY%
             // o.vertexColor = v.vertexColor;
+            // #endif
+
+            // #if %SCREENPOSREQUIREKEY%
             // o.screenPos = ComputeScreenPos(o.pos);
+            // #endif
+
             o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
             o.worldNormal = UnityObjectToWorldNormal(v.normal);
             o.worldTangent.xyz = UnityObjectToWorldDir(v.tangent.xyz);
@@ -5506,7 +6599,11 @@ ZWrite Off ColorMask RGB
          
 
          // fragment shader
-         fixed4 Frag (VertexToPixel IN) : SV_Target
+         fixed4 Frag (VertexToPixel IN
+         #if NEED_FACING
+            , bool facing : SV_IsFrontFace
+         #endif
+         ) : SV_Target
          {
             UNITY_SETUP_INSTANCE_ID(IN);
 
@@ -5518,7 +6615,11 @@ ZWrite Off ColorMask RGB
                UNITY_EXTRACT_FOG(IN);
             #endif
 
-            ShaderData d = CreateShaderData(IN);
+            ShaderData d = CreateShaderData(IN
+               #if NEED_FACING
+                 , facing
+              #endif
+            );
 
             Surface l = (Surface)0;
 
@@ -5550,6 +6651,8 @@ ZWrite Off ColorMask RGB
       }
 
       
+
+
 
 
 

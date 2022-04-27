@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component will spawn and throw Rigidbody prefabs from the camera when you tap the mouse or a finger.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dTapThrow")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Tap Throw")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dTapThrow")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Tap Throw")]
 	public class P3dTapThrow : MonoBehaviour
 	{
 		/// <summary>The key that must be held for this component to activate on desktop platforms.
@@ -25,40 +26,40 @@ namespace PaintIn3D
 		public bool StoreStates { set { storeStates = value; } get { return storeStates; } } [SerializeField] protected bool storeStates;
 
 		[System.NonSerialized]
-		private List<P3dInputManager.Finger> fingers = new List<P3dInputManager.Finger>();
+		private List<CwInputManager.Finger> fingers = new List<CwInputManager.Finger>();
 
 		protected virtual void OnEnable()
 		{
-			P3dInputManager.EnsureThisComponentExists();
+			CwInputManager.EnsureThisComponentExists();
 
-			P3dInputManager.OnFingerDown += HandleFingerDown;
-			P3dInputManager.OnFingerUp   += HandleFingerUp;
+			CwInputManager.OnFingerDown += HandleFingerDown;
+			CwInputManager.OnFingerUp   += HandleFingerUp;
 		}
 
 		protected virtual void OnDisable()
 		{
-			P3dInputManager.OnFingerDown -= HandleFingerDown;
-			P3dInputManager.OnFingerUp   -= HandleFingerUp;
+			CwInputManager.OnFingerDown -= HandleFingerDown;
+			CwInputManager.OnFingerUp   -= HandleFingerUp;
 		}
 
-		private void HandleFingerDown(P3dInputManager.Finger finger)
+		private void HandleFingerDown(CwInputManager.Finger finger)
 		{
-			if (finger.Index == P3dInputManager.HOVER_FINGER_INDEX) return;
+			if (finger.Index == CwInputManager.HOVER_FINGER_INDEX) return;
 
-			if (P3dInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == true) return;
+			if (CwInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == true) return;
 
-			if (key != KeyCode.None && P3dInputManager.IsDown(key) == false) return;
+			if (key != KeyCode.None && CwInput.GetKeyIsHeld(key) == false) return;
 
 			fingers.Add(finger);
 		}
 
-		private void HandleFingerUp(P3dInputManager.Finger finger)
+		private void HandleFingerUp(CwInputManager.Finger finger)
 		{
 			if (fingers.Remove(finger) == true)
 			{
-				var delta = Vector2.Distance(finger.StartScreenPosition, finger.ScreenPosition) * P3dInputManager.ScaleFactor;
+				//var delta = Vector2.Distance(finger.StartScreenPosition, finger.ScreenPosition) * CwInputManager.ScaleFactor;
 
-				if (finger.Age < 0.5f && delta < 20.0f)
+				if (finger.Age < 0.5f)// && delta < 20.0f)
 				{
 					DoThrow(finger.ScreenPosition);
 				}
@@ -69,7 +70,7 @@ namespace PaintIn3D
 		{
 			if (prefab != null)
 			{
-				var camera = P3dHelper.GetCamera();
+				var camera = CwHelper.GetCamera(null);
 
 				if (camera != null)
 				{
@@ -108,7 +109,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dTapThrow_Editor : P3dEditor
+	public class P3dTapThrow_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

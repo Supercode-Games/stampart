@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component will perform a raycast under the mouse or finger as it moves across the screen. It will then send hit events to components like <b>P3dPaintDecal</b>, allowing you to paint the scene.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitScreen")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Screen")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitScreen")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Screen")]
 	public class P3dHitScreen : P3dHitScreenBase
 	{
 		// This stores extra information for each finger unique to this component
-		protected class Link : P3dInputManager.Link
+		protected class Link : CwInputManager.Link
 		{
 			public float   Age;
 			public bool    Down;
@@ -77,7 +77,7 @@ namespace PaintIn3D
 
 		/// <summary>This allows you to control how often the screen is painted.
 		/// PixelInterval = Once every <b>Interval</b> pixels.
-		/// ScaledPixelInterval = Once every <b>Interval</b> scaled pixels.
+		/// ScaledPixelInterval = Like <b>PixelInterval</b>, but scaled to the screen DPI.
 		/// TimeInterval = Once every <b>Interval</b> seconds.
 		/// OnceOnRelease = When the finger/mouse goes down a preview will be shown, and when it goes up the paint will apply.
 		/// OnceOnPress = When the finger/mouse goes down the paint will apply.
@@ -85,7 +85,7 @@ namespace PaintIn3D
 		public FrequencyType Frequency { set { frequency = value; } get { return frequency; } } [SerializeField] private FrequencyType frequency = FrequencyType.OnceEveryFrame;
 
 		/// <summary>This allows you to set the pixels/seconds between each hit point based on the current <b>Frequency</b> setting.</summary>
-		public float Interval { set { interval = value; } get { return interval; } } [FSA("spacing")] [SerializeField] private float interval = 10.0f;
+		public float Interval { set { interval = value; } get { return interval; } } [SerializeField] private float interval = 10.0f;
 
 		/// <summary>This allows you to connect the hit points together to form lines.</summary>
 		public P3dPointConnector Connector { get { if (connector == null) connector = new P3dPointConnector(); return connector; } } [SerializeField] private P3dPointConnector connector;
@@ -124,14 +124,19 @@ namespace PaintIn3D
 			connector.Update();
 		}
 
-		protected override void HandleFingerUpdate(P3dInputManager.Finger finger, bool down, bool up)
+		protected override void HandleFingerUpdate(CwInputManager.Finger finger, bool down, bool up)
 		{
-			var link = P3dInputManager.Link.Find(ref links, finger);
+			var link = CwInputManager.Link.Find(links, finger);
 			var set  = true;
+
+			if (link == null)
+			{
+				link = CwInputManager.Link.Create(ref links, finger);
+			}
 
 			link.Move(finger.ScreenPosition);
 
-			if (finger.Index == P3dInputManager.HOVER_FINGER_INDEX && keyPressed == false)
+			if (finger.Index == CwInputManager.HOVER_FINGER_INDEX && keyPressed == false)
 			{
 				if (showPreview == true)
 				{
@@ -152,7 +157,7 @@ namespace PaintIn3D
 				switch (frequency)
 				{
 					case FrequencyType.PixelInterval: PaintSmooth(link, down, interval); break;
-					case FrequencyType.ScaledPixelInterval: PaintSmooth(link, down, interval / P3dInputManager.ScaleFactor); break;
+					case FrequencyType.ScaledPixelInterval: PaintSmooth(link, down, interval / CwInputManager.ScaleFactor); break;
 					case FrequencyType.TimeInterval: PaintInterval(link, down); break;
 					case FrequencyType.OnceOnRelease: PaintRelease(link, up); break;
 					case FrequencyType.OnceOnPress: PaintPress(link, down); break;
@@ -161,9 +166,14 @@ namespace PaintIn3D
 			}
 		}
 
-		protected override void HandleFingerUp(P3dInputManager.Finger finger)
+		protected override void HandleFingerUp(CwInputManager.Finger finger)
 		{
-			var link = P3dInputManager.Link.Find(ref links, finger);
+			var link = CwInputManager.Link.Find(links, finger);
+
+			if (link == null)
+			{
+				link = CwInputManager.Link.Create(ref links, finger);
+			}
 
 			connector.BreakHits(link);
 
@@ -189,7 +199,7 @@ namespace PaintIn3D
 			if (pixelSpacing > 0.0f)
 			{
 				var steps = Mathf.Max(1, Mathf.FloorToInt(link.Finger.SmoothScreenPositionDelta));
-				var step  = P3dHelper.Reciprocal(steps);
+				var step  = CwHelper.Reciprocal(steps);
 
 				for (var i = 0; i <= steps; i++)
 				{

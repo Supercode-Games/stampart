@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component automatically updates all P3dModel and P3dPaintableTexture instances at the end of the frame, batching all paint operations together.</summary>
 	[DefaultExecutionOrder(100)]
 	[DisallowMultipleComponent]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintableManager")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Paintable Manager")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintableManager")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Paintable Manager")]
 	public class P3dPaintableManager : MonoBehaviour
 	{
 		/// <summary>This stores all active and enabled instances in the open scenes.</summary>
@@ -128,7 +129,7 @@ namespace PaintIn3D
 			}
 			else
 			{
-				P3dHelper.Destroy(gameObject);
+				CwHelper.Destroy(gameObject);
 			}
 		}
 
@@ -144,7 +145,7 @@ namespace PaintIn3D
 		{
 			foreach (var paintableTexture in P3dPaintableTexture.Instances)
 			{
-				paintableTexture.ExecuteCommands(true);
+				paintableTexture.ExecuteCommands(true, true);
 			}
 		}
 	}
@@ -158,7 +159,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintableManager_Editor : P3dEditor
+	public class P3dPaintableManager_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

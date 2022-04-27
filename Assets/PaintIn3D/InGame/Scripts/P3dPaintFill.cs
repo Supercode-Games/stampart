@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component implements the fill paint mode, which will modify all pixels in the specified texture in the same way.
 	/// This is useful if you want to gradually fade a texture to a specific color.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintFill")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Paint Fill")]
-	public class P3dPaintFill : MonoBehaviour, IHit, IHitCoord
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintFill")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Paint Fill")]
+	public class P3dPaintFill : MonoBehaviour, IHitCoord
 	{
 		/// <summary>Only the <b>P3dPaintableTexture</b> components with a matching group will be painted by this component.</summary>
 		public P3dGroup Group { set { group = value; } get { return group; } } [SerializeField] private P3dGroup group;
@@ -52,11 +53,11 @@ namespace PaintIn3D
 
 					if (modifiers != null && modifiers.Count > 0)
 					{
-						P3dHelper.BeginSeed(seed);
+						CwHelper.BeginSeed(seed);
 							modifiers.ModifyColor(ref finalColor, preview, pressure);
 							modifiers.ModifyOpacity(ref finalOpacity, preview, pressure);
 							modifiers.ModifyTexture(ref finalTexture, preview, pressure);
-						P3dHelper.EndSeed();
+						CwHelper.EndSeed();
 					}
 
 					P3dCommandFill.Instance.SetState(preview, priority);
@@ -82,7 +83,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintFill_Editor : P3dEditor
+	public class P3dPaintFill_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

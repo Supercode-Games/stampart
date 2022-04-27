@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component grabs paint hits and connected hits, mirrors the data, then re-broadcasts it.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dCloneMirror")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Clone Mirror")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dCloneMirror")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Clone Mirror")]
 	public class P3dCloneMirror : P3dClone
 	{
 		/// <summary>When a decal is mirrored it will appear backwards, should it be flipped back around?</summary>
@@ -53,7 +54,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dCloneMirror_Editor : P3dEditor
+	public class P3dCloneMirror_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

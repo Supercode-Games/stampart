@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to move the current <b>Transform</b> using editor events (e.g. UI buttons).</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dTranslate")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Translate")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dTranslate")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Translate")]
 	public class P3dTranslate : MonoBehaviour
 	{
 		/// <summary>This allows you to set the coordinate space the movement will use.</summary>
@@ -18,7 +18,7 @@ namespace PaintIn3D
 		/// -1 = Instantly change.
 		/// 1 = Slowly change.
 		/// 10 = Quickly change.</summary>
-		public float Damping { set { damping = value; } get { return damping; } } [FSA("dampening")] [SerializeField] private float damping = 10.0f;
+		public float Damping { set { damping = value; } get { return damping; } } [SerializeField] private float damping = 10.0f;
 
 		/// <summary>The position will be incremented by this each second.</summary>
 		public Vector3 PerSecond { set { perSecond = value; } get { return perSecond; } } [SerializeField] private Vector3 perSecond;
@@ -63,7 +63,7 @@ namespace PaintIn3D
 
 		protected virtual void Update()
 		{
-			var factor   = P3dHelper.DampenFactor(Damping, Time.deltaTime);
+			var factor   = CwHelper.DampenFactor(Damping, Time.deltaTime);
 			var newDelta = Vector3.Lerp(remainingDelta, Vector3.zero, factor);
 
 			transform.position += remainingDelta - newDelta;
@@ -83,7 +83,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dTranslate_Editor : P3dEditor
+	public class P3dTranslate_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

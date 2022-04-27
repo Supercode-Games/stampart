@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component fills the attached UI Image based on the total amount of pixels that have been painted in the specified <b>P3dColorCounter</b> components.</summary>
 	[RequireComponent(typeof(Image))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dColorCounterFill")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Color Counter Fill")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dColorCounterFill")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Color Counter Fill")]
 	public class P3dColorCounterFill : MonoBehaviour
 	{
 		/// <summary>This allows you to specify the counters that will be used.
@@ -51,7 +52,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dColorCounterFill_Editor : P3dEditor
+	public class P3dColorCounterFill_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

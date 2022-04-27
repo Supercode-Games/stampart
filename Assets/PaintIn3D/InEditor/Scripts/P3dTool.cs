@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can be used to create tool prefabs for in-editor painting. These will automatically appear in the Paint tab's Tool list.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dTool")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Tool")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dTool")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Tool")]
 	public class P3dTool : MonoBehaviour, IBrowsable
 	{
 		public string Category { set { category = value; } get { return category; } } [SerializeField] private string category;
@@ -22,13 +23,13 @@ namespace PaintIn3D
 				{
 					cachedTools = new List<P3dTool>();
 #if UNITY_EDITOR
-					var scriptGuid = P3dHelper.FindScriptGUID<P3dTool>();
+					var scriptGuid = P3dCommon.FindScriptGUID<P3dTool>();
 
 					if (scriptGuid != null)
 					{
 						foreach (var prefabGuid in UnityEditor.AssetDatabase.FindAssets("t:prefab"))
 						{
-							var tool = P3dHelper.LoadPrefabIfItContainsScriptGUID<P3dTool>(prefabGuid, scriptGuid);
+							var tool = P3dCommon.LoadPrefabIfItContainsScriptGUID<P3dTool>(prefabGuid, scriptGuid);
 
 							if (tool != null)
 							{
@@ -78,13 +79,13 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dTool_Editor : P3dEditor
+	public class P3dTool_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
 			TARGET tgt; TARGET[] tgts; GetTargets(out tgt, out tgts);
 
-			if (P3dTool.CachedTools.Contains(tgt) == false && P3dHelper.IsAsset(tgt) == true)
+			if (P3dTool.CachedTools.Contains(tgt) == false && CwHelper.IsAsset(tgt) == true)
 			{
 				P3dTool.CachedTools.Add(tgt);
 			}

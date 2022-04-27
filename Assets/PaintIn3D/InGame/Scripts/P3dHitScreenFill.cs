@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace PaintIn3D
 {
 	/// <summary>This component works like <b>P3dHitScreen</b>, but it will fill in the shape you draw.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitScreenFill")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Screen Fill")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitScreenFill")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Screen Fill")]
 	public class P3dHitScreenFill : P3dHitScreen
 	{
 		/// <summary>This allows you to set the pixel distance between each grid point.

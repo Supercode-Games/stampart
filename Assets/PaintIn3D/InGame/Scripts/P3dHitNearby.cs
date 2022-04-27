@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component continuously fires hit events using the current Transform position.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitNearby")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Nearby")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitNearby")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Nearby")]
 	public class P3dHitNearby : MonoBehaviour
 	{
 		public enum PhaseType
 		{
+			ManuallyOnly = -1,
 			Update,
 			FixedUpdate
 		}
@@ -18,9 +19,8 @@ namespace PaintIn3D
 		public PhaseType PaintIn { set { paintIn = value; } get { return paintIn; } } [SerializeField] private PhaseType paintIn;
 
 		/// <summary>The time in seconds between each hit.
-		/// 0 = Every frame.
-		/// -1 = Manual only.</summary>
-		public float Interval { set { interval = value; } get { return interval; } } [FSA("delay")] [SerializeField] private float interval = 0.05f;
+		/// 0 = Every frame.</summary>
+		public float Interval { set { interval = value; } get { return interval; } } [SerializeField] private float interval = 0.05f;
 
 		/// <summary>Should the applied paint be applied as a preview?</summary>
 		public bool Preview { set { preview = value; } get { return preview; } } [SerializeField] private bool preview;
@@ -122,7 +122,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dHitNearby_Editor : P3dEditor
+	public class P3dHitNearby_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
@@ -133,7 +133,10 @@ namespace PaintIn3D
 			EndDisabled();
 
 			Draw("paintIn", "Where in the game loop should this component hit?");
-			Draw("interval", "The time in seconds between each hit.\n\n0 = Every frame.\n\n-1 = Manual only.");
+			if (Any(tgts, t => t.PaintIn != TARGET.PhaseType.ManuallyOnly))
+			{
+				Draw("interval", "The time in seconds between each hit.\n\n0 = Every frame.");
+			}
 
 			Separator();
 

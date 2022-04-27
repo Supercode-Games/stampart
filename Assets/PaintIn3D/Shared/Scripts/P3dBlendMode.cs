@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -77,23 +78,29 @@ namespace PaintIn3D
 		/// 1,0,0,0 = Only red will be modified.</summary>
 		public Vector4 Channels;
 
+		private static int _Channels           = Shader.PropertyToID("_Channels");
+		private static int _ReplaceColor       = Shader.PropertyToID("_ReplaceColor");
+		private static int _ReplaceTexture     = Shader.PropertyToID("_ReplaceTexture");
+		private static int _ReplaceTextureSize = Shader.PropertyToID("_ReplaceTextureSize");
+		private static int _Kernel             = Shader.PropertyToID("_Kernel");
+
 		public void Apply(Material material)
 		{
-			material.SetVector(P3dShader._Channels, Channels);
+			material.SetVector(_Channels, Channels);
 
 			if (Index == REPLACE_CUSTOM || Index == REPLACE_ORIGINAL)
 			{
-				material.SetColor(P3dShader._ReplaceColor, P3dHelper.FromGamma(Color));
-				material.SetTexture(P3dShader._ReplaceTexture, Texture);
+				material.SetColor(_ReplaceColor, CwHelper.ToLinear(Color));
+				material.SetTexture(_ReplaceTexture, Texture);
 
 				if (Texture != null)
 				{
-					material.SetVector(P3dShader._ReplaceTextureSize, new Vector2(Texture.width, Texture.height));
+					material.SetVector(_ReplaceTextureSize, new Vector2(Texture.width, Texture.height));
 				}
 			}
 			else if (Index == BLUR || Index == FLOW)
 			{
-				material.SetFloat(P3dShader._Kernel, Kernel);
+				material.SetFloat(_Kernel, Kernel);
 			}
 		}
 

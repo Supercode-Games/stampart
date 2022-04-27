@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to fade the pixels of the specified P3dPaintableTexture.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dGraduallyFade")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Gradually Fade")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dGraduallyFade")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Gradually Fade")]
 	public class P3dGraduallyFade : MonoBehaviour
 	{
 		/// <summary>This allows you to choose which paintable texture will be modified by this component.</summary>
@@ -24,13 +24,13 @@ namespace PaintIn3D
 		public P3dBlendMode BlendMode { set { blendMode = value; } get { return blendMode; } } [SerializeField] private P3dBlendMode blendMode = P3dBlendMode.ReplaceOriginal(Vector4.one);
 
 		/// <summary>The texture that will be faded toward.</summary>
-		public Texture BlendTexture { set { blendTexture = value; } get { return blendTexture; } } [FSA("texture")] [SerializeField] private Texture blendTexture;
+		public Texture BlendTexture { set { blendTexture = value; } get { return blendTexture; } } [SerializeField] private Texture blendTexture;
 
 		/// <summary>The paintable texture that will be faded toward.</summary>
 		public P3dPaintableTexture BlendPaintableTexture { set { blendPaintableTexture = value; } get { return blendPaintableTexture; } } [SerializeField] private P3dPaintableTexture blendPaintableTexture;
 
 		/// <summary>The color that will be faded toward.</summary>
-		public Color BlendColor { set { blendColor = value; } get { return blendColor; } } [FSA("color")] [SerializeField] private Color blendColor = Color.white;
+		public Color BlendColor { set { blendColor = value; } get { return blendColor; } } [SerializeField] private Color blendColor = Color.white;
 
 		/// <summary>If you want the gradually fade effect to be masked by a texture, then specify it here.</summary>
 		public Texture MaskTexture { set { maskTexture = value; } get { return maskTexture; } } [SerializeField] private Texture maskTexture;
@@ -89,7 +89,7 @@ namespace PaintIn3D
 						}
 
 						command.LocalMaskTexture = finalMaskTexture;
-						command.LocalMaskChannel = P3dHelper.IndexToVector((int)maskChannel);
+						command.LocalMaskChannel = P3dCommon.IndexToVector((int)maskChannel);
 					}
 				}
 			}
@@ -105,7 +105,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dGraduallyFade_Editor : P3dEditor
+	public class P3dGraduallyFade_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

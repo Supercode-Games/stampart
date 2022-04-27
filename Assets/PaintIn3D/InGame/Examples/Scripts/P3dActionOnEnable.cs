@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component invokes the <b>Action</b> event when this component is enabled.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dActionOnEnable")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Action OnEnable")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dActionOnEnable")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Action OnEnable")]
 	public class P3dActionOnEnable : MonoBehaviour
 	{
 		/// <summary>The event that will be invoked.</summary>
@@ -29,7 +30,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dActionOnEnable_Editor : P3dEditor
+	public class P3dActionOnEnable_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

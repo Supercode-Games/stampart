@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -45,7 +46,7 @@ namespace PaintIn3D
 			var sPro      = property.FindPropertyRelative("index");
 			var groupData = P3dGroupData_Editor.GetGroupData(sPro.intValue);
 
-			P3dEditor.BeginError(groupData == null);
+			CwEditor.BeginError(groupData == null);
 				if (GUI.Button(position, groupData != null ? groupData.name : "MISSING: " + sPro.intValue, EditorStyles.popup) == true)
 				{
 					var menu       = new GenericMenu();
@@ -61,7 +62,7 @@ namespace PaintIn3D
 
 					menu.DropDown(position);
 				}
-			P3dEditor.EndError();
+			CwEditor.EndError();
 		}
 
 		private static void AddMenuItem(GenericMenu menu, P3dGroupData groupData, SerializedProperty sPro, int index)

@@ -1,9 +1,7 @@
-﻿#if UNITY_2018_2_OR_NEWER
-	#define ASYNC_READBACK_SUPPORTED
-#endif
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 using Unity.Collections;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -11,10 +9,12 @@ namespace PaintIn3D
 	[System.Serializable]
 	public class P3dReader
 	{
-#if ASYNC_READBACK_SUPPORTED
 		[SerializeField]
 		private AsyncGPUReadbackRequest request;
-#endif
+
+		[SerializeField]
+		private bool dirty;
+
 		[SerializeField]
 		private bool requested;
 
@@ -37,6 +37,14 @@ namespace PaintIn3D
 		private Texture2D tempTexture;
 
 		public event System.Action<NativeArray<Color32>> OnComplete;
+
+		public bool Dirty
+		{
+			get
+			{
+				return dirty;
+			}
+		}
 
 		public bool Requested
 		{
@@ -78,9 +86,13 @@ namespace PaintIn3D
 			}
 		}
 
+		public void MarkAsDirty()
+		{
+			dirty = true;
+		}
+
 		public void UpdateRequest()
 		{
-#if ASYNC_READBACK_SUPPORTED
 			if (requested == true)
 			{
 				if (request.hasError == true)
@@ -93,18 +105,17 @@ namespace PaintIn3D
 				{
 					requested = false;
 
-					buffer = P3dHelper.ReleaseRenderTexture(buffer);
+					buffer = P3dCommon.ReleaseRenderTexture(buffer);
 
 					OnComplete(request.GetData<Color32>());
 				}
 			}
-#endif
 		}
 
 		public static bool NeedsUpdating<T>(P3dReader reader, NativeArray<T> array, RenderTexture texture, int downsampleSteps)
 			where T : struct
 		{
-			if (array.IsCreated == false || reader.DownsampledSize.x * reader.DownsampledSize.y != array.Length)
+			if (array.IsCreated == false || reader.dirty == true || reader.DownsampledSize.x * reader.DownsampledSize.y != array.Length)
 			{
 				return true;
 			}
@@ -173,10 +184,10 @@ namespace PaintIn3D
 			desc.width     = downsampledSize.x;
 			desc.height    = downsampledSize.y;
 
-			buffer = P3dHelper.GetRenderTexture(desc);
+			buffer = P3dCommon.GetRenderTexture(desc);
 
 			P3dCommandReplace.Blit(buffer, texture, Color.white);
-#if ASYNC_READBACK_SUPPORTED
+
 			if (async == true && SystemInfo.supportsAsyncGPUReadback == true)
 			{
 				request   = AsyncGPUReadback.Request(buffer, 0, TextureFormat.RGBA32);
@@ -185,7 +196,6 @@ namespace PaintIn3D
 				UpdateRequest();
 			}
 			else
-#endif
 			{
 				CompleteDirectly();
 			}
@@ -193,16 +203,16 @@ namespace PaintIn3D
 
 		public void Release()
 		{
-			buffer = P3dHelper.ReleaseRenderTexture(buffer);
+			buffer = P3dCommon.ReleaseRenderTexture(buffer);
 
-			tempTexture = P3dHelper.Destroy(tempTexture);
+			tempTexture = CwHelper.Destroy(tempTexture);
 		}
 
 		private void CompleteDirectly()
 		{
 			if (tempTexture != null && (tempTexture.width != buffer.width || tempTexture.height != buffer.height))
 			{
-				tempTexture = P3dHelper.Destroy(tempTexture);
+				tempTexture = CwHelper.Destroy(tempTexture);
 			}
 
 			if (tempTexture == null)
@@ -210,13 +220,13 @@ namespace PaintIn3D
 				tempTexture = new Texture2D(buffer.width, buffer.height, TextureFormat.RGBA32, false);
 			}
 
-			P3dHelper.BeginActive(buffer);
+			CwHelper.BeginActive(buffer);
 
 			tempTexture.ReadPixels(new Rect(0, 0, buffer.width, buffer.height), 0, 0);
 
-			P3dHelper.EndActive();
+			CwHelper.EndActive();
 
-			buffer = P3dHelper.ReleaseRenderTexture(buffer);
+			buffer = P3dCommon.ReleaseRenderTexture(buffer);
 
 			tempTexture.Apply();
 

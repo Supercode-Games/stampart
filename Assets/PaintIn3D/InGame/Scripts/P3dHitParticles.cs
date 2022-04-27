@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can be added to any ParticleSystem with collisions enabled, and it will fire hits when the particles collide with something.</summary>
 	[RequireComponent(typeof(ParticleSystem))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitParticles")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Particles")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitParticles")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Particles")]
 	public class P3dHitParticles : MonoBehaviour
 	{
 		public enum EmitType
@@ -40,7 +40,7 @@ namespace PaintIn3D
 		/// PointsIn3D = Point drawing in 3D.
 		/// PointsOnUV = Point drawing on UV (requires non-convex <b>MeshCollider</b>).
 		/// TrianglesIn3D = Triangle drawing in 3D.</summary>
-		public EmitType Emit { set { emit = value; } get { return emit; } } [FSA("draw")] [SerializeField] private EmitType emit;
+		public EmitType Emit { set { emit = value; } get { return emit; } } [SerializeField] private EmitType emit;
 
 		/// <summary>When emitting <b>PointsOnUV</b> or <b>TrianglesIn3D</b>, this setting allows you to specify the world space distance from the hit point a raycast will be fired. This is necessary because particles by themselves don't provide the necessary information.
 		/// NOTE: Performing this raycast has a slight performance penalty.</summary>
@@ -82,16 +82,16 @@ namespace PaintIn3D
 		public PressureType PressureMode { set { pressureMode = value; } get { return pressureMode; } } [SerializeField] private PressureType pressureMode = PressureType.Constant;
 
 		/// <summary>This allows you to specify the distance/speed that gives 0.0 pressure.</summary>
-		public float PressureMin { set { pressureMin = value; } get { return pressureMin; } } [FSA("pressureMinDistance")] [SerializeField] private float pressureMin;
+		public float PressureMin { set { pressureMin = value; } get { return pressureMin; } } [SerializeField] private float pressureMin;
 
 		/// <summary>This allows you to specify the distance/speed that gives 1.0 pressure.</summary>
-		public float PressureMax { set { pressureMax = value; } get { return pressureMax; } } [FSA("pressureMaxDistance")] [SerializeField] private float pressureMax;
+		public float PressureMax { set { pressureMax = value; } get { return pressureMax; } } [SerializeField] private float pressureMax;
 
 		/// <summary>The pressure value used when <b>PressureMode</b> is set to <b>Constant</b>.</summary>
 		public float PressureConstant { set { pressureConstant = value; } get { return pressureConstant; } } [SerializeField] [Range(0.0f, 1.0f)] private float pressureConstant = 1.0f;
 
 		/// <summary>The calculated pressure value will be multiplied by this.</summary>
-		public float PressureMultiplier { set { pressureMultiplier = value; } get { return pressureMultiplier; } } [FSA("pressure")] [SerializeField] private float pressureMultiplier = 1.0f;
+		public float PressureMultiplier { set { pressureMultiplier = value; } get { return pressureMultiplier; } } [SerializeField] private float pressureMultiplier = 1.0f;
 
 		/// <summary>Hit events are normally sent to all components attached to the current GameObject, but this setting allows you to override that. This is useful if you want to use multiple <b>P3dHitParticles</b> components with different settings and results.</summary>
 		public GameObject Root { set { ClearHitCache(); root = value; } get { return root; } } [SerializeField] private GameObject root;
@@ -166,7 +166,7 @@ namespace PaintIn3D
 			count = cachedParticleSystem.GetCollisionEvents(hitGameObject, particleCollisionEvents);
 
 			// Calculate up vector ahead of time
-			var finalUp   = orientation == OrientationType.CameraUp ? P3dHelper.GetCameraUp(_camera) : Vector3.up;
+			var finalUp   = orientation == OrientationType.CameraUp ? P3dCommon.GetCameraUp(_camera) : Vector3.up;
 			var finalRoot = root != null ? root : gameObject;
 
 			// Paint all locations
@@ -174,7 +174,7 @@ namespace PaintIn3D
 			{
 				var collision = particleCollisionEvents[i];
 
-				if (P3dHelper.IndexInMask(collision.colliderComponent.gameObject.layer, layers) == false)
+				if (CwHelper.IndexInMask(collision.colliderComponent.gameObject.layer, layers) == false)
 				{
 					continue;
 				}
@@ -276,7 +276,7 @@ namespace PaintIn3D
 	using TARGET = P3dHitParticles;
 
 	[CustomEditor(typeof(TARGET))]
-	public class P3dHitParticles_Editor : P3dEditor
+	public class P3dHitParticles_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

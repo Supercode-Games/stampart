@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can be added to an empty GameObject, and it will set it up with a procedurally generated quad that is ready for painting.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dProceduralSetup")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Procedural Setup")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dProceduralSetup")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Procedural Setup")]
 	public class P3dProceduralSetup : MonoBehaviour
 	{
 		/// <summary>The <b>Material</b> applied to the renderer.</summary>
@@ -87,7 +88,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dProceduralSetup_Editor : P3dEditor
+	public class P3dProceduralSetup_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

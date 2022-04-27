@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44950086, g: 0.49649626, b: 0.5591468, a: 1}
+  m_IndirectSpecularColor: {r: 0.18230188, g: 0.22486997, b: 0.28911617, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -173,7 +173,8 @@ MonoBehaviour:
   paintable: {fileID: 0}
   includeScale: 1
   useMesh: 0
-  hash: 0
+  hash:
+    v: 0
   activation: 0
   baseScale: {x: 0, y: 0, z: 0}
   otherRenderers: []
@@ -237,6 +238,8 @@ MonoBehaviour:
   localMaskTexture: {fileID: 0}
   localMaskChannel: 0
   shaderKeyword: 
+  hash:
+    v: 0
   isDummy: 0
   output: 
   activated: 0
@@ -401,13 +404,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 259520481}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3829727c01ae90c47a93e45778b9e978, type: 3}
+  m_Script: {fileID: 11500000, guid: 2d2927631b10c2f4b9ce492ed53fd69b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  follow: 0
   target: {fileID: 86057770}
-  offset: {x: 0, y: 0, z: 0}
-  tilt: {x: 0, y: 0, z: 0}
-  dampening: 10
+  damping: 10
+  rotate: 0
+  ignoreZ: 0
+  followIn: 1
+  localPosition: {x: 0, y: 0, z: 0}
+  localRotation: {x: 0, y: 0, z: 0}
 --- !u!4 &259520483
 Transform:
   m_ObjectHideFlags: 0
@@ -527,11 +534,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 326400335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f2e5963485f8aa44b9c7e54ccfd56cc, type: 3}
+  m_Script: {fileID: 11500000, guid: 92ede0252ef7e92459ff5df2a16cd28e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space: 1
-  perSecond: {x: 350, y: 0, z: 0}
+  angularVelocity: {x: 350, y: 1, z: 0}
+  relativeTo: 1
 --- !u!1 &430947916
 GameObject:
   m_ObjectHideFlags: 0
@@ -609,13 +616,55 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyColorRandom
-      jsonData: '{"preview":true,"unique":true,"gradient":{"serializedVersion":"2","key0":{"r":0.36764705181121828,"g":0.29903948307037356,"b":0.11894463747739792,"a":1.0},"key1":{"r":0.3014705777168274,"g":0.20836937427520753,"b":0.06871755421161652,"a":1.0},"key2":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key3":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key4":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key5":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key6":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key7":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"ctime0":0,"ctime1":65535,"ctime2":0,"ctime3":0,"ctime4":0,"ctime5":0,"ctime6":0,"ctime7":0,"atime0":0,"atime1":65535,"atime2":0,"atime3":0,"atime4":0,"atime5":0,"atime6":0,"atime7":0,"m_Mode":0,"m_NumColorKeys":2,"m_NumAlphaKeys":2},"blend":0}'
-      objects: []
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    - id: 1
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyColorRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        gradient:
+          serializedVersion: 2
+          key0: {r: 0.36764705, g: 0.29903948, b: 0.11894464, a: 1}
+          key1: {r: 0.30147058, g: 0.20836937, b: 0.068717554, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        blend: 0
+    00000001:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!114 &430947919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5502,6 +5551,8 @@ MonoBehaviour:
   localMaskTexture: {fileID: 0}
   localMaskChannel: 0
   shaderKeyword: 
+  hash:
+    v: 0
   isDummy: 0
   output: 
   activated: 0
@@ -5538,7 +5589,8 @@ MonoBehaviour:
   paintable: {fileID: 0}
   includeScale: 1
   useMesh: 0
-  hash: 0
+  hash:
+    v: 0
   activation: 0
   baseScale: {x: 0, y: 0, z: 0}
   otherRenderers: []
@@ -5711,11 +5763,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1043558866}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f2e5963485f8aa44b9c7e54ccfd56cc, type: 3}
+  m_Script: {fileID: 11500000, guid: 92ede0252ef7e92459ff5df2a16cd28e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space: 1
-  perSecond: {x: 350, y: 0, z: 0}
+  angularVelocity: {x: 350, y: 1, z: 0}
+  relativeTo: 1
 --- !u!1 &1110163129
 GameObject:
   m_ObjectHideFlags: 0
@@ -5793,13 +5845,55 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyColorRandom
-      jsonData: '{"preview":true,"unique":true,"gradient":{"serializedVersion":"2","key0":{"r":0.36764705181121828,"g":0.29903948307037356,"b":0.11894463747739792,"a":1.0},"key1":{"r":0.3014705777168274,"g":0.20836937427520753,"b":0.06871755421161652,"a":1.0},"key2":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key3":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key4":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key5":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key6":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key7":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"ctime0":0,"ctime1":65535,"ctime2":0,"ctime3":0,"ctime4":0,"ctime5":0,"ctime6":0,"ctime7":0,"atime0":0,"atime1":65535,"atime2":0,"atime3":0,"atime4":0,"atime5":0,"atime6":0,"atime7":0,"m_Mode":0,"m_NumColorKeys":2,"m_NumAlphaKeys":2},"blend":0}'
-      objects: []
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    - id: 1
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyColorRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        gradient:
+          serializedVersion: 2
+          key0: {r: 0.36764705, g: 0.29903948, b: 0.11894464, a: 1}
+          key1: {r: 0.30147058, g: 0.20836937, b: 0.068717554, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        blend: 0
+    00000001:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!114 &1110163132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10629,13 +10723,55 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyColorRandom
-      jsonData: '{"preview":true,"unique":true,"gradient":{"serializedVersion":"2","key0":{"r":0.36764705181121828,"g":0.29903948307037356,"b":0.11894463747739792,"a":1.0},"key1":{"r":0.3014705777168274,"g":0.20836937427520753,"b":0.06871755421161652,"a":1.0},"key2":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key3":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key4":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key5":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key6":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key7":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"ctime0":0,"ctime1":65535,"ctime2":0,"ctime3":0,"ctime4":0,"ctime5":0,"ctime6":0,"ctime7":0,"atime0":0,"atime1":65535,"atime2":0,"atime3":0,"atime4":0,"atime5":0,"atime6":0,"atime7":0,"m_Mode":0,"m_NumColorKeys":2,"m_NumAlphaKeys":2},"blend":0}'
-      objects: []
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    - id: 1
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyColorRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        gradient:
+          serializedVersion: 2
+          key0: {r: 0.36764705, g: 0.29903948, b: 0.11894464, a: 1}
+          key1: {r: 0.30147058, g: 0.20836937, b: 0.068717554, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        blend: 0
+    00000001:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!114 &1236265642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15492,11 +15628,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1256984033}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f2e5963485f8aa44b9c7e54ccfd56cc, type: 3}
+  m_Script: {fileID: 11500000, guid: 92ede0252ef7e92459ff5df2a16cd28e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space: 1
-  perSecond: {x: 350, y: 0, z: 0}
+  angularVelocity: {x: 350, y: 1, z: 0}
+  relativeTo: 1
 --- !u!1001 &1380833761
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15510,17 +15646,21 @@ PrefabInstance:
       value: 'This shows you how to particle collision painting can be used to apply
         dirt to a car as its wheel kick up dust.
 
-        Drag (Orbit Mode) / Right
-        Click + Drag = Orbit'
-      objectReference: {fileID: 0}
-    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
+        Right Click + Drag = Orbit'
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224552809178886476, guid: f43c82fa79085354ba883fd6d09728bc,
@@ -15642,21 +15782,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.6252315
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.8909461
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 6.279085
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f43c82fa79085354ba883fd6d09728bc, type: 3}
@@ -15820,13 +15945,55 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
-    modifierDatas:
-    - typeName: PaintIn3D.P3dModifyColorRandom
-      jsonData: '{"preview":true,"unique":true,"gradient":{"serializedVersion":"2","key0":{"r":0.36764705181121828,"g":0.29903948307037356,"b":0.11894463747739792,"a":1.0},"key1":{"r":0.3014705777168274,"g":0.20836937427520753,"b":0.06871755421161652,"a":1.0},"key2":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key3":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key4":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key5":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key6":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"key7":{"r":0.0,"g":0.0,"b":0.0,"a":0.0},"ctime0":0,"ctime1":65535,"ctime2":0,"ctime3":0,"ctime4":0,"ctime5":0,"ctime6":0,"ctime7":0,"atime0":0,"atime1":65535,"atime2":0,"atime3":0,"atime4":0,"atime5":0,"atime6":0,"atime7":0,"m_Mode":0,"m_NumColorKeys":2,"m_NumAlphaKeys":2},"blend":0}'
-      objects: []
-    - typeName: PaintIn3D.P3dModifyAngleRandom
-      jsonData: '{"preview":true,"unique":true,"min":-180.0,"max":180.0,"blend":0}'
-      objects: []
+    modifiers:
+    - id: 0
+    - id: 1
+    modifierDatas: []
+  references:
+    version: 1
+    00000000:
+      type: {class: P3dModifyColorRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        gradient:
+          serializedVersion: 2
+          key0: {r: 0.36764705, g: 0.29903948, b: 0.11894464, a: 1}
+          key1: {r: 0.30147058, g: 0.20836937, b: 0.068717554, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        blend: 0
+    00000001:
+      type: {class: P3dModifyAngleRandom, ns: PaintIn3D, asm: PaintIn3D}
+      data:
+        preview: 1
+        unique: 1
+        min: -180
+        max: 180
+        blend: 0
 --- !u!114 &1995370790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20683,8 +20850,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 2129358510}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f2e5963485f8aa44b9c7e54ccfd56cc, type: 3}
+  m_Script: {fileID: 11500000, guid: 92ede0252ef7e92459ff5df2a16cd28e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space: 1
-  perSecond: {x: 350, y: 0, z: 0}
+  angularVelocity: {x: 350, y: 1, z: 0}
+  relativeTo: 1

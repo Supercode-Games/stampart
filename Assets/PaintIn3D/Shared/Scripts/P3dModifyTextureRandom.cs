@@ -12,35 +12,7 @@ namespace PaintIn3D
 		public static string Title = "Random";
 
 		/// <summary>A random texture will be picked from this list.</summary>
-		public List<Texture> Textures { get { if (textures == null) textures = new List<Texture>(); return textures; } } [System.NonSerialized] private List<Texture> textures;
-
-		public override void SetObjects(Object[] objects)
-		{
-			Textures.Clear(); // NOTE: Property
-
-			if (objects != null)
-			{
-				foreach (var obj in objects)
-				{
-					Textures.Add(obj as Texture);
-				}
-			}
-		}
-
-		public override List<Object> GetObjects()
-		{
-			tempObjects.Clear();
-
-			if (textures != null)
-			{
-				foreach (var tex in textures)
-				{
-					tempObjects.Add(tex);
-				}
-			}
-
-			return tempObjects;
-		}
+		public List<Texture> Textures { get { if (textures == null) textures = new List<Texture>(); return textures; } } [SerializeField] private List<Texture> textures;
 
 		protected override void OnModifyTexture(ref Texture texture, float pressure)
 		{

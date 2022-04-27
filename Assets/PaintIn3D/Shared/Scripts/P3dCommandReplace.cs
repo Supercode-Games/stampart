@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -19,6 +20,9 @@ namespace PaintIn3D
 
 		public override bool RequireMesh { get { return false; } }
 
+		private static int _Texture = Shader.PropertyToID("_Texture");
+		private static int _Color   = Shader.PropertyToID("_Color");
+
 		static P3dCommandReplace()
 		{
 			BuildMaterial(ref cachedMaterial, ref cachedMaterialHash, "Hidden/Paint in 3D/Replace");
@@ -30,7 +34,7 @@ namespace PaintIn3D
 
 			Instance.Apply(material);
 
-			P3dHelper.Blit(renderTexture, material, Instance.Pass);
+			P3dCommon.Blit(renderTexture, material, Instance.Pass);
 		}
 
 		public static void BlitFast(RenderTexture renderTexture, Texture texture, Color tint)
@@ -46,8 +50,8 @@ namespace PaintIn3D
 		{
 			base.Apply(material);
 
-			material.SetTexture(P3dShader._Texture, Texture);
-			material.SetColor(P3dShader._Color, P3dHelper.FromGamma(Color));
+			material.SetTexture(_Texture, Texture);
+			material.SetColor(_Color, CwHelper.ToLinear(Color));
 		}
 
 		public override void Pool()

@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component shows you how to listen for and store paint commands added to any <b>P3dPaintableTexture</b> component in the scene.
-	/// This component can then reset each paintable texture, and randomly apply one of the recorded paint commands.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dCommandSerialization")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Command Serialization")]
+	/// This component can then reset each paintable texture, and randomly apply one of the recorded paint commands.
+	/// NOTE: For a paint command to be able to be de/serialized, all P3dModel, P3dPaintable, P3dPaintableTexture, and Texture instance associated with the paint command must be registered with a unique hash code that will be the same across all application runs and clients.
+	/// NOTE: The hash codes for the P3d___ components can be set using the <b>Advanced/Hash</b> setting, but the <b>Texture</b> instances must be done separately using either the <b>P3dTextureHash</b> component, or manual calls to <b>P3dSerialization.TryRegister(texture)</b> before you attempt to de/serialize a paint command.</summary>
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dCommandSerialization")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Command Serialization")]
 	public class P3dCommandSerialization : MonoBehaviour
 	{
 		[System.Serializable]
@@ -78,10 +81,7 @@ namespace PaintIn3D
 		[ContextMenu("Serialize And Deserialize")]
 		public void SerializeAndDeserialize()
 		{
-			// This JSON data can be saved or loaded like this
-			// NOTE: This requires you to call P3dSerialization.TryRegister(texture) for every texture that is used by the paint commands
-			// NOTE: You must modify the hash calculation inside each P3dSerialization.TryRegister method if you want the de/serialization of P3dPaintableTexture + Texture + P3dModel to work across clients or application runs
-
+			// In this example the JSON data is merely created then loaded, but in your project you would probably want to save it to a file or send it over the network
 			var json = JsonUtility.ToJson(this);
 
 			JsonUtility.FromJsonOverwrite(json, this);
@@ -131,7 +131,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dCommandSerialization_Editor : P3dEditor
+	public class P3dCommandSerialization_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

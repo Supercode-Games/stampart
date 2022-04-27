@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can be added to any Rigidbody, and it will fire hit events when it hits something.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitCollisions")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Collisions")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitCollisions")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Collisions")]
 	public class P3dHitCollisions : MonoBehaviour
 	{
 		public enum EmitType
@@ -31,7 +31,7 @@ namespace PaintIn3D
 		/// PointsIn3D = Point drawing in 3D.
 		/// PointsOnUV = Point drawing on UV (requires non-convex <b>MeshCollider</b>).
 		/// TrianglesIn3D = Triangle drawing in 3D.</summary>
-		public EmitType Emit { set { emit = value; } get { return emit; } } [FSA("draw")] [SerializeField] private EmitType emit;
+		public EmitType Emit { set { emit = value; } get { return emit; } } [SerializeField] private EmitType emit;
 
 		/// <summary>When emitting <b>PointsOnUV</b> or <b>TrianglesIn3D</b>, this setting allows you to specify the world space distance from the hit point a raycast will be fired. This is necessary because collisions by themselves don't provide the necessary information.
 		/// NOTE: Performing this raycast has a slight performance penalty.</summary>
@@ -68,16 +68,16 @@ namespace PaintIn3D
 		public PressureType PressureMode { set { pressureMode = value; } get { return pressureMode; } } [SerializeField] private PressureType pressureMode = PressureType.ImpactSpeed;
 
 		/// <summary>The impact strength required for a hit to occur with a pressure of 0.</summary>
-		public float PressureMin { set { pressureMin = value; } get { return pressureMin; } } [FSA("impactMin")] [SerializeField] private float pressureMin = 50.0f;
+		public float PressureMin { set { pressureMin = value; } get { return pressureMin; } } [SerializeField] private float pressureMin = 50.0f;
 
 		/// <summary>The impact strength required for a hit to occur with a pressure of 1.</summary>
-		public float PressureMax { set { pressureMax = value; } get { return pressureMax; } } [FSA("impactPressure")] [SerializeField] private float pressureMax = 100.0f;
+		public float PressureMax { set { pressureMax = value; } get { return pressureMax; } } [SerializeField] private float pressureMax = 100.0f;
 
 		/// <summary>The pressure value used when <b>PressureMode</b> is set to <b>Constant</b>.</summary>
 		public float PressureConstant { set { pressureConstant = value; } get { return pressureConstant; } } [SerializeField] [Range(0.0f, 1.0f)] private float pressureConstant = 1.0f;
 
 		/// <summary>The calculated pressure value will be multiplied by this.</summary>
-		public float PressureMultiplier { set { pressureMultiplier = value; } get { return pressureMultiplier; } } [FSA("pressure")] [SerializeField] private float pressureMultiplier = 1.0f;
+		public float PressureMultiplier { set { pressureMultiplier = value; } get { return pressureMultiplier; } } [SerializeField] private float pressureMultiplier = 1.0f;
 
 		/// <summary>If you want the raycast hit point to be offset from the surface a bit, this allows you to set by how much in world space.</summary>
 		public float Offset { set { offset = value; } get { return offset; } } [SerializeField] private float offset;
@@ -154,7 +154,7 @@ namespace PaintIn3D
 				cooldown = delay;
 
 				// Calculate up vector ahead of time
-				var finalUp       = orientation == OrientationType.CameraUp ? P3dHelper.GetCameraUp(_camera) : Vector3.up;
+				var finalUp       = orientation == OrientationType.CameraUp ? P3dCommon.GetCameraUp(_camera) : Vector3.up;
 				var contacts      = collision.contacts;
 				var finalPressure = pressureMultiplier;
 				var finalRoot     = root != null ? root : gameObject;
@@ -178,7 +178,7 @@ namespace PaintIn3D
 				{
 					var contact = contacts[i];
 
-					if (P3dHelper.IndexInMask(contact.otherCollider.gameObject.layer, layers) == true)
+					if (CwHelper.IndexInMask(contact.otherCollider.gameObject.layer, layers) == true)
 					{
 						var finalPosition = contact.point + contact.normal * offset;
 						var finalRotation = Quaternion.LookRotation(-contact.normal, finalUp);
@@ -233,7 +233,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dHitCollisions_Editor : P3dEditor
+	public class P3dHitCollisions_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
@@ -269,7 +269,7 @@ namespace PaintIn3D
 
 			Draw("preview", "Should the applied paint be applied as a preview?");
 			Draw("threshold", "If the collision impact speed is below this value, then the collision will be ignored.");
-			Draw("pressureMode", "This allows you to set how the pressure value will be calculated.\n\nConstant = The PressureConstant value will be directly used.\n\nImpulseMagnitude = The pressure will be 0 when the collision impact speed is PressureMin, and 1 when the impact speed is or exceeds PressureMax.");
+			Draw("pressureMode", "This allows you to set how the pressure value will be calculated.\n\nConstant = The <b>PressureConstant</b> value will be directly used.\n\nImpactSpeed = The pressure will be 0 when the collision impact speed is <b>PressureMin</b>, and 1 when the impact speed is or exceeds <b>PressureMax</b>.");
 			BeginIndent();
 				if (Any(tgts, t => t.PressureMode == P3dHitCollisions.PressureType.Constant))
 				{

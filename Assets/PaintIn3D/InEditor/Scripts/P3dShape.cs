@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can be used to create shape prefabs for in-editor painting. These will automatically appear in the Paint tab's Shape list.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dShape")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Shape")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dShape")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Shape")]
 	public class P3dShape : MonoBehaviour, IBrowsable
 	{
 		public string Category { set { category = value; } get { return category; } } [SerializeField] private string category;
@@ -22,13 +23,13 @@ namespace PaintIn3D
 				{
 					cachedShapes = new List<P3dShape>();
 #if UNITY_EDITOR
-					var scriptGuid  = P3dHelper.FindScriptGUID<P3dShape>();
+					var scriptGuid  = P3dCommon.FindScriptGUID<P3dShape>();
 
 					if (scriptGuid != null)
 					{
 						foreach (var prefabGuid in UnityEditor.AssetDatabase.FindAssets("t:prefab"))
 						{
-							var shape = P3dHelper.LoadPrefabIfItContainsScriptGUID<P3dShape>(prefabGuid, scriptGuid);
+							var shape = P3dCommon.LoadPrefabIfItContainsScriptGUID<P3dShape>(prefabGuid, scriptGuid);
 
 							if (shape != null)
 							{
@@ -78,13 +79,13 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dShape_Editor : P3dEditor
+	public class P3dShape_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
 			TARGET tgt; TARGET[] tgts; GetTargets(out tgt, out tgts);
 
-			if (P3dShape.CachedShapes.Contains(tgt) == false && P3dHelper.IsAsset(tgt) == true)
+			if (P3dShape.CachedShapes.Contains(tgt) == false && CwHelper.IsAsset(tgt) == true)
 			{
 				P3dShape.CachedShapes.Add(tgt);
 			}

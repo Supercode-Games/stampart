@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to output the totals of all the specified pixel counters to a UI Text component.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterText")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Channel Counter Text")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dChannelCounterText")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Channel Counter Text")]
 	public class P3dChannelCounterText : MonoBehaviour
 	{
 		[System.Serializable] public class StringEvent : UnityEvent<string> {}
@@ -61,7 +62,7 @@ namespace PaintIn3D
 			}
 
 			var final   = format;
-			var percent = P3dHelper.RatioToPercentage(P3dHelper.Divide(count, total), decimalPlaces);
+			var percent = P3dCommon.RatioToPercentage(CwHelper.Divide(count, total), decimalPlaces);
 
 			final = final.Replace("{TOTAL}", total.ToString());
 			final = final.Replace("{COUNT}", count.ToString());
@@ -83,7 +84,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dChannelCounterText_Editor : P3dEditor
+	public class P3dChannelCounterText_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

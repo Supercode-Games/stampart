@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -27,7 +28,7 @@ namespace PaintIn3D
 
 				if (shader != null)
 				{
-					foreach (var texEnv in P3dHelper.GetTexEnvs(shader))
+					foreach (var texEnv in P3dCommon.GetTexEnvs(shader))
 					{
 						if (texEnv.Name == Name)
 						{
@@ -49,7 +50,7 @@ namespace PaintIn3D
 
 				if (paintable != null)
 				{
-					var material = P3dHelper.GetMaterial(paintable.CachedRenderer, Index);
+					var material = P3dCommon.GetMaterial(paintable.CachedRenderer, Index);
 
 					if (material != null && material.HasProperty(Name) == true)
 					{
@@ -69,7 +70,7 @@ namespace PaintIn3D
 
 				if (paintable != null)
 				{
-					var material = P3dHelper.GetMaterial(paintable.CachedRenderer, Index);
+					var material = P3dCommon.GetMaterial(paintable.CachedRenderer, Index);
 
 					if (material != null)
 					{
@@ -130,15 +131,15 @@ namespace PaintIn3D
 			// Valid slot?
 			if (paintable != null)
 			{
-				var material = P3dHelper.GetMaterial(paintable.CachedRenderer, sIdx.intValue);
+				var material = P3dCommon.GetMaterial(paintable.CachedRenderer, sIdx.intValue);
 
-				if (material != null && P3dHelper.TexEnvNameExists(material.shader, sNam.stringValue) == true)
+				if (material != null && P3dCommon.TexEnvNameExists(material.shader, sNam.stringValue) == true)
 				{
 					missing = false;
 				}
 			}
 
-			P3dEditor.BeginError(missing);
+			CwEditor.BeginError(missing);
 			{
 				EditorGUI.LabelField(rectA, label);
 
@@ -170,7 +171,7 @@ namespace PaintIn3D
 								{
 									materialName += " (" + material.name + ")";
 
-									var texEnvs = P3dHelper.GetTexEnvs(material.shader);
+									var texEnvs = P3dCommon.GetTexEnvs(material.shader);
 
 									if (texEnvs != null && texEnvs.Count > 0)
 									{
@@ -212,7 +213,7 @@ namespace PaintIn3D
 					menu.DropDown(rectD);
 				}
 			}
-			P3dEditor.EndError();
+			CwEditor.EndError();
 		}
 	}
 }

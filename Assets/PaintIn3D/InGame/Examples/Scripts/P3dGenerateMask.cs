@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can generate a mask texture from the specified mesh. This can be used with the <b>P3dPaintableTexture</b> component's <b>Advanced / LocalMask</b> setting.</summary>
 	//[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dGenerateMask")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Generate Mask")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dGenerateMask")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Generate Mask")]
 	public class P3dGenerateMask : MonoBehaviour
 	{
 		public enum ApplyType
@@ -138,7 +139,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dGenerateMask_Editor : P3dEditor
+	public class P3dGenerateMask_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

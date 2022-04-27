@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component raycasts between two points, and fires hit events when the ray hits something.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitBetween")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Between")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitBetween")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Between")]
 	public class P3dHitBetween : MonoBehaviour
 	{
 		public enum PhaseType
@@ -45,7 +44,7 @@ namespace PaintIn3D
 		/// <summary>The time in seconds between each raycast.
 		/// 0 = Every frame.
 		/// -1 = Manual only.</summary>
-		public float Interval { set { interval = value; } get { return interval; } } [FSA("delay")] [SerializeField] private float interval = 0.05f;
+		public float Interval { set { interval = value; } get { return interval; } } [SerializeField] private float interval = 0.05f;
 
 		/// <summary>The start point of the raycast.</summary>
 		public Transform PointA { set { pointA = value; } get { return pointA; } } [SerializeField] private Transform pointA;
@@ -94,7 +93,7 @@ namespace PaintIn3D
 		/// PointsIn3D = Point drawing in 3D.
 		/// PointsOnUV = Point drawing on UV (requires non-convex <b>MeshCollider</b>).
 		/// TrianglesIn3D = Triangle drawing in 3D.</summary>
-		public EmitType Draw { set { emit = value; } get { return emit; } } [FSA("draw")] [SerializeField] private EmitType emit;
+		public EmitType Draw { set { emit = value; } get { return emit; } } [SerializeField] private EmitType emit;
 
 		/// <summary>If you want to display something at the hit point (e.g. particles), you can specify the Transform here.</summary>
 		public Transform Point { set { point = value; } get { return point; } } [SerializeField] private Transform point;
@@ -239,7 +238,7 @@ namespace PaintIn3D
 
 				case OrientationType.CameraUp:
 				{
-					var finalUp     = P3dHelper.GetCameraUp(_camera);
+					var finalUp     = P3dCommon.GetCameraUp(_camera);
 					var finalNormal = normal == NormalType.HitNormal ? hitNormal : -ray.direction;
 
 					finalRotation = Quaternion.LookRotation(-finalNormal, finalUp);
@@ -336,7 +335,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dHitBetween_Editor : P3dEditor
+	public class P3dHitBetween_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

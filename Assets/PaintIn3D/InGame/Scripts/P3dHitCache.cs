@@ -117,7 +117,7 @@ namespace PaintIn3D
 			}
 		}
 
-		public void InvokeLine(GameObject gameObject, bool preview, int priority, float pressure, Vector3 position, Vector3 endPosition, Quaternion rotation)
+		public void InvokeLine(GameObject gameObject, bool preview, int priority, float pressure, Vector3 position, Vector3 endPosition, Quaternion rotation, bool clip)
 		{
 			if (cached == false)
 			{
@@ -128,7 +128,7 @@ namespace PaintIn3D
 
 			for (var i = 0; i < hitLines.Count; i++)
 			{
-				hitLines[i].HandleHitLine(preview, priority, pressure, seed, position, endPosition, rotation);
+				hitLines[i].HandleHitLine(preview, priority, pressure, seed, position, endPosition, rotation, clip);
 			}
 		}
 
@@ -159,7 +159,7 @@ namespace PaintIn3D
 			}
 		}
 
-		public void InvokeQuad(GameObject gameObject, bool preview, int priority, float pressure, Vector3 position, Vector3 endPosition, Vector3 position2, Vector3 endPosition2, Quaternion rotation)
+		public void InvokeQuad(GameObject gameObject, bool preview, int priority, float pressure, Vector3 position, Vector3 endPosition, Vector3 position2, Vector3 endPosition2, Quaternion rotation, bool clip)
 		{
 			if (cached == false)
 			{
@@ -170,7 +170,7 @@ namespace PaintIn3D
 
 			for (var i = 0; i < hitQuads.Count; i++)
 			{
-				hitQuads[i].HandleHitQuad(preview, priority, pressure, seed, position, endPosition, position2, endPosition2, rotation);
+				hitQuads[i].HandleHitQuad(preview, priority, pressure, seed, position, endPosition, position2, endPosition2, rotation, clip);
 			}
 		}
 

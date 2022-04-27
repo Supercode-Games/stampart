@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to perform the Redo All action. This can be done by attaching it to a clickable object, or manually from the RedoAll method.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dButtonRedoAll")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Button Redo All")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dButtonRedoAll")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Button Redo All")]
 	public class P3dButtonRedoAll : MonoBehaviour, IPointerClickHandler
 	{
 		public void OnPointerClick(PointerEventData eventData)
@@ -40,7 +41,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dRedoAll_Editor : P3dEditor
+	public class P3dRedoAll_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

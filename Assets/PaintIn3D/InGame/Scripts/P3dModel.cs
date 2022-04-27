@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -7,8 +8,8 @@ namespace PaintIn3D
 	/// NOTE: To actually paint, the <b>P3dPaintableTexture</b> component must be on a different object.</summary>
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Renderer))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dModel")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Model")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dModel")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Model")]
 	public class P3dModel : MonoBehaviour
 	{
 		public enum UseMeshType
@@ -205,7 +206,7 @@ namespace PaintIn3D
 
 			foreach (var instance in instances)
 			{
-				if (P3dHelper.IndexInMask(instance.CachedGameObject.layer, layerMask) == true && instance.Paintable != null)
+				if (CwHelper.IndexInMask(instance.CachedGameObject.layer, layerMask) == true && instance.Paintable != null)
 				{
 					var bounds    = instance.CachedRenderer.bounds;
 					var sqrRadius = radius + bounds.extents.magnitude; sqrRadius *= sqrRadius;
@@ -297,7 +298,8 @@ namespace PaintIn3D
 						bakedMeshSet = true;
 					}
 
-					var scaling       = P3dHelper.Reciprocal3(cachedTransform.lossyScale);
+					var lossyScale    = cachedTransform.lossyScale;
+					var scaling       = new Vector3(CwHelper.Reciprocal(lossyScale.x), CwHelper.Reciprocal(lossyScale.y), CwHelper.Reciprocal(lossyScale.z));
 					var oldLocalScale = cachedTransform.localScale;
 
 					cachedTransform.localScale = Vector3.one;
@@ -347,7 +349,7 @@ namespace PaintIn3D
 
 		protected virtual void OnDestroy()
 		{
-			P3dHelper.Destroy(bakedMesh);
+			CwHelper.Destroy(bakedMesh);
 
 			P3dSerialization.TryRegister(this, default(P3dHash));
 		}
@@ -362,7 +364,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dModel_Editor : P3dEditor
+	public class P3dModel_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
@@ -379,14 +381,14 @@ namespace PaintIn3D
 
 			if (Button("Analyze Mesh") == true)
 			{
-				if (tgt.Prepared == true)
-				{
-					P3dMeshAnalysis.OpenWith(tgt.PreparedMesh);
-				}
-				else
-				{
-					P3dMeshAnalysis.OpenWith(tgt.gameObject);
-				}
+				P3dMeshAnalysis.OpenWith(tgt.gameObject, tgt.PreparedMesh);
+			}
+
+			var mesh = P3dCommon.GetMesh(tgt.gameObject, tgt.PreparedMesh);
+
+			if (mesh != null && mesh.isReadable == false)
+			{
+				Error("You must set the Read/Write Enabled setting in this object's Mesh import settings.");
 			}
 		}
 	}

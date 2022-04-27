@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component implements the replace channels paint mode, which will replace all pixels in the specified textures and channel weights.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintReplaceChannels")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Paint Replace Channels")]
-	public class P3dPaintReplaceChannels : MonoBehaviour, IHit, IHitCoord
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintReplaceChannels")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Paint Replace Channels")]
+	public class P3dPaintReplaceChannels : MonoBehaviour, IHitCoord
 	{
 		/// <summary>Only the <b>P3dPaintableTexture</b> components with a matching group will be painted by this component.</summary>
 		public P3dGroup Group { set { group = value; } get { return group; } } [SerializeField] private P3dGroup group;
@@ -53,7 +54,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintReplaceChannels_Editor : P3dEditor
+	public class P3dPaintReplaceChannels_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -93,13 +94,13 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dGroupData_Editor : P3dEditor
+	public class P3dGroupData_Editor : CwEditor
 	{
 		class Entry
 		{
 			public string Path;
 
-			public List<P3dHelper.TexEnv> TexEnvs = new List<P3dHelper.TexEnv>();
+			public List<P3dCommon.TexEnv> TexEnvs = new List<P3dCommon.TexEnv>();
 		}
 
 		private string filter;
@@ -259,7 +260,7 @@ namespace PaintIn3D
 						var entry = new Entry();
 
 						entry.Path    = shaderInfo.name;
-						entry.TexEnvs.AddRange(P3dHelper.GetTexEnvs(Shader.Find(shaderInfo.name)));
+						entry.TexEnvs.AddRange(P3dCommon.GetTexEnvs(Shader.Find(shaderInfo.name)));
 
 						entries.Add(entry);
 					}

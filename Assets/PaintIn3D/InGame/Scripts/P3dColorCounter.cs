@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component will search the specified paintable texture for pixel colors matching an active and enabled P3dColor.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dColorCounter")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Color Counter")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dColorCounter")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Color Counter")]
 	public class P3dColorCounter : P3dPaintableTextureMonitorMask
 	{
 		public class Contribution
@@ -26,7 +27,7 @@ namespace PaintIn3D
 		public static LinkedList<P3dColorCounter> Instances = new LinkedList<P3dColorCounter>(); private LinkedListNode<P3dColorCounter> instancesNode;
 
 		/// <summary>The RGBA values must be within this range of a color for it to be counted.</summary>
-		public float Threshold { set { threshold = value; } get { return threshold; } } [Range(0.0f, 1.0f)] [SerializeField] private float threshold = 0.1f;
+		public float Threshold { set { if (threshold != value) { threshold = value; MarkCurrentReaderAsDirty(); } } get { return threshold; } } [Range(0.0f, 1.0f)] [SerializeField] private float threshold = 0.1f;
 
 		/// <summary>Each color contribution will be stored in this list.</summary>
 		public List<Contribution> Contributions { get { return contributions; } } [System.NonSerialized] private List<Contribution> contributions = new List<Contribution>();
@@ -46,7 +47,7 @@ namespace PaintIn3D
 		/// <summary>The <b>Ratio</b> of the specified counters.</summary>
 		public static float GetRatio(P3dColor color, ICollection<P3dColorCounter> counters = null)
 		{
-			return P3dHelper.Divide(GetCount(color, counters), GetTotal(counters));
+			return CwHelper.Divide(GetCount(color, counters), GetTotal(counters));
 		}
 
 		/// <summary>This tells you how many pixels of the specified color are in the current <b>PaintableTexture</b>.</summary>
@@ -218,7 +219,9 @@ namespace PaintIn3D
 
 			base.OnInspector();
 
-			Draw("threshold", "The RGBA values must be within this range of a color for it to be counted.");
+			var markAsDirty = false;
+
+			Draw("threshold", ref markAsDirty, "The RGBA values must be within this range of a color for it to be counted.");
 
 			Separator();
 
@@ -236,6 +239,11 @@ namespace PaintIn3D
 					EditorGUI.ProgressBar(rectR, contribution.Ratio, "Ratio");
 				}
 			EndDisabled();
+
+			if (markAsDirty == true)
+			{
+				Each(tgts, t => t.MarkCurrentReaderAsDirty(), true, true);
+			}
 		}
 	}
 }

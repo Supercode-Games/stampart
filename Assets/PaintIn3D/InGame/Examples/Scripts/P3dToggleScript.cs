@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to enable/disable the target component while the specified key is held down.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dToggleScript")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Toggle Script")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dToggleScript")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Toggle Script")]
 	public class P3dToggleScript : MonoBehaviour
 	{
 		/// <summary>The key that must be held for this component to activate.
@@ -21,7 +22,7 @@ namespace PaintIn3D
 		{
 			if (target != null)
 			{
-				if (P3dInputManager.IsPressed(key) == true)
+				if (CwInput.GetKeyIsHeld(key) == true)
 				{
 					if (storeStates == true && target.enabled == false)
 					{
@@ -47,7 +48,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dKeyControl_Editor : P3dEditor
+	public class P3dKeyControl_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

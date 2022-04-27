@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to duplicate a material before you paint on it. This is useful if the material is shared between multiple GameObjects (e.g. prefabs).</summary>
 	[RequireComponent(typeof(Renderer))]
 	[RequireComponent(typeof(P3dPaintable))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dMaterialCloner")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Material Cloner")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dMaterialCloner")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Material Cloner")]
 	public class P3dMaterialCloner : MonoBehaviour
 	{
 		/// <summary>The material index that will be cloned. This matches the Materials list in your MeshRenderer/SkinnedMeshRenderer, where 0 is the first material.</summary>
@@ -136,7 +137,7 @@ namespace PaintIn3D
 
 				ReplaceAll(current, original);
 
-				current = P3dHelper.Destroy(current);
+				current = CwHelper.Destroy(current);
 			}
 		}
 
@@ -192,7 +193,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dMaterialCloner_Editor : P3dEditor
+	public class P3dMaterialCloner_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
@@ -220,7 +221,7 @@ namespace PaintIn3D
 			{
 				BeginIndent();
 					BeginDisabled();
-						EditorGUILayout.ObjectField(new GUIContent("Material", "This is the current material at the specified material index."), P3dHelper.GetMaterial(tgt.CachedRenderer, tgt.Index), typeof(Material), false);
+						EditorGUILayout.ObjectField(new GUIContent("Material", "This is the current material at the specified material index."), P3dCommon.GetMaterial(tgt.CachedRenderer, tgt.Index), typeof(Material), false);
 					EndDisabled();
 				EndIndent();
 			}

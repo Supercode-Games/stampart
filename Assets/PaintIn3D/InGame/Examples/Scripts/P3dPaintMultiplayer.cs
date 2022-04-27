@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component listens for <b>point</b> and <b>line</b> painting events. It then simulates transmitting them over a network with a delay, and then painting the received data.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintMultiplayer")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Paint Multiplayer")]
-	public class P3dPaintMultiplayer : MonoBehaviour, IHit, IHitPoint, IHitLine
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintMultiplayer")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Paint Multiplayer")]
+	public class P3dPaintMultiplayer : MonoBehaviour, IHitPoint, IHitLine
 	{
 		/// <summary>This allows you to specify the simulated delay between painting across the network in seconds.</summary>
 		public float Delay { set { delay = value; } get { return delay; } } [SerializeField] private float delay = 0.5f;
@@ -32,7 +33,7 @@ namespace PaintIn3D
 			StartCoroutine(SimulateNetworkTransmission(preview, priority, pressure, seed, position, rotation));
 		}
 
-		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation)
+		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation, bool clip)
 		{
 			// NOTE: You should remove this code when you implement actual networking
 			{
@@ -51,7 +52,7 @@ namespace PaintIn3D
 			}
 
 			// Send the hit data over the fake network
-			StartCoroutine(SimulateNetworkTransmission(preview, priority, pressure, seed, position, endPosition, rotation));
+			StartCoroutine(SimulateNetworkTransmission(preview, priority, pressure, seed, position, endPosition, rotation, clip));
 		}
 
 		private IEnumerator SimulateNetworkTransmission(bool preview, int priority, float pressure, int seed, Vector3 position, Quaternion rotation)
@@ -71,7 +72,7 @@ namespace PaintIn3D
 			}
 		}
 
-		private IEnumerator SimulateNetworkTransmission(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation)
+		private IEnumerator SimulateNetworkTransmission(bool preview, int priority, float pressure, int seed, Vector3 position, Vector3 endPosition, Quaternion rotation, bool clip)
 		{
 			// Simulate network delay
 			yield return new WaitForSecondsRealtime(delay);
@@ -83,7 +84,7 @@ namespace PaintIn3D
 				if ((Object)hitLine != this)
 				{
 					// Submit the hit line
-					hitLine.HandleHitLine(preview, priority, pressure, seed, position, endPosition, rotation);
+					hitLine.HandleHitLine(preview, priority, pressure, seed, position, endPosition, rotation, clip);
 				}
 			}
 		}
@@ -98,7 +99,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintMultiplayer_Editor : P3dEditor
+	public class P3dPaintMultiplayer_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

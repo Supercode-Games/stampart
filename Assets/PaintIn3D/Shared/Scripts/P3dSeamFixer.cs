@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This tool allows you to convert a normal mesh with UV seams to a fixed mesh without UV seams.
-	/// This tool can be accessed from the context menu (gear icon at top right) of any mesh/model inspector.</summary>
+	/// This tool can be accessed from the context menu (⋮ button at top right) of any mesh/model inspector.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dSeamFixer")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dSeamFixer")]
 	public class P3dSeamFixer : ScriptableObject
 	{
 		[System.Serializable]
@@ -43,6 +44,7 @@ namespace PaintIn3D
 			public bool  Used;
 			public Point PointA;
 			public Point PointB;
+			public bool  Flip;
 
 			public bool Match(Point a, Point b)
 			{
@@ -175,7 +177,7 @@ namespace PaintIn3D
 				}
 			}
 #if UNITY_EDITOR
-			if (P3dHelper.IsAsset(this) == true)
+			if (CwHelper.IsAsset(this) == true)
 			{
 				var assets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(UnityEditor.AssetDatabase.GetAssetPath(this));
 
@@ -196,7 +198,7 @@ namespace PaintIn3D
 				{
 					foreach (var pair in meshes)
 					{
-						if (pair.Output != null && P3dHelper.IsAsset(pair.Output) == false)
+						if (pair.Output != null && CwHelper.IsAsset(pair.Output) == false)
 						{
 							UnityEditor.AssetDatabase.AddObjectToAsset(pair.Output, this);
 
@@ -206,9 +208,9 @@ namespace PaintIn3D
 				}
 			}
 
-			if (P3dHelper.IsAsset(this) == true)
+			if (CwHelper.IsAsset(this) == true)
 			{
-				P3dHelper.ReimportAsset(this);
+				CwHelper.ReimportAsset(this);
 			}
 
 			UnityEditor.EditorUtility.SetDirty(this);
@@ -259,6 +261,11 @@ namespace PaintIn3D
 
 					submeshes.Add(indices);
 
+					foreach (var pair in points)
+					{
+						pair.Value.Edges.Clear();
+					}
+
 					if (coords.Length > 0)
 					{
 						for (var j = 0; j < indices.Count; j += 3)
@@ -270,6 +277,7 @@ namespace PaintIn3D
 							AddTriangle(edges, pointA, pointB, pointC);
 						}
 					}
+
 #if UNITY_EDITOR
 					if (P3dSeamFixer_Editor.DebugScale > 0.0f)
 					{
@@ -348,13 +356,26 @@ namespace PaintIn3D
 									var coordC = pointA.Outer.NewCoord;
 									var coordD = pointB.Outer.NewCoord;
 
-									indices.Add(indexA);
-									indices.Add(indexB);
-									indices.Add(indexC);
+									if (edge.Flip == true)
+									{
+										indices.Add(indexA);
+										indices.Add(indexC);
+										indices.Add(indexB);
 
-									indices.Add(indexD);
-									indices.Add(indexC);
-									indices.Add(indexB);
+										indices.Add(indexD);
+										indices.Add(indexB);
+										indices.Add(indexC);
+									}
+									else
+									{
+										indices.Add(indexA);
+										indices.Add(indexB);
+										indices.Add(indexC);
+
+										indices.Add(indexD);
+										indices.Add(indexC);
+										indices.Add(indexB);
+									}
 #if UNITY_EDITOR
 									if (P3dSeamFixer_Editor.DebugScale > 0.0f)
 									{
@@ -586,23 +607,23 @@ namespace PaintIn3D
 				// Clockwise?
 				if (((pointB.Coord.x - pointA.Coord.x) * (pointC.Coord.y - pointA.Coord.y) - (pointC.Coord.x - pointA.Coord.x) * (pointB.Coord.y - pointA.Coord.y)) >= 0.0f)
 				{
-					AddTriangle2(edges, pointA, pointB, pointC);
+					AddTriangle2(edges, pointA, pointB, pointC, true);
 				}
 				else
 				{
-					AddTriangle2(edges, pointC, pointB, pointA);
+					AddTriangle2(edges, pointC, pointB, pointA, false);
 				}
 			}
 		}
 
-		private static void AddTriangle2(List<Edge> edges, Point pointA, Point pointB, Point pointC)
+		private static void AddTriangle2(List<Edge> edges, Point pointA, Point pointB, Point pointC, bool flip)
 		{
-			RemoveOrAddEdge(edges, pointA, pointB);
-			RemoveOrAddEdge(edges, pointB, pointC);
-			RemoveOrAddEdge(edges, pointC, pointA);
+			RemoveOrAddEdge(edges, pointA, pointB, flip);
+			RemoveOrAddEdge(edges, pointB, pointC, flip);
+			RemoveOrAddEdge(edges, pointC, pointA, flip);
 		}
 
-		private static void RemoveOrAddEdge(List<Edge> edges, Point pointA, Point pointB)
+		private static void RemoveOrAddEdge(List<Edge> edges, Point pointA, Point pointB, bool flip)
 		{
 			for (var i = 0; i < pointA.Edges.Count; i++)
 			{
@@ -628,6 +649,7 @@ namespace PaintIn3D
 
 			newEdge.PointA = pointA;
 			newEdge.PointB = pointB;
+			newEdge.Flip   = flip;
 
 			pointA.Edges.Add(newEdge);
 			pointB.Edges.Add(newEdge);
@@ -644,7 +666,7 @@ namespace PaintIn3D
 	using TARGET = P3dSeamFixer;
 
 	[CustomEditor(typeof(TARGET))]
-	public class P3dSeamFixer_Editor : P3dEditor
+	public class P3dSeamFixer_Editor : CwEditor
 	{
 		/// <summary>If this is above 0 then Debug.Lines will be output during generation.</summary>
 		public static float DebugScale;

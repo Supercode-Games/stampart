@@ -34,9 +34,12 @@ namespace PaintIn3D
 		/// <summary>The channel of the LocalMaskTexture that will be used.</summary>
 		public Vector4 LocalMaskChannel;
 
+		private static int _LocalMaskTexture = Shader.PropertyToID("_LocalMaskTexture");
+		private static int _LocalMaskChannel = Shader.PropertyToID("_LocalMaskChannel");
+
 		public static void BuildMaterial(ref Material material, ref int materialHash, string path, string keyword = null)
 		{
-			material     = P3dShader.BuildMaterial(path, keyword);
+			material     = P3dCommon.BuildMaterial(path, keyword);
 			materialHash = P3dSerialization.TryRegister(material);
 		}
 
@@ -70,8 +73,8 @@ namespace PaintIn3D
 
 		public virtual void Apply(Material material)
 		{
-			material.SetTexture(P3dShader._LocalMaskTexture, LocalMaskTexture);
-			material.SetVector(P3dShader._LocalMaskChannel, LocalMaskChannel);
+			material.SetTexture(_LocalMaskTexture, LocalMaskTexture);
+			material.SetVector(_LocalMaskChannel, LocalMaskChannel);
 		}
 
 		public abstract void Pool();
@@ -83,7 +86,7 @@ namespace PaintIn3D
 			var copy   = SpawnCopy();
 			var matrix = transform.worldToLocalMatrix;
 
-			copy.Transform(matrix, matrix);
+			copy.Transform(matrix, Matrix4x4.Rotate(matrix.rotation));
 
 			return copy;
 		}
@@ -93,7 +96,7 @@ namespace PaintIn3D
 			var copy   = SpawnCopy();
 			var matrix = transform.localToWorldMatrix;
 
-			copy.Transform(matrix, matrix);
+			copy.Transform(matrix, Matrix4x4.Rotate(matrix.rotation));
 
 			return copy;
 		}
@@ -102,10 +105,10 @@ namespace PaintIn3D
 			where T : P3dCommand, new()
 		{
 			var command = pool.Count > 0 ? pool.Pop() : new T();
-
+			
+			command.Index            = Index;
 			command.Preview          = Preview;
 			command.Priority         = Priority;
-			command.Index            = Index;
 			command.Material         = Material;
 			command.Pass             = Pass;
 			command.Model            = Model;
@@ -119,7 +122,7 @@ namespace PaintIn3D
 		public virtual void Apply(P3dPaintableTexture paintableTexture)
 		{
 			LocalMaskTexture = paintableTexture.LocalMaskTexture;
-			LocalMaskChannel = P3dHelper.IndexToVector((int)paintableTexture.LocalMaskChannel);
+			LocalMaskChannel = P3dCommon.IndexToVector((int)paintableTexture.LocalMaskChannel);
 		}
 	}
 }

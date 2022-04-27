@@ -31,9 +31,15 @@ public class DrillerManager2 : MonoBehaviour
 
     public AudioSource myAudioSource;
 
+    public bool isPencil;
+
+    public float pencilY;
+    public float drillerY;
+
     // Start is called before the first frame update
     void Start()
     {
+
     }
 
     public void loadPath()
@@ -52,6 +58,8 @@ public class DrillerManager2 : MonoBehaviour
            refs.Add(k.GetComponent<Ref>());
             dist += .1f;
         }
+        isPencil = false;
+        transform.position = refs[0].transform.position;
 
     }
 
@@ -76,7 +84,7 @@ public class DrillerManager2 : MonoBehaviour
         }
 
         var closestPoint = pathCreator.path.GetClosestPointOnPath(transform.position);
-        if (Vector2.Distance(new Vector2(closestPoint.x, closestPoint.z), new Vector2(transform.position.x, transform.position.z)) < .7f)
+        if (Vector2.Distance(new Vector2(closestPoint.x, closestPoint.z), new Vector2(transform.position.x, transform.position.z)) < 6f)
         {
             var p = follower.transform.position;
             p.x = closestPoint.x;
@@ -92,7 +100,7 @@ public class DrillerManager2 : MonoBehaviour
             pencil.transform.position = h;
 
             smoke.gameObject.transform.position = new Vector3(h.x, -0.29f, h.z);
-            if(!smoke.isPlaying)
+            if(!smoke.isPlaying && !isPencil)
             {
                 smoke.Play();
                 myAudioSource.Play();
@@ -108,7 +116,7 @@ public class DrillerManager2 : MonoBehaviour
             laserIndic.material = laserIndicMat;
 
             follower.transform.position = Vector3.Lerp(follower.transform.position, p, Time.deltaTime * 20f);
-            if (smoke.isPlaying)
+            if (smoke.isPlaying && !isPencil)
             {
                 smoke.Stop();
                 myAudioSource.Stop();

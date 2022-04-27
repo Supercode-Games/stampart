@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component will total up all RGBA channels in the specified P3dPaintableTexture that exceed the threshold value.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounter")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Channel Counter")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dChannelCounter")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Channel Counter")]
 	public class P3dChannelCounter : P3dPaintableTextureMonitorMask
 	{
 		/// <summary>This stores all active and enabled instances.</summary>
 		public static LinkedList<P3dChannelCounter> Instances = new LinkedList<P3dChannelCounter>(); private LinkedListNode<P3dChannelCounter> instancesNode;
 
 		/// <summary>The RGBA value must be higher than this for it to be counted.</summary>
-		public float Threshold { set { threshold = value; } get { return threshold; } } [Range(0.0f, 1.0f)] [SerializeField] private float threshold = 0.5f;
+		public float Threshold { set { if (threshold != value) { threshold = value; MarkCurrentReaderAsDirty(); } } get { return threshold; } } [Range(0.0f, 1.0f)] [SerializeField] private float threshold = 0.5f;
 
 		/// <summary>The previously counted amount of pixels with a red channel value above the threshold.</summary>
 		public int CountR { get { return countR; } } [SerializeField] private int countR;
@@ -94,25 +95,25 @@ namespace PaintIn3D
 		/// <summary>The <b>CountR / Total</b> of the specified counters.</summary>
 		public static float GetRatioR(ICollection<P3dChannelCounter> counters = null)
 		{
-			return P3dHelper.Divide(GetCountR(counters), GetTotal(counters));
+			return CwHelper.Divide(GetCountR(counters), GetTotal(counters));
 		}
 
 		/// <summary>The <b>CountG / Total</b> of the specified counters.</summary>
 		public static float GetRatioG(ICollection<P3dChannelCounter> counters = null)
 		{
-			return P3dHelper.Divide(GetCountG(counters), GetTotal(counters));
+			return CwHelper.Divide(GetCountG(counters), GetTotal(counters));
 		}
 
 		/// <summary>The <b>CountB / Total</b> of the specified counters.</summary>
 		public static float GetRatioB(ICollection<P3dChannelCounter> counters = null)
 		{
-			return P3dHelper.Divide(GetCountB(counters), GetTotal(counters));
+			return CwHelper.Divide(GetCountB(counters), GetTotal(counters));
 		}
 
 		/// <summary>The <b>CountA / Total</b> of the specified counters.</summary>
 		public static float GetRatioA(ICollection<P3dChannelCounter> counters = null)
 		{
-			return P3dHelper.Divide(GetCountA(counters), GetTotal(counters));
+			return CwHelper.Divide(GetCountA(counters), GetTotal(counters));
 		}
 
 		/// <summary>The <b>GetCountR/G/B/A / GetTotal</b> of the specified counters stored in a Vector4.</summary>
@@ -217,7 +218,9 @@ namespace PaintIn3D
 
 			base.OnInspector();
 
-			Draw("threshold", "The RGBA value must be higher than this for it to be counted.");
+			var markAsDirty = false;
+
+			Draw("threshold", ref markAsDirty, "The RGBA value must be higher than this for it to be counted.");
 
 			Separator();
 
@@ -229,6 +232,11 @@ namespace PaintIn3D
 				DrawChannel("countB", "Ratio B", tgt.RatioB);
 				DrawChannel("countA", "Ratio A", tgt.RatioA);
 			EndDisabled();
+
+			if (markAsDirty == true)
+			{
+				Each(tgts, t => t.MarkCurrentReaderAsDirty(), true, true);
+			}
 		}
 
 		private void DrawChannel(string countTitle, string ratioTitle, float ratio)

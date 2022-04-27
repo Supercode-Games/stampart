@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -39,7 +40,7 @@ namespace PaintIn3D
 										}
 										else
 										{
-											P3dHelper.SelectAndPing(item.GetObject());
+											CwHelper.SelectAndPing(item.GetObject());
 										}
 									}
 								}

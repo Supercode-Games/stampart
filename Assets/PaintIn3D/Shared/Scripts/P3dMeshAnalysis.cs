@@ -2,11 +2,12 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
-	/// <summary>This window allows you to examine the UV data of a mesh. This can be accessed from the context menu (gear icon at top right) of any mesh in the inspector.</summary>
-	public class P3dMeshAnalysis : P3dEditorWindow
+	/// <summary>This window allows you to examine the UV data of a mesh. This can be accessed from the context menu (⋮ button at top right) of any mesh in the inspector.</summary>
+	public class P3dMeshAnalysis : CwEditorWindow
 	{
 		private Mesh mesh;
 
@@ -58,6 +59,8 @@ namespace PaintIn3D
 
 		private List<float> ratioList = new List<float>();
 
+		private static int _Coord = Shader.PropertyToID("_Coord");
+
 #if UNITY_EDITOR
 		[MenuItem("CONTEXT/Mesh/Analyze Mesh (Paint in 3D)")]
 		public static void Create(MenuCommand menuCommand)
@@ -71,23 +74,9 @@ namespace PaintIn3D
 		}
 #endif
 
-		public static void OpenWith(GameObject gameObject)
+		public static void OpenWith(GameObject gameObject, Mesh mesh = null)
 		{
-			var meshFilter = gameObject.GetComponent<MeshFilter>();
-
-			if (meshFilter != null)
-			{
-				OpenWith(meshFilter.sharedMesh);
-			}
-			else
-			{
-				var skinnedMeshRenderer = gameObject.GetComponent<SkinnedMeshRenderer>();
-
-				if (skinnedMeshRenderer != null)
-				{
-					OpenWith(skinnedMeshRenderer.sharedMesh);
-				}
-			}
+			OpenWith(P3dCommon.GetMesh(gameObject, mesh));
 		}
 
 		public static void OpenWith(Mesh mesh)
@@ -105,20 +94,20 @@ namespace PaintIn3D
 
 		protected virtual void OnDestroy()
 		{
-			P3dHelper.Destroy(overlapTex);
+			CwHelper.Destroy(overlapTex);
 		}
 
 		private void BakeOverlap()
 		{
 			var desc          = new RenderTextureDescriptor(1024, 1024, RenderTextureFormat.ARGB32, 0);
-			var renderTexture = P3dHelper.GetRenderTexture(desc);
+			var renderTexture = P3dCommon.GetRenderTexture(desc);
 
 			if (overlapMaterial == null)
 			{
-				overlapMaterial = P3dShader.BuildMaterial("Hidden/Paint in 3D/Overlap");
+				overlapMaterial = P3dCommon.BuildMaterial("Hidden/Paint in 3D/Overlap");
 			}
 
-			overlapMaterial.SetVector(P3dShader._Coord, P3dHelper.IndexToVector(coord));
+			overlapMaterial.SetVector(_Coord, P3dCommon.IndexToVector(coord));
 
 			var oldActive = RenderTexture.active;
 
@@ -142,9 +131,9 @@ namespace PaintIn3D
 
 			RenderTexture.active = oldActive;
 
-			overlapTex = P3dHelper.GetReadableCopy(renderTexture);
+			overlapTex = P3dCommon.GetReadableCopy(renderTexture);
 
-			P3dHelper.ReleaseRenderTexture(renderTexture);
+			P3dCommon.ReleaseRenderTexture(renderTexture);
 
 			var utilizationCount = 0;
 			var overlapCount     = 0;
@@ -153,7 +142,7 @@ namespace PaintIn3D
 			{
 				for (var x = 0; x < overlapTex.width; x++)
 				{
-					var pixel = P3dHelper.FromGamma(overlapTex.GetPixel(x, y));
+					var pixel = CwHelper.ToLinear(overlapTex.GetPixel(x, y));
 
 					if (pixel.r > 0.0f)
 					{
@@ -240,25 +229,25 @@ namespace PaintIn3D
 				EditorGUI.BeginDisabledGroup(true);
 					EditorGUILayout.BeginHorizontal();
 						EditorGUILayout.IntField("Total", triangleCount);
-						P3dEditor.BeginError(invalidCount > 0);
+						CwEditor.BeginError(invalidCount > 0);
 							EditorGUILayout.IntField("With No UV", invalidCount);
-						P3dEditor.EndError();
+						CwEditor.EndError();
 					EditorGUILayout.EndHorizontal();
 					EditorGUILayout.BeginHorizontal();
-						P3dEditor.BeginError(outsideCount > 0);
+						CwEditor.BeginError(outsideCount > 0);
 							EditorGUILayout.IntField("Out Of Bounds", outsideCount);
-						P3dEditor.EndError();
-						P3dEditor.BeginError(partiallyCount > 0);
+						CwEditor.EndError();
+						CwEditor.BeginError(partiallyCount > 0);
 							EditorGUILayout.IntField("Partially Out Of Bounds", partiallyCount);
-						P3dEditor.EndError();
+						CwEditor.EndError();
 					EditorGUILayout.EndHorizontal();
 					EditorGUILayout.BeginHorizontal();
-						P3dEditor.BeginError(utilizationPercent < 40.0f);
+						CwEditor.BeginError(utilizationPercent < 40.0f);
 							EditorGUILayout.FloatField("Utilization %", utilizationPercent);
-						P3dEditor.EndError();
-						P3dEditor.BeginError(overlapPercent > 0);
+						CwEditor.EndError();
+						CwEditor.BeginError(overlapPercent > 0);
 							EditorGUILayout.FloatField("Overlap %", overlapPercent);
-						P3dEditor.EndError();
+						CwEditor.EndError();
 					EditorGUILayout.EndHorizontal();
 				EditorGUI.EndDisabledGroup();
 
@@ -280,7 +269,7 @@ namespace PaintIn3D
 					invalidCount       = 0;
 					outsideCount       = 0;
 					partiallyCount     = 0;
-					overlapTex         = P3dHelper.Destroy(overlapTex);
+					overlapTex         = CwHelper.Destroy(overlapTex);
 					utilizationPercent = 0.0f;
 					overlapPercent     = 0.0f;
 
@@ -293,7 +282,7 @@ namespace PaintIn3D
 
 						var rot  = Quaternion.Euler(pitch, yaw, 0.0f);
 						var off  = -mesh.bounds.center;
-						var mul  = P3dHelper.Reciprocal(mesh.bounds.size.magnitude);
+						var mul  = CwHelper.Reciprocal(mesh.bounds.size.magnitude);
 						var half = Vector3.one * 0.5f;
 
 						for (var i = 0; i < indices.Count; i += 3)

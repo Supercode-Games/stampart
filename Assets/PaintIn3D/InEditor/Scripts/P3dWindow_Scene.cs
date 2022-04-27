@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -218,7 +219,7 @@ namespace PaintIn3D
 				}
 			EditorGUILayout.EndHorizontal();
 
-			P3dEditor.BeginLabelWidth(100);
+			CwEditor.BeginLabelWidth(100);
 				EditorGUI.indentLevel++;
 					EditorGUILayout.BeginHorizontal();
 						var outputTexture    = paintableTexture.OutputTexture;
@@ -256,7 +257,7 @@ namespace PaintIn3D
 						EditorGUILayout.HelpBox("This texture hasn't been exported yet, so you cannot Export All.", MessageType.Warning);
 					}
 				EditorGUI.indentLevel--;
-			P3dEditor.EndLabelWidth();
+			CwEditor.EndLabelWidth();
 		}
 
 		private bool CanLoadAll(P3dPaintableTexture[] paintableTextures)
@@ -310,7 +311,7 @@ namespace PaintIn3D
 					}
 				EditorGUI.EndDisabledGroup();
 				EditorGUI.BeginDisabledGroup(CanReExportAll(paintableTextures) == false);
-					P3dEditor.BeginColor(Color.green);
+					CwEditor.BeginColor(Color.green);
 						if (GUILayout.Button("Re-Export All", EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)) == true)
 						{
 							if (EditorUtility.DisplayDialog("Are you sure?", "This will re-export all paintable textures in your scene.", "OK") == true)
@@ -326,7 +327,7 @@ namespace PaintIn3D
 								AssetDatabase.Refresh();
 							}
 						}
-					P3dEditor.EndColor();
+					CwEditor.EndColor();
 				EditorGUI.EndDisabledGroup();
 			EditorGUILayout.EndHorizontal();
 		}

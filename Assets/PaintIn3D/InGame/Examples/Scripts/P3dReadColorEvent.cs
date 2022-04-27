@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to perform an event when the attached <b>P3dReadColor</b> component reads a specific color.</summary>
 	[RequireComponent(typeof(P3dReadColor))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dReadColorEvent")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Read Color Event")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dReadColorEvent")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Read Color Event")]
 	public class P3dReadColorEvent : MonoBehaviour
 	{
 		[System.Serializable] public class ColorEvent : UnityEvent<Color> {}
@@ -67,7 +68,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dReadColorEvent_Editor : P3dEditor
+	public class P3dReadColorEvent_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
@@ -76,7 +77,7 @@ namespace PaintIn3D
 			Draw("color", "This color we want to detect.");
 			Draw("threshold", "The RGBA values must be within this range of a color for it to be counted.");
 
-			EditorGUILayout.Separator();
+			Separator();
 
 			Draw("onColor");
 		}

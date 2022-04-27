@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component adds basic Pitch/Yaw controls to the current GameObject (e.g. camera) using mouse or touch controls.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dDragPitchYaw")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Drag Pitch Yaw")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dDragPitchYaw")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Drag Pitch Yaw")]
 	public class P3dDragPitchYaw : MonoBehaviour
 	{
 		/// <summary>Rotation will be active if all of these tools are deactivated.</summary>
@@ -47,34 +48,34 @@ namespace PaintIn3D
 		private float currentYaw;
 
 		[System.NonSerialized]
-		private List<P3dInputManager.Finger> fingers = new List<P3dInputManager.Finger>();
+		private List<CwInputManager.Finger> fingers = new List<CwInputManager.Finger>();
 
 		protected virtual void OnEnable()
 		{
-			P3dInputManager.EnsureThisComponentExists();
+			CwInputManager.EnsureThisComponentExists();
 
-			P3dInputManager.OnFingerDown += HandleFingerDown;
-			P3dInputManager.OnFingerUp   += HandleFingerUp;
+			CwInputManager.OnFingerDown += HandleFingerDown;
+			CwInputManager.OnFingerUp   += HandleFingerUp;
 		}
 
 		protected virtual void OnDisable()
 		{
-			P3dInputManager.OnFingerDown -= HandleFingerDown;
-			P3dInputManager.OnFingerUp   -= HandleFingerUp;
+			CwInputManager.OnFingerDown -= HandleFingerDown;
+			CwInputManager.OnFingerUp   -= HandleFingerUp;
 		}
 
-		private void HandleFingerDown(P3dInputManager.Finger finger)
+		private void HandleFingerDown(CwInputManager.Finger finger)
 		{
-			if (finger.Index == P3dInputManager.HOVER_FINGER_INDEX) return;
+			if (finger.Index == CwInputManager.HOVER_FINGER_INDEX) return;
 
-			if (P3dInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == true) return;
+			if (CwInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == true) return;
 
-			if (key != KeyCode.None && P3dInputManager.IsDown(key) == false) return;
+			if (key != KeyCode.None && CwInput.GetKeyIsHeld(key) == false) return;
 
 			fingers.Add(finger);
 		}
 
-		private void HandleFingerUp(P3dInputManager.Finger finger)
+		private void HandleFingerUp(CwInputManager.Finger finger)
 		{
 			fingers.Remove(finger);
 		}
@@ -84,7 +85,7 @@ namespace PaintIn3D
 			// Calculate delta
 			if (CanRotate == true && Application.isPlaying == true)
 			{
-				var delta = P3dInputManager.GetAverageDeltaScaled(fingers);
+				var delta = CwInputManager.GetAverageDeltaScaled(fingers);
 
 				pitch -= delta.y * pitchSensitivity;
 				yaw   += delta.x *   yawSensitivity;
@@ -93,7 +94,7 @@ namespace PaintIn3D
 			pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
 
 			// Smoothly dampen values
-			var factor = P3dHelper.DampenFactor(dampening, Time.deltaTime);
+			var factor = CwHelper.DampenFactor(dampening, Time.deltaTime);
 
 			currentPitch = Mathf.Lerp(currentPitch, pitch, factor);
 			currentYaw   = Mathf.Lerp(currentYaw  , yaw  , factor);
@@ -106,7 +107,7 @@ namespace PaintIn3D
 		{
 			get
 			{
-				if (P3dInputManager.IsPressed(key) == true)
+				if (CwInput.GetKeyIsHeld(key) == true)
 				{
 					return true;
 				}
@@ -138,7 +139,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dDragPitchYaw_Editor : P3dEditor
+	public class P3dDragPitchYaw_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

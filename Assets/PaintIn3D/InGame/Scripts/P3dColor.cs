@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to define a color that can later be counted from the <b>P3dColorCounter</b> component.
 	/// NOTE: You should put this component its own GameObject, so you can give it a unique name.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dColor")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Color")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dColor")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Color")]
 	public class P3dColor : MonoBehaviour
 	{
 		[SerializeField]
@@ -54,7 +55,7 @@ namespace PaintIn3D
 					{
 						var contribution = contributions[i];
 
-						if (contribution.Counter != null && contribution.Counter.isActiveAndEnabled == true)
+						if (CwHelper.Enabled(contribution.Counter) == true)
 						{
 							solid += contribution.Solid;
 						}
@@ -88,11 +89,21 @@ namespace PaintIn3D
 		protected virtual void OnEnable()
 		{
 			instancesNode = instances.AddLast(this);
+
+			foreach (var colorCounter in P3dColorCounter.Instances)
+			{
+				colorCounter.MarkCurrentReaderAsDirty();
+			}
 		}
 
 		protected virtual void OnDisable()
 		{
 			instances.Remove(instancesNode); instancesNode = null;
+
+			foreach (var colorCounter in P3dColorCounter.Instances)
+			{
+				colorCounter.MarkCurrentReaderAsDirty();
+			}
 		}
 
 		public void Contribute(P3dColorCounter counter, int solid)
@@ -145,7 +156,7 @@ namespace PaintIn3D
 	using TARGET = P3dColor;
 
 	[CustomEditor(typeof(TARGET))]
-	public class P3dColor_Editor : P3dEditor
+	public class P3dColor_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

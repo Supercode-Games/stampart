@@ -21,9 +21,9 @@ namespace PaintIn3D
 		{
 			Clear();
 
-			Texture = P3dHelper.GetRenderTexture(current.descriptor, current);
+			Texture = P3dCommon.GetRenderTexture(current.descriptor, current);
 
-			P3dHelper.Blit(Texture, current);
+			P3dCommon.Blit(Texture, current);
 		}
 
 		public void Write(List<P3dCommand> commands)
@@ -33,11 +33,22 @@ namespace PaintIn3D
 			Commands.AddRange(commands);
 		}
 
+		public void Write(RenderTexture current, List<P3dCommand> commands)
+		{
+			Clear();
+
+			Texture = P3dCommon.GetRenderTexture(current.descriptor, current);
+
+			P3dCommon.Blit(Texture, current);
+
+			Commands.AddRange(commands);
+		}
+
 		private void Clear()
 		{
 			if (Texture != null)
 			{
-				P3dHelper.ReleaseRenderTexture(Texture);
+				P3dCommon.ReleaseRenderTexture(Texture);
 
 				Texture = null;
 			}

@@ -3,7 +3,7 @@
 namespace PaintIn3D
 {
 	/// <summary>This component shows you how to paint from code.</summary>
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Paint From Code")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Paint From Code")]
 	public class P3dPaintFromCode : MonoBehaviour
 	{
 		// The decal settings we want to use (this can be a prefab).

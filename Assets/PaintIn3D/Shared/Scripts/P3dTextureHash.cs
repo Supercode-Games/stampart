@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to manually associate a <b>Texture</b> with a hash code so it can be de/serialized.</summary>
 	[DefaultExecutionOrder(-200)]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dTextureHash")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Texture Hash")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dTextureHash")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Texture Hash")]
 	public class P3dTextureHash : MonoBehaviour
 	{
 		/// <summary>The texture that will be hashed.</summary>
@@ -34,7 +35,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dTextureHash_Editor : P3dEditor
+	public class P3dTextureHash_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This allows you to spawn a prefab at a hit point. Hit points will automatically be sent by any <b>P3dHit___</b> component on this GameObject, or its ancestors.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dSpawner")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Spawner")]
-	public class P3dSpawner : MonoBehaviour, IHit, IHitPoint
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dSpawner")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Spawner")]
+	public class P3dSpawner : MonoBehaviour, IHitPoint
 	{
 		/// <summary>A random prefab from this list will be spawned.</summary>
 		public List<GameObject> Prefabs { get { if (prefabs == null) prefabs = new List<GameObject>(); return prefabs; } } [SerializeField] private List<GameObject> prefabs;
@@ -19,7 +19,7 @@ namespace PaintIn3D
 		public Vector3 Velocity { set { velocity = value; } get { return velocity; } } [SerializeField] private Vector3 velocity;
 
 		/// <summary>The spawned prefab will be offset from the hit point based on the hit normal by this value in world space.</summary>
-		public float OffsetNormal { set { offsetNormal = value; } get { return offsetNormal; } } [FSA("offset")] [SerializeField] private float offsetNormal;
+		public float OffsetNormal { set { offsetNormal = value; } get { return offsetNormal; } } [SerializeField] private float offsetNormal;
 
 		/// <summary>The spawned prefab will be offset from the hit point based on this value in world space.</summary>
 		public Vector3 OffsetWorld { set { offsetWorld = value; } get { return offsetWorld; } } [SerializeField] private Vector3 offsetWorld;
@@ -88,7 +88,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dSpawner_Editor : P3dEditor
+	public class P3dSpawner_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

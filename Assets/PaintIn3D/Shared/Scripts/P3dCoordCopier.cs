@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This tool allows you to copy UV1 data into UV0. This is useful if you let Unity automatically generate lightmap UV data for you and you want to use them to paint normally.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dCoordCopier")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dCoordCopier")]
 	public class P3dCoordCopier : ScriptableObject
 	{
 		public enum Coord
@@ -147,7 +148,7 @@ namespace PaintIn3D
 				}
 
 #if UNITY_EDITOR
-				if (P3dHelper.IsAsset(this) == true)
+				if (CwHelper.IsAsset(this) == true)
 				{
 					var assets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(UnityEditor.AssetDatabase.GetAssetPath(this));
 
@@ -161,7 +162,7 @@ namespace PaintIn3D
 						}
 					}
 
-					if (P3dHelper.IsAsset(mesh) == false)
+					if (CwHelper.IsAsset(mesh) == false)
 					{
 						UnityEditor.AssetDatabase.AddObjectToAsset(mesh, this);
 
@@ -172,16 +173,16 @@ namespace PaintIn3D
 			}
 
 #if UNITY_EDITOR
-			if (P3dHelper.IsAsset(this) == true)
+			if (CwHelper.IsAsset(this) == true)
 			{
-				P3dHelper.ReimportAsset(this);
+				CwHelper.ReimportAsset(this);
 			}
 #endif
 		}
 
 		protected virtual void OnDestroy()
 		{
-			P3dHelper.Destroy(mesh);
+			CwHelper.Destroy(mesh);
 		}
 	}
 }
@@ -193,7 +194,7 @@ namespace PaintIn3D
 	using TARGET = P3dCoordCopier;
 
 	[CustomEditor(typeof(TARGET))]
-	public class P3dCoordCopier_Editor : P3dEditor
+	public class P3dCoordCopier_Editor : CwEditor
 	{
 		[MenuItem("CONTEXT/Mesh/Coord Copier (Paint in 3D)")]
 		public static void Create(MenuCommand menuCommand)

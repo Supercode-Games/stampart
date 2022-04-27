@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -13,25 +14,13 @@ namespace PaintIn3D
 		/// <summary>Should this modifier use a unique seed?</summary>
 		public bool Unique { set { unique = value; } get { return unique; } } [SerializeField] private bool unique = true;
 
-		// Used to build the GetObjects return value.
-		protected static List<Object> tempObjects = new List<Object>();
-
-		public virtual void SetObjects(Object[] objects)
-		{
-		}
-
-		public virtual List<Object> GetObjects()
-		{
-			return null;
-		}
-
 		public void ModifyAngle(ref float angle, float pressure)
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyAngle(ref angle, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -47,9 +36,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyColor(ref color, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -65,9 +54,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyHardness(ref hardness, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -83,9 +72,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyOpacity(ref opacity, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -101,9 +90,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyRadius(ref radius, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -119,9 +108,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyScale(ref scale, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -137,9 +126,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyTexture(ref texture, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{
@@ -155,9 +144,9 @@ namespace PaintIn3D
 		{
 			if (unique == true)
 			{
-				P3dHelper.BeginUniqueSeed();
+				CwHelper.BeginSeed();
 					OnModifyPosition(ref position, pressure);
-				P3dHelper.EndSeed();
+				CwHelper.EndSeed();
 			}
 			else
 			{

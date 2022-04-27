@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.45141143, g: 0.5005515, b: 0.57044375, a: 1}
+  m_IndirectSpecularColor: {r: 0.18230188, g: 0.22486997, b: 0.28911617, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -335,7 +335,8 @@ MonoBehaviour:
   paintable: {fileID: 0}
   includeScale: 1
   useMesh: 0
-  hash: 0
+  hash:
+    v: 0
   activation: 0
   baseScale: {x: 0, y: 0, z: 0}
   otherRenderers: []
@@ -445,6 +446,8 @@ MonoBehaviour:
   localMaskTexture: {fileID: 0}
   localMaskChannel: 0
   shaderKeyword: 
+  hash:
+    v: 0
   isDummy: 0
   output: 
   activated: 0
@@ -536,6 +539,7 @@ MonoBehaviour:
     m_Bits: 4294967291
   orientation: 0
   _camera: {fileID: 0}
+  customTransform: {fileID: 0}
   normal: 0
   offset: 0
   preview: 0
@@ -584,7 +588,10 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
+    modifiers: []
     modifierDatas: []
+  references:
+    version: 1
 --- !u!1 &562063548
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,6 +897,7 @@ MonoBehaviour:
     m_Bits: 4294967291
   orientation: 0
   _camera: {fileID: 0}
+  customTransform: {fileID: 0}
   normal: 0
   offset: 0
   preview: 0
@@ -954,7 +962,10 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
+    modifiers: []
     modifierDatas: []
+  references:
+    version: 1
 --- !u!1 &871898963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1241,6 +1252,7 @@ MonoBehaviour:
     m_Bits: 4294967291
   orientation: 0
   _camera: {fileID: 0}
+  customTransform: {fileID: 0}
   normal: 0
   offset: 0
   preview: 0
@@ -1305,7 +1317,10 @@ MonoBehaviour:
   tileOpacity: 1
   tileTransition: 4
   modifiers:
+    modifiers: []
     modifierDatas: []
+  references:
+    version: 1
 --- !u!1 &1111357508
 GameObject:
   m_ObjectHideFlags: 0
@@ -1675,12 +1690,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
-      propertyPath: m_SizeDelta.x
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
-      propertyPath: m_SizeDelta.y
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224200602946344026, guid: f43c82fa79085354ba883fd6d09728bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224552809178886476, guid: f43c82fa79085354ba883fd6d09728bc,
@@ -1841,21 +1861,6 @@ PrefabInstance:
     - target: {fileID: 7501290077127860424, guid: f43c82fa79085354ba883fd6d09728bc,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9223282086298496735, guid: f43c82fa79085354ba883fd6d09728bc,
-        type: 3}
-      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

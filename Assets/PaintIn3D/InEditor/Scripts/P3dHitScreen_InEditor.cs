@@ -1,17 +1,19 @@
 ﻿using UnityEngine;
 using System.Reflection;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component modifies <b>P3dHitScreen</b> to work in the editor <b>SceneView</b> without colliders.</summary>
-    public class P3dHitScreen_InEditor : P3dHitScreen
-    {
+	[AddComponentMenu("")]
+	public class P3dHitScreen_InEditor : P3dHitScreen
+	{
 #if UNITY_EDITOR
 		private static MethodInfo method_IntersectRayMesh;
 
-		private P3dInputManager.Finger virtualHover = new P3dInputManager.Finger();
+		private CwInputManager.Finger virtualHover = new CwInputManager.Finger();
 
-		private P3dInputManager.Finger virtualPaint = new P3dInputManager.Finger();
+		private CwInputManager.Finger virtualPaint = new CwInputManager.Finger();
 
 		private bool mouseSet;
 
@@ -57,7 +59,7 @@ namespace PaintIn3D
 
 			if (P3dSceneTool.LastSet == true || mouseSet == true)
 			{
-				virtualPaint.Index = P3dInputManager.MOUSE_FINGER_INDEX;
+				virtualPaint.Index = CwInputManager.MOUSE_FINGER_INDEX;
 				virtualPaint.Down  = mouseSet == false;
 				virtualPaint.Up    = P3dSceneTool.LastSet == false;
 
@@ -85,7 +87,7 @@ namespace PaintIn3D
 				fingers.Add(virtualPaint);
 			}
 
-			virtualHover.Index          = P3dInputManager.HOVER_FINGER_INDEX;
+			virtualHover.Index          = CwInputManager.HOVER_FINGER_INDEX;
 			virtualHover.ScreenPosition = screenPosition;
 
 			fingers.Add(virtualHover);

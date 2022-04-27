@@ -2,12 +2,13 @@
 using UnityEngine.XR;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component attached the current GameObject to a tracked hand.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dVrTool")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "VR Tool")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dVrTool")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "VR Tool")]
 	public class P3dVrTool : MonoBehaviour
 	{
 		/// <summary>The XR node this GameObject will follow.</summary>
@@ -168,7 +169,7 @@ namespace PaintIn3D
 
 			if (vrManager.IsSimulation == true)
 			{
-				dampening = P3dHelper.DampenFactor(simulatedDampening, Time.deltaTime);
+				dampening = CwHelper.DampenFactor(simulatedDampening, Time.deltaTime);
 			}
 
 			if (positionSet == true)
@@ -250,8 +251,8 @@ namespace PaintIn3D
 	using TARGET = P3dVrTool;
 
 	[CanEditMultipleObjects]
-	[CustomEditor(typeof(P3dVrTool))]
-	public class P3dVrTool_Editor : P3dEditor
+	[CustomEditor(typeof(TARGET))]
+	public class P3dVrTool_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

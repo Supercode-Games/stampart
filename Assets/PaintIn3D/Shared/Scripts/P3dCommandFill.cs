@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -22,6 +23,13 @@ namespace PaintIn3D
 
 		public override bool RequireMesh { get { return false; } }
 
+		private static int _Buffer     = Shader.PropertyToID("_Buffer");
+		private static int _BufferSize = Shader.PropertyToID("_BufferSize");
+		private static int _Texture    = Shader.PropertyToID("_Texture");
+		private static int _Color      = Shader.PropertyToID("_Color");
+		private static int _Opacity    = Shader.PropertyToID("_Opacity");
+		private static int _Minimum    = Shader.PropertyToID("_Minimum");
+
 		static P3dCommandFill()
 		{
 			BuildMaterial(ref cachedMaterial, ref cachedMaterialHash, "Hidden/Paint in 3D/Fill");
@@ -29,11 +37,11 @@ namespace PaintIn3D
 
 		public static RenderTexture Blit(RenderTexture main, P3dBlendMode blendMode, Texture texture, Color color, float opacity, float minimum)
 		{
-			var swap = P3dHelper.GetRenderTexture(main.descriptor, main);
+			var swap = P3dCommon.GetRenderTexture(main.descriptor, main);
 
 			Blit(ref main, ref swap, blendMode, texture, color, opacity, minimum);
 
-			P3dHelper.ReleaseRenderTexture(swap);
+			P3dCommon.ReleaseRenderTexture(swap);
 
 			return main;
 		}
@@ -48,11 +56,11 @@ namespace PaintIn3D
 			{
 				P3dCommandReplace.Blit(swap, main, Color.white);
 
-				material.SetTexture(P3dShader._Buffer, swap);
-				material.SetVector(P3dShader._BufferSize, new Vector2(swap.width, swap.height));
+				material.SetTexture(_Buffer, swap);
+				material.SetVector(_BufferSize, new Vector2(swap.width, swap.height));
 			}
 
-			P3dHelper.Blit(main, material, blendMode);
+			P3dCommon.Blit(main, material, blendMode);
 		}
 
 		public override void Apply(Material material)
@@ -61,10 +69,10 @@ namespace PaintIn3D
 
 			Blend.Apply(material);
 
-			material.SetTexture(P3dShader._Texture, Texture);
-			material.SetColor(P3dShader._Color, P3dHelper.FromGamma(Color));
-			material.SetFloat(P3dShader._Opacity, Opacity);
-			material.SetVector(P3dShader._Minimum, new Vector4(Minimum, Minimum, Minimum, Minimum));
+			material.SetTexture(_Texture, Texture);
+			material.SetColor(_Color, CwHelper.ToLinear(Color));
+			material.SetFloat(_Opacity, Opacity);
+			material.SetVector(_Minimum, new Vector4(Minimum, Minimum, Minimum, Minimum));
 		}
 
 		public override void Pool()

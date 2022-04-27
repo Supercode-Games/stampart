@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to define a set of <b>P3dPaintableTexture</b> and <b>P3dMaterial</b> components that are configured for a specific set of Materials.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPreset")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPreset")]
 	[AddComponentMenu("")]
 	public class P3dPreset : MonoBehaviour
 	{
@@ -28,13 +29,13 @@ namespace PaintIn3D
 				{
 					cachedPresets = new List<P3dPreset>();
 
-					var scriptGuid  = P3dHelper.FindScriptGUID<P3dPreset>();
+					var scriptGuid  = P3dCommon.FindScriptGUID<P3dPreset>();
 
 					if (scriptGuid != null)
 					{
 						foreach (var prefabGuid in UnityEditor.AssetDatabase.FindAssets("t:prefab"))
 						{
-							var preset = P3dHelper.LoadPrefabIfItContainsScriptGUID<P3dPreset>(prefabGuid, scriptGuid);
+							var preset = P3dCommon.LoadPrefabIfItContainsScriptGUID<P3dPreset>(prefabGuid, scriptGuid);
 
 							if (preset != null)
 							{
@@ -177,13 +178,13 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPreset_Editor : P3dEditor
+	public class P3dPreset_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
 			TARGET tgt; TARGET[] tgts; GetTargets(out tgt, out tgts);
 
-			if (P3dPreset.CachedPresets.Contains(tgt) == false && P3dHelper.IsAsset(tgt) == true)
+			if (P3dPreset.CachedPresets.Contains(tgt) == false && CwHelper.IsAsset(tgt) == true)
 			{
 				P3dPreset.CachedPresets.Add(tgt);
 			}

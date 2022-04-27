@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component constantly draws lines between the two specified points.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitThrough")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Through")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitThrough")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Through")]
 	public class P3dHitThrough : MonoBehaviour
 	{
 		public enum PhaseType
@@ -27,7 +27,7 @@ namespace PaintIn3D
 		/// <summary>The time in seconds between each hit.
 		/// 0 = Every frame.
 		/// -1 = Manual only.</summary>
-		public float Interval { set { interval = value; } get { return interval; } } [FSA("delay")] [SerializeField] private float interval = 0.05f;
+		public float Interval { set { interval = value; } get { return interval; } } [SerializeField] private float interval = 0.05f;
 
 		/// <summary>The start point of the raycast.</summary>
 		public Transform PointA { set { pointA = value; } get { return pointA; } } [SerializeField] private Transform pointA;
@@ -119,14 +119,14 @@ namespace PaintIn3D
 		{
 			if (pointA != null && pointB != null)
 			{
-				var camera    = P3dHelper.GetCamera(_camera);
+				var camera    = CwHelper.GetCamera(_camera);
 				var positionA = pointA.position;
 				var positionB = pointB.position;
 				var finalUp   = orientation == OrientationType.CameraUp && camera != null ? camera.transform.up : Vector3.up;
 				var vector    = positionB - positionA;
 				var rotation  = vector != Vector3.zero ? Quaternion.LookRotation(vector, finalUp) : Quaternion.identity;
 
-				connector.SubmitLine(gameObject, preview, priority, pointA.position, pointB.position, rotation, pressure, this);
+				connector.SubmitLine(gameObject, preview, priority, pressure, pointA.position, pointB.position, rotation, this);
 			}
 		}
 
@@ -176,7 +176,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dHitThrough_Editor : P3dEditor
+	public class P3dHitThrough_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

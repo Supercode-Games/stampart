@@ -1,10 +1,11 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using CW.Common;
 
 namespace PaintIn3D
 {
-	public partial class P3dWindow : P3dEditorWindow
+	public partial class P3dWindow : CwEditorWindow
 	{
 		enum PageType
 		{
@@ -226,7 +227,7 @@ namespace PaintIn3D
 
 		private static float LogSlider(string title, float value, float logMin, float logMax)
 		{
-			var rect   = P3dEditor.Reserve();
+			var rect   = CwEditor.Reserve();
 			var rectA  = rect; rectA.width = EditorGUIUtility.labelWidth + 50;
 			var rectB  = rect; rectB.xMin += EditorGUIUtility.labelWidth + 52;
 			var logOld = Mathf.Log10(value);
@@ -242,7 +243,7 @@ namespace PaintIn3D
 
 		private static float Slider(string title, float value, float min, float max)
 		{
-			var rect  = P3dEditor.Reserve();
+			var rect  = CwEditor.Reserve();
 			var rectA = rect; rectA.width = EditorGUIUtility.labelWidth + 50;
 			var rectB = rect; rectB.xMin += EditorGUIUtility.labelWidth + 52;
 

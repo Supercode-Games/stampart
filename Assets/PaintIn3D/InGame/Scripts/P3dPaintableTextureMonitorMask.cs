@@ -10,6 +10,9 @@ namespace PaintIn3D
 		/// NOTE: For best results this should be the original mesh, NOT the seam-fixed version.</summary>
 		public Mesh MaskMesh { set { maskMesh = value; } get { return maskMesh; } } [UnityEngine.Serialization.FormerlySerializedAs("mesh")] [SerializeField] private Mesh maskMesh;
 
+		/// <summary>If you have a <b>MaskMesh</b> set, then this allows you to choose which submesh of it will be used for the mask.</summary>
+		public int MaskSubmesh { set { maskSubmesh = value; } get { return maskSubmesh; } } [SerializeField] private int maskSubmesh;
+
 		/// <summary>If you want this component to accurately count pixels relative to a mask texture, then specify it here.</summary>
 		public Texture MaskTexture { set { maskTexture = value; } get { return maskTexture; } } [SerializeField] private Texture maskTexture;
 
@@ -20,18 +23,25 @@ namespace PaintIn3D
 		public int Total { get { return total; } } [SerializeField] protected int total;
 
 		[SerializeField]
-		private bool maskDirty;
-
-		[SerializeField]
 		private P3dReader maskReader;
 
 		[SerializeField]
 		protected NativeArray<byte> maskPixels;
 
-		/// <summary>This will manually mark the mask as being dirty and update it later.</summary>
-		public void MarkMaskDirty()
+		public P3dReader MaskReader
 		{
-			maskDirty = true;
+			get
+			{
+				return maskReader;
+			}
+		}
+
+		public void MarkMaskReaderAsDirty()
+		{
+			if (maskReader != null)
+			{
+				maskReader.MarkAsDirty();
+			}
 		}
 
 		private void HandleCompleteMask(NativeArray<Color32> pixels)
@@ -112,26 +122,24 @@ namespace PaintIn3D
 
 			if (maskReader.Requested == false && registeredPaintableTexture != null && registeredPaintableTexture.Activated == true)
 			{
-				if (P3dReader.NeedsUpdating(maskReader, maskPixels, registeredPaintableTexture.Current, downsampleSteps) == true || maskDirty == true)
+				if (P3dReader.NeedsUpdating(maskReader, maskPixels, registeredPaintableTexture.Current, downsampleSteps) == true)
 				{
-					maskDirty = false;
-
 					var desc          = registeredPaintableTexture.Current.descriptor; desc.useMipMap = false;
-					var renderTexture = P3dHelper.GetRenderTexture(desc);
+					var renderTexture = P3dCommon.GetRenderTexture(desc);
 
 					if (maskTexture != null)
 					{
-						P3dBlit.Texture(renderTexture, P3dHelper.GetQuadMesh(), 0, maskTexture, P3dCoord.First);
+						P3dBlit.Texture(renderTexture, P3dCommon.GetQuadMesh(), 0, maskTexture, P3dCoord.First);
 					}
 					else
 					{
-						P3dBlit.White(renderTexture, maskMesh, 0, registeredPaintableTexture.Coord);
+						P3dBlit.White(renderTexture, maskMesh, maskSubmesh, registeredPaintableTexture.Coord);
 					}
 
 					// Request new mask
 					maskReader.Request(renderTexture, DownsampleSteps, Async);
 
-					P3dHelper.ReleaseRenderTexture(renderTexture);
+					P3dCommon.ReleaseRenderTexture(renderTexture);
 				}
 			}
 
@@ -155,20 +163,21 @@ namespace PaintIn3D
 
 			base.OnInspector();
 
-			var markMaskDirty = false;
+			var markAsDirty = false;
 
 			BeginError(Any(tgts, t => t.MaskMesh != null && t.MaskTexture != null));
 				Draw("maskMesh", "If you want this component to accurately count pixels relative to a mask mesh, then specify it here.\n\nNOTE: For best results this should be the original mesh, NOT the seam-fixed version.");
-				
+				Draw("maskSubmesh", "If you have a <b>MaskMesh</b> set, then this allows you to choose which submesh of it will be used for the mask.");
+
 				EditorGUILayout.BeginHorizontal();
 				Draw("maskTexture", "If you want this component to accurately count pixels relative to a mask texture, then specify it here.");
 				EditorGUILayout.PropertyField(serializedObject.FindProperty("maskChannel"), GUIContent.none, GUILayout.Width(50));
 			EditorGUILayout.EndHorizontal();
 			EndError();
 
-			if (markMaskDirty == true)
+			if (markAsDirty == true)
 			{
-				Each(tgts, t => t.MarkMaskDirty());
+				Each(tgts, t => t.MarkMaskReaderAsDirty(), true, true);
 			}
 		}
 	}

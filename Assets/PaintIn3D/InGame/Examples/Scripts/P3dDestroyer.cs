@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component automatically destroys the specified GameObject when sent a hit point. Hit points will automatically be sent by any <b>P3dHit___</b> component on this GameObject, or its ancestors.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dDestroyer")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Destroyer")]
-	public class P3dDestroyer : MonoBehaviour, IHit, IHitPoint, IHitLine, IHitQuad
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dDestroyer")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Destroyer")]
+	public class P3dDestroyer : MonoBehaviour, IHitPoint, IHitLine, IHitQuad
 	{
 		/// <summary>This GameObject will be destroyed.</summary>
 		public GameObject Target { set { target = value; } get { return target; } } [SerializeField] private GameObject target;
@@ -21,12 +22,12 @@ namespace PaintIn3D
 			DestroyNow();
 		}
 
-		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 positionA, Vector3 positionB, Quaternion rotation)
+		public void HandleHitLine(bool preview, int priority, float pressure, int seed, Vector3 positionA, Vector3 positionB, Quaternion rotation, bool clip)
 		{
 			DestroyNow();
 		}
 
-		public void HandleHitQuad(bool preview, int priority, float pressure, int seed, Vector3 positionA, Vector3 positionB, Vector3 positionC, Vector3 positionD, Quaternion rotation)
+		public void HandleHitQuad(bool preview, int priority, float pressure, int seed, Vector3 positionA, Vector3 positionB, Vector3 positionC, Vector3 positionD, Quaternion rotation, bool clip)
 		{
 			DestroyNow();
 		}
@@ -48,7 +49,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dDestroyer_Editor : P3dEditor
+	public class P3dDestroyer_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component can be used to create material prefabs for in-editor painting. These will automatically appear in the Paint tab's Material list.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dMaterial")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Material")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dMaterial")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Material")]
 	public class P3dMaterial : MonoBehaviour, IBrowsable
 	{
 		public string Category { set { category = value; } get { return category; } } [SerializeField] private string category;
@@ -24,13 +25,13 @@ namespace PaintIn3D
 				{
 					cachedMaterials = new List<P3dMaterial>();
 #if UNITY_EDITOR
-					var scriptGuid  = P3dHelper.FindScriptGUID<P3dMaterial>();
+					var scriptGuid  = P3dCommon.FindScriptGUID<P3dMaterial>();
 
 					if (scriptGuid != null)
 					{
 						foreach (var prefabGuid in UnityEditor.AssetDatabase.FindAssets("t:prefab"))
 						{
-							var material = P3dHelper.LoadPrefabIfItContainsScriptGUID<P3dMaterial>(prefabGuid, scriptGuid);
+							var material = P3dCommon.LoadPrefabIfItContainsScriptGUID<P3dMaterial>(prefabGuid, scriptGuid);
 
 							if (material != null)
 							{
@@ -82,7 +83,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dMaterial_Editor : P3dEditor
+	public class P3dMaterial_Editor : CwEditor
 	{
 		private static int size = 512;
 
@@ -106,7 +107,7 @@ namespace PaintIn3D
 		{
 			TARGET tgt; TARGET[] tgts; GetTargets(out tgt, out tgts);
 
-			if (P3dMaterial.CachedMaterials.Contains(tgt) == false && P3dHelper.IsAsset(tgt) == true)
+			if (P3dMaterial.CachedMaterials.Contains(tgt) == false && CwHelper.IsAsset(tgt) == true)
 			{
 				P3dMaterial.CachedMaterials.Add(tgt);
 			}

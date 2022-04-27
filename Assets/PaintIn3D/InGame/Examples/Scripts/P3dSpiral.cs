@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component moves the current <b>Transform</b> in a spiral pattern.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dSpiral")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Spiral")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dSpiral")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Spiral")]
 	public class P3dSpiral : MonoBehaviour
 	{
 		public Vector3 Position { set { position = value; } get { return position; } } [SerializeField] private Vector3 position;
@@ -68,7 +69,7 @@ namespace PaintIn3D
 	using TARGET = P3dSpiral;
 
 	[CustomEditor(typeof(TARGET))]
-	public class P3dSpiral_Editor : P3dEditor
+	public class P3dSpiral_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

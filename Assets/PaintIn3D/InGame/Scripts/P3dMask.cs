@@ -1,17 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using FSA = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to block paint from being applied at the current position using the specified shape.</summary>
 	[ExecuteInEditMode]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dMask")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Mask")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dMask")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Mask")]
 	public class P3dMask : MonoBehaviour
 	{
 		/// <summary>The mask will use this texture shape.</summary>
-		public Texture Texture { set { texture = value; } get { return texture; } } [FSA("shape")] [SerializeField] private Texture texture;
+		public Texture Texture { set { texture = value; } get { return texture; } } [SerializeField] private Texture texture;
 
 		/// <summary>The mask will use pixels from this texture channel.</summary>
 		public P3dChannel Channel { set { channel = value; } get { return channel; } } [SerializeField] private P3dChannel channel = P3dChannel.Alpha;
@@ -39,7 +39,7 @@ namespace PaintIn3D
 
 			foreach (var instance in instances)
 			{
-				if (P3dHelper.IndexInMask(instance.gameObject.layer, layers) == true)
+				if (CwHelper.IndexInMask(instance.gameObject.layer, layers) == true)
 				{
 					var distance = Vector3.SqrMagnitude(position - instance.transform.position);
 
@@ -86,7 +86,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dMask_Editor : P3dEditor
+	public class P3dMask_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

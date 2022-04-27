@@ -10,26 +10,10 @@ namespace PaintIn3D
 	/// <summary>This class maintains a list of <b>P3dModifier</b> instances, and contains helper methods to apply them.
 	/// This is used instead of a normal list so the modifiers can be de/serialized with polymorphism.</summary>
 	[System.Serializable]
-	public class P3dModifierList : ISerializationCallbackReceiver
+	public class P3dModifierList
 	{
-		// Unity can't serialize polymorphic classes, so we have to do this sillyness
-		// As of 2019.3 it now does, so we keep this code here for backwards compatibility
-		[System.Serializable]
-		class ModifierData
-		{
-			public string typeName = null;
-
-			public string jsonData = null;
-
-			public Object[] objects = null;
-		}
-
 		[SerializeReference]
 		private List<P3dModifier> modifiers;
-
-		// TODO: Remove this in a future version, as it's no longer required
-		[SerializeField]
-		private List<ModifierData> modifierDatas = null;
 
 		/// <summary>The amount of modifiers in the list.</summary>
 		public int Count
@@ -97,48 +81,6 @@ namespace PaintIn3D
 		public void ModifyPosition(ref Vector3 position, bool preview, float pressure)
 		{
 			if (modifiers != null) foreach (var modifier in modifiers) if (modifier != null) if (modifier.Preview || !preview) modifier.ModifyPosition(ref position, pressure);
-		}
-
-		public void OnAfterDeserialize()
-		{
-			ExtractModifierDatas();
-		}
-
-		public void OnBeforeSerialize()
-		{
-			ExtractModifierDatas();
-		}
-
-		// TODO: Remove this in a future version, as it's no longer required
-		private void ExtractModifierDatas()
-		{
-			if (modifierDatas != null && modifierDatas.Count > 0)
-			{
-				if (modifiers == null)
-				{
-					modifiers = new List<P3dModifier>();
-				}
-
-				if (modifiers.Count == 0)
-				{
-					foreach (var modifierData in modifierDatas)
-					{
-						var type     = System.Type.GetType(modifierData.typeName);
-						var modifier = (P3dModifier)System.Activator.CreateInstance(type);
-
-						JsonUtility.FromJsonOverwrite(modifierData.jsonData, modifier);
-
-						modifier.SetObjects(modifierData.objects);
-
-						if (modifier != null)
-						{
-							modifiers.Add(modifier);
-						}
-					}
-				}
-
-				modifierDatas.Clear();
-			}
 		}
 
 #if UNITY_EDITOR

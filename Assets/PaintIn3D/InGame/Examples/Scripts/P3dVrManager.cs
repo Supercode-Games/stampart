@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component attached the current GameObject to a tracked hand.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dVrManager")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "VR Manager")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dVrManager")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "VR Manager")]
 	public class P3dVrManager : MonoBehaviour
 	{
 		class SimulatedState
@@ -339,12 +340,12 @@ namespace PaintIn3D
 		{
 			if (IsSimulation == true)
 			{
-				LeftTrigger  = P3dInputManager.IsPressed(simulatedLeftTrigger);
-				LeftGrip     = P3dInputManager.IsPressed(simulatedLeftGrip);
-				RightTrigger = P3dInputManager.IsPressed(simulatedRightTrigger);
-				RightGrip    = P3dInputManager.IsPressed(simulatedRightGrip);
+				LeftTrigger  = CwInput.GetKeyIsHeld(simulatedLeftTrigger);
+				LeftGrip     = CwInput.GetKeyIsHeld(simulatedLeftGrip);
+				RightTrigger = CwInput.GetKeyIsHeld(simulatedRightTrigger);
+				RightGrip    = CwInput.GetKeyIsHeld(simulatedRightGrip);
 
-				if (P3dInputManager.PointOverGui(P3dInputManager.MousePosition) == true)
+				if (CwInputManager.PointOverGui(CwInput.GetMousePosition()) == true)
 				{
 					LeftTrigger  = false;
 					LeftGrip     = false;
@@ -353,7 +354,7 @@ namespace PaintIn3D
 				}
 			}
 
-			//if (P3dInputManager.IsPressed(recenterKey) == true)
+			//if (CwInputManager.IsDown(recenterKey) == true)
 			//{
 			//	Recenter();
 			//}
@@ -361,11 +362,11 @@ namespace PaintIn3D
 
 		protected virtual void LateUpdate()
 		{
-			var camera = P3dHelper.GetCamera();
+			var camera = CwHelper.GetCamera(null);
 
 			if (camera != null)
 			{
-				var ray = camera.ScreenPointToRay(P3dInputManager.MousePosition);
+				var ray = camera.ScreenPointToRay(CwInput.GetMousePosition());
 				var hit = default(RaycastHit);
 				var cam = camera.transform.rotation;
 
@@ -437,7 +438,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dVrManager_Editor : P3dEditor
+	public class P3dVrManager_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

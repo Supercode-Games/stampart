@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component allows you to convert input axis values to a boolean event. This can be used to map VR buttons to other components.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dInputAxis")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Input Axis")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dInputAxis")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Input Axis")]
 	public class P3dInputAxis : MonoBehaviour
 	{
 		[System.Serializable] public class BoolEvent : UnityEvent<bool> {}
@@ -36,7 +37,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dInputAxis_Editor : P3dEditor
+	public class P3dInputAxis_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

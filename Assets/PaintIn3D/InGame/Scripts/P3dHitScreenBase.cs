@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
@@ -90,7 +91,10 @@ namespace PaintIn3D
 		public Transform CustomTransform { set { customTransform = value; } get { return customTransform; } } [SerializeField] private Transform customTransform;
 
 		/// <summary>If you want the raycast hit point to be offset from the surface a bit, this allows you to set by how much in world space.</summary>
-		public float Offset { set { offset = value; } get { return offset; } } [SerializeField] private float offset;
+		public float NormalOffset { set { normalOffset = value; } get { return normalOffset; } } [UnityEngine.Serialization.FormerlySerializedAs("offset")] [SerializeField] private float normalOffset;
+
+		/// <summary>If you want the hit point to be offset upwards when using mouse input, this allows you to specify the physical distance the hit will be offset by on the screen. This is useful if you find paint hard to see because it's underneath your mouse.</summary>
+		public float MouseOffset { set { mouseOffset = value; } get { return mouseOffset; } } [SerializeField] private float mouseOffset;
 
 		/// <summary>If you want the hit point to be offset upwards when using touch input, this allows you to specify the physical distance the hit will be offset by on the screen. This is useful if you find paint hard to see because it's underneath your finger.</summary>
 		public float TouchOffset { set { touchOffset = value; } get { return touchOffset; } } [SerializeField] private float touchOffset;
@@ -105,7 +109,7 @@ namespace PaintIn3D
 		public int Priority { set { priority = value; } get { return priority; } } [SerializeField] private int priority;
 
 		[System.NonSerialized]
-		protected List<P3dInputManager.Finger> fingers = new List<P3dInputManager.Finger>();
+		protected List<CwInputManager.Finger> fingers = new List<CwInputManager.Finger>();
 
 		protected bool keyPressed;
 
@@ -119,11 +123,11 @@ namespace PaintIn3D
 
 		protected virtual void OnEnable()
 		{
-			P3dInputManager.EnsureThisComponentExists();
+			CwInputManager.EnsureThisComponentExists();
 
-			P3dInputManager.OnFingerDown += HandleFingerDown;
+			CwInputManager.OnFingerDown += HandleFingerDown;
 			
-			foreach (var finger in P3dInputManager.Fingers)
+			foreach (var finger in CwInputManager.Fingers)
 			{
 				HandleFingerDown(finger);
 			}
@@ -137,20 +141,20 @@ namespace PaintIn3D
 				var down   = finger.Down;
 				var up     = finger.Up;
 
-				if (finger.Index == P3dInputManager.HOVER_FINGER_INDEX)
+				if (finger.Index == CwInputManager.HOVER_FINGER_INDEX)
 				{
 					if (keyPressed == true)
 					{
-						if (requiredKey == KeyCode.None || P3dInputManager.IsPressed(requiredKey) == false)
+						if (requiredKey == KeyCode.None || CwInput.GetKeyIsHeld(requiredKey) == false)
 						{
 							up = true;
 						}
 					}
 					else
 					{
-						if (requiredKey != KeyCode.None && P3dInputManager.IsDown(requiredKey) == true)
+						if (requiredKey != KeyCode.None && CwInput.GetKeyWentDown(requiredKey) == true)
 						{
-							if (P3dInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == false)
+							if (CwInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == false)
 							{
 								keyPressed = true;
 								down       = true;
@@ -163,7 +167,7 @@ namespace PaintIn3D
 
 				if (up == true)
 				{
-					if (finger.Index != P3dInputManager.HOVER_FINGER_INDEX)
+					if (finger.Index != CwInputManager.HOVER_FINGER_INDEX)
 					{
 						fingers.Remove(finger);
 					}
@@ -174,45 +178,45 @@ namespace PaintIn3D
 
 			if (keyPressed == true)
 			{
-				if (requiredKey == KeyCode.None || P3dInputManager.IsPressed(requiredKey) == false)
+				if (requiredKey == KeyCode.None || CwInput.GetKeyIsHeld(requiredKey) == false)
 				{
 					keyPressed = false;
 				}
 			}
 		}
 
-		protected virtual void HandleFingerUpdate(P3dInputManager.Finger finger, bool down, bool up)
+		protected virtual void HandleFingerUpdate(CwInputManager.Finger finger, bool down, bool up)
 		{
 		}
 
-		protected virtual void HandleFingerUp(P3dInputManager.Finger finger)
+		protected virtual void HandleFingerUp(CwInputManager.Finger finger)
 		{
 		}
 
 		protected virtual void OnDisable()
 		{
-			P3dInputManager.OnFingerDown -= HandleFingerDown;
+			CwInputManager.OnFingerDown -= HandleFingerDown;
 
 			fingers.Clear();
 		}
 
-		private bool FingerWentDown(P3dInputManager.Finger finger)
+		private bool FingerWentDown(CwInputManager.Finger finger)
 		{
 			if (finger.Index < 0)
 			{
-				if (P3dInputManager.MouseExists == true)
+				if (CwInput.GetMouseExists() == true)
 				{
-					if ((requiredButtons & ButtonTypes.LeftMouse) != 0 && P3dInputManager.GetMousePressed(0) == true)
+					if ((requiredButtons & ButtonTypes.LeftMouse) != 0 && CwInput.GetKeyIsHeld(KeyCode.Mouse0) == true)
 					{
 						return true;
 					}
 
-					if ((requiredButtons & ButtonTypes.RightMouse) != 0 && P3dInputManager.GetMousePressed(1) == true)
+					if ((requiredButtons & ButtonTypes.RightMouse) != 0 && CwInput.GetKeyIsHeld(KeyCode.Mouse1) == true)
 					{
 						return true;
 					}
 
-					if ((requiredButtons & ButtonTypes.MiddleMouse) != 0 && P3dInputManager.GetMousePressed(2) == true)
+					if ((requiredButtons & ButtonTypes.MiddleMouse) != 0 && CwInput.GetKeyIsHeld(KeyCode.Mouse2) == true)
 					{
 						return true;
 					}
@@ -226,13 +230,13 @@ namespace PaintIn3D
 			return false;
 		}
 
-		private void HandleFingerDown(P3dInputManager.Finger finger)
+		private void HandleFingerDown(CwInputManager.Finger finger)
 		{
-			if (finger.Index != P3dInputManager.HOVER_FINGER_INDEX)
+			if (finger.Index != CwInputManager.HOVER_FINGER_INDEX)
 			{
 				if (FingerWentDown(finger) == false) return;
 
-				if (P3dInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == true) return;
+				if (CwInputManager.PointOverGui(finger.ScreenPosition, guiLayers) == true) return;
 			}
 
 			fingers.Add(finger);
@@ -240,7 +244,7 @@ namespace PaintIn3D
 
 		protected virtual void DoQuery(Vector2 screenPosition, ref Camera camera, ref Ray ray, ref RaycastHit hit3D, ref RaycastHit2D hit2D)
 		{
-			camera = P3dHelper.GetCamera(_camera);
+			camera = CwHelper.GetCamera(_camera);
 			ray    = camera.ScreenPointToRay(screenPosition);
 			hit2D  = Physics2D.GetRayIntersection(ray, float.PositiveInfinity, layers);
 
@@ -249,10 +253,12 @@ namespace PaintIn3D
 
 		protected void PaintAt(P3dPointConnector connector, P3dHitCache hitCache, Vector2 screenPosition, Vector2 screenPositionOld, bool preview, float pressure, object owner)
 		{
-			if (touchOffset != 0.0f && P3dInputManager.TouchCount > 0)
+			var offset = CwInput.GetTouchCount() > 0 ? touchOffset : mouseOffset;
+
+			if (offset != 0.0f)
 			{
-				screenPosition.y    += touchOffset / P3dInputManager.ScaleFactor;
-				screenPositionOld.y += touchOffset / P3dInputManager.ScaleFactor;
+				screenPosition.y    += offset / CwInputManager.ScaleFactor;
+				screenPositionOld.y += offset / CwInputManager.ScaleFactor;
 			}
 
 			var camera        = default(Camera);
@@ -326,7 +332,7 @@ namespace PaintIn3D
 
 		private void CalcHitData(Vector3 hitPoint, Vector3 hitNormal, Ray ray, Camera camera, Vector2 screenPositionOld, ref Vector3 finalPosition, ref Quaternion finalRotation)
 		{
-			finalPosition = hitPoint + hitNormal * offset;
+			finalPosition = hitPoint + hitNormal * normalOffset;
 			finalRotation = Quaternion.identity;
 
 			switch (rotateTo)
@@ -385,7 +391,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dHitScreenBase_Editor : P3dEditor
+	public class P3dHitScreenBase_Editor : CwEditor
 	{
 		protected virtual void DrawBasic()
 		{
@@ -396,7 +402,7 @@ namespace PaintIn3D
 				Draw("layers", "The layers you want the raycast to hit.");
 			EndError();
 			Draw("guiLayers", "Fingers that began touching the screen on top of these UI layers will be ignored.");
-			BeginError(Any(tgts, t => P3dHelper.GetCamera(t.Camera) == null));
+			BeginError(Any(tgts, t => CwHelper.GetCamera(t.Camera) == null));
 				Draw("_camera", "Orient to a specific camera?\n\nNone = MainCamera.");
 			EndError();
 
@@ -435,7 +441,8 @@ namespace PaintIn3D
 			Draw("storeStates", "Should painting triggered from this component be eligible for being undone?");
 			Draw("showPreview", "Show a painting preview under the mouse?");
 			Draw("priority", "This allows you to override the order this paint gets applied to the object during the current frame.");
-			Draw("offset", "If you want the raycast hit point to be offset from the surface a bit, this allows you to set by how much in world space.");
+			Draw("normalOffset", "If you want the raycast hit point to be offset from the surface a bit, this allows you to set by how much in world space.");
+			Draw("mouseOffset", "If you want the hit point to be offset upwards when using mouse input, this allows you to specify the physical distance the hit will be offset by on the screen. This is useful if you find paint hard to see because it's underneath your mouse.");
 			Draw("touchOffset", "If you want the hit point to be offset upwards when using touch input, this allows you to specify the physical distance the hit will be offset by on the screen. This is useful if you find paint hard to see because it's underneath your finger.");
 		}
 	}

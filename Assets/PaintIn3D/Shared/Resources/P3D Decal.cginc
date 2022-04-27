@@ -2,6 +2,7 @@
 #include "P3dMasking.cginc"
 #include "P3dBlendModes.cginc"
 #include "P3dExtrusions.cginc"
+#include "P3dOverlap.cginc"
 
 float4    _Coord;
 float4    _Channels;
@@ -78,6 +79,49 @@ void Vert(a2v i, out v2f o)
 #endif
 }
 
+float GetStrength(float3 position, float normal)
+{
+	// Fade OOB
+	float3 box = saturate(abs(position));
+	box.xy = pow(box.xy, 1000.0f);
+	box.z = pow(box.z, _Hardness);
+
+	// Fade slopes
+	float front = (_NormalFront.x - normal) * _NormalFront.y;
+	float back  = (_NormalBack.x - normal) * _NormalBack.y;
+	float fade  = saturate(max(front, back));
+
+	// Shape
+	float2 coord = position.xy * 0.5f + 0.5f;
+	float  shape = dot(tex2D(_Shape, coord), _ShapeChannel);
+
+	// Combine
+	float strength = 1.0f;
+	strength -= max(box.x, max(box.y, box.z));
+	strength *= smoothstep(0.0f, 1.0f, fade);
+	strength *= _Opacity;
+	strength *= shape;
+	return strength;
+}
+
+float GetStrength(v2f i, float3 position)
+{
+	float strength = GetStrength(position, i.normal);
+	#if P3D_LINE_CLIP || P3D_LINE_QUAD
+		#if P3D_LINE_CLIP
+			float3 f_position = i.position - _Position;
+		#elif P3D_LINE_QUAD
+			float3 f_position = i.position - GetClosestPosition_Edge(_Position, _EndPosition, i.position);
+		#endif
+		float  f_depth    = f_position.z * _Wrapping; f_position.xy /= 1.0f - f_depth * f_depth;
+		float  f_strength = GetStrength(f_position, i.normal);
+
+		return GetOverlapStrength(strength, f_strength);
+	#else
+		return strength;
+	#endif
+}
+
 void Frag(v2f i, out f2g o)
 {
 	float3 position = i.position - GetClosestPosition(i.position);
@@ -91,20 +135,8 @@ void Frag(v2f i, out f2g o)
 	}
 
 	float2 coord    = position.xy * 0.5f + 0.5f;
-	float  strength = 1.0f;
+	float  strength = GetStrength(i, position);
 	float4 color    = tex2D(_Texture, coord) * _Color;
-
-	// Fade OOB
-	float3 box = saturate(absPos);
-	box.xy = pow(box.xy, 1000.0f);
-	box.z = pow(box.z, _Hardness);
-	strength -= max(box.x, max(box.y, box.z));
-
-	// Fade slopes
-	float front = (_NormalFront.x - i.normal) * _NormalFront.y;
-	float back = (_NormalBack.x - i.normal) * _NormalBack.y;
-	float fade = saturate(max(front, back));
-	strength *= smoothstep(0.0f, 1.0f, fade);
 
 	// Fade mask
 	strength *= GetMask(i.mask);
@@ -112,14 +144,11 @@ void Frag(v2f i, out f2g o)
 	// Fade local mask
 	strength *= GetLocalMask(i.texcoord);
 
-	// Mix in shape
-	strength *= dot(tex2D(_Shape, coord), _ShapeChannel);
-
 	// Mix in tiling
 	float4 textureX = tex2D(_TileTexture, i.tile.yz) * i.weights.x;
 	float4 textureY = tex2D(_TileTexture, i.tile.xz) * i.weights.y;
 	float4 textureZ = tex2D(_TileTexture, i.tile.xy) * i.weights.z;
 	color *= lerp(float4(1.0f, 1.0f, 1.0f, 1.0f), textureX + textureY + textureZ, _TileOpacity);
 
-	o.color = Blend(color, strength * _Opacity, i.texcoord, i.rot, _Channels);
+	o.color = Blend(color, strength, i.texcoord, i.rot, _Channels);
 }

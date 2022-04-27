@@ -5,9 +5,10 @@ float3 _EndPosition2;
 
 float3 GetClosestPosition_Edge(float3 a, float3 b, float3 p)
 {
-	float3 ab = b - a;
+	float3 ab  = b - a;
+	float  abd = dot(ab, ab);
 
-	return a + ab * saturate(dot(p - a, ab) / dot(ab, ab));
+	return abd > 0.0f ? a + ab * saturate(dot(p - a, ab) / abd) : a;
 }
 
 float3 GetClosestPosition_Triangle(float3 a, float3 b, float3 c, float3 p)
@@ -22,27 +23,35 @@ float3 GetClosestPosition_Triangle(float3 a, float3 b, float3 c, float3 p)
 
 	if (dot(cross(n, ab), ap) < 0.0f)
 	{
-		return a + ab * saturate(dot(ap, ab) / dot(ab, ab));
+		float abd = dot(ab, ab);
+
+		return abd > 0.0f ? a + ab * saturate(dot(ap, ab) / abd) : a;
 	}
 
 	if (dot(cross(n, bc), bp) < 0.0f)
 	{
-		return b + bc * saturate(dot(bp, bc) / dot(bc, bc));
+		float bcd = dot(bc, bc);
+
+		return bcd > 0.0f ? b + bc * saturate(dot(bp, bc) / bcd) : b;
 	}
 
 	if (dot(cross(n, ca), cp) < 0.0f)
 	{
-		return c + ca * saturate(dot(cp, ca) / dot(ca, ca));
+		float cad = dot(ca, ca);
+
+		return cad > 0.0f ? c + ca * saturate(dot(cp, ca) / cad) : c;
 	}
 
-	return p - n * dot(n, ap) / dot(n, n);
+	float nd = dot(n, n);
+
+	return nd > 0.0f ? p - n * dot(n, ap) / nd : a;
 }
 
 float3 GetClosestPosition(float3 p)
 {
-#if P3D_LINE
+#if P3D_LINE || P3D_LINE_CLIP
 	return GetClosestPosition_Edge(_Position, _EndPosition, p);
-#elif P3D_QUAD
+#elif P3D_QUAD || P3D_QUAD_CLIP
 	float3 a = GetClosestPosition_Triangle(_Position, _EndPosition, _Position2, p);
 	float3 b = GetClosestPosition_Triangle(_EndPosition2, _Position2, _EndPosition, p);
 

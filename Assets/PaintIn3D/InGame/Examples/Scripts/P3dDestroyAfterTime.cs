@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
-	/// <summary>This component auatomatically destroys this GameObject after some time.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dDestroyAfterTime")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Destroy After Time")]
+	/// <summary>This component automatically destroys this GameObject after some time.</summary>
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dDestroyAfterTime")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Destroy After Time")]
 	public class P3dDestroyAfterTime : MonoBehaviour
 	{
 		/// <summary>If this component has been active for this many seconds, the current GameObject will be destroyed.
@@ -43,7 +44,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dDestroyAfterTime_Editor : P3dEditor
+	public class P3dDestroyAfterTime_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

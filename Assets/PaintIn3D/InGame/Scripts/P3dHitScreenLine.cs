@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component will perform a raycast under the mouse or finger as it moves across the screen. It will then send hit events to components like <b>P3dPaintDecal</b>, allowing you to paint the scene.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dHitScreenLine")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Hit Screen Line")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dHitScreenLine")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Hit Screen Line")]
 	public class P3dHitScreenLine : P3dHitScreenBase
 	{
 		public enum FrequencyType
@@ -65,9 +65,9 @@ namespace PaintIn3D
 			connector.Update();
 		}
 
-		protected override void HandleFingerUpdate(P3dInputManager.Finger finger, bool down, bool up)
+		protected override void HandleFingerUpdate(CwInputManager.Finger finger, bool down, bool up)
 		{
-			if (finger.Index == P3dInputManager.HOVER_FINGER_INDEX)
+			if (finger.Index == CwInputManager.HOVER_FINGER_INDEX)
 			{
 				return;
 			}
@@ -84,16 +84,16 @@ namespace PaintIn3D
 			{
 				case FrequencyType.StartAndEnd: PaintStartEnd(finger, up); break;
 				case FrequencyType.PixelInterval: PaintStartInterval(finger, up, interval, false); break;
-				case FrequencyType.ScaledPixelInterval: PaintStartInterval(finger, up, interval / P3dInputManager.ScaleFactor, false); break;
+				case FrequencyType.ScaledPixelInterval: PaintStartInterval(finger, up, interval / CwInputManager.ScaleFactor, false); break;
 				case FrequencyType.StretchedPixelInterval: PaintStartInterval(finger, up, interval, true); break;
-				case FrequencyType.StretchedScaledPixelInterval: PaintStartInterval(finger, up, interval / P3dInputManager.ScaleFactor, true); break;
+				case FrequencyType.StretchedScaledPixelInterval: PaintStartInterval(finger, up, interval / CwInputManager.ScaleFactor, true); break;
 				case FrequencyType.Once: PaintOne(finger, up, position, pixelOffset); break;
 			}
 
 			connector.BreakHits(finger);
 		}
 
-		private void PaintStartEnd(P3dInputManager.Finger finger, bool up)
+		private void PaintStartEnd(CwInputManager.Finger finger, bool up)
 		{
 			var preview = up == false;
 			var pointS  = finger.StartScreenPosition;
@@ -104,7 +104,7 @@ namespace PaintIn3D
 			PaintAt(connector, connector.HitCache, pointE, pointE - pointV, preview, finger.Pressure, finger);
 		}
 
-		private void PaintStartInterval(P3dInputManager.Finger finger, bool up, float pixelSpacing, bool stretch)
+		private void PaintStartInterval(CwInputManager.Finger finger, bool up, float pixelSpacing, bool stretch)
 		{
 			var preview = up == false;
 			var pointS  = finger.StartScreenPosition;
@@ -131,7 +131,7 @@ namespace PaintIn3D
 			}
 		}
 
-		private void PaintOne(P3dInputManager.Finger finger, bool up, float frac, float pixelOff)
+		private void PaintOne(CwInputManager.Finger finger, bool up, float frac, float pixelOff)
 		{
 			var preview = up == false;
 			var pointS  = finger.StartScreenPosition;

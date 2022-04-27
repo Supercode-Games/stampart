@@ -19,7 +19,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 0 // ALPHA_BLEND
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -30,7 +30,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 1 // ALPHA_BLEND_INVERSE
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -41,7 +41,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 2 // PREMULTIPLIED
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -52,7 +52,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 3 // ADDITIVE
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -63,7 +63,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 4 // ADDITIVE_SOFT
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -74,7 +74,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 5 // SUBTRACTIVE
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -85,7 +85,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 6 // SUBTRACTIVE_SOFT
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -96,7 +96,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 7 // REPLACE
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -107,7 +107,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 8 // REPLACE_ORIGINAL
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -118,7 +118,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 9 // REPLACE_CUSTOM
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -129,7 +129,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 10 // MULTIPLY_INVERSE_RGB
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -140,7 +140,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 11 // BLUR
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -151,7 +151,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 12 // NORMAL_BLEND
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -162,7 +162,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 13 // NORMAL_REPLACE
 			#include "P3D Sphere.cginc"
 			ENDCG
@@ -173,7 +173,7 @@
 			CGPROGRAM
 			#pragma vertex Vert
 			#pragma fragment Frag
-			#pragma multi_compile __ P3D_LINE P3D_QUAD
+			#pragma multi_compile_local __ P3D_LINE P3D_QUAD P3D_LINE_CLIP P3D_QUAD_CLIP
 			#define BLEND_MODE_INDEX 14 // FLOW
 			#include "P3D Sphere.cginc"
 			ENDCG

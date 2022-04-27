@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component implements the replace paint mode, which will replace all pixels in the specified texture.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dPaintReplace")]
-	[AddComponentMenu(P3dHelper.ComponentHitMenuPrefix + "Paint Replace")]
-	public class P3dPaintReplace : MonoBehaviour, IHit, IHitCoord
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dPaintReplace")]
+	[AddComponentMenu(P3dCommon.ComponentHitMenuPrefix + "Paint Replace")]
+	public class P3dPaintReplace : MonoBehaviour, IHitCoord
 	{
 		/// <summary>Only the <b>P3dPaintableTexture</b> components with a matching group will be painted by this component.</summary>
 		public P3dGroup Group { set { group = value; } get { return group; } } [SerializeField] private P3dGroup group;
@@ -34,10 +35,10 @@ namespace PaintIn3D
 
 					if (modifiers != null && modifiers.Count > 0)
 					{
-						P3dHelper.BeginSeed(seed);
+						CwHelper.BeginSeed(seed);
 							modifiers.ModifyColor(ref finalColor, preview, pressure);
 							modifiers.ModifyTexture(ref finalTexture, preview, pressure);
-						P3dHelper.EndSeed();
+						CwHelper.EndSeed();
 					}
 
 					P3dCommandReplace.Instance.SetState(preview, priority);
@@ -63,7 +64,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dPaintReplace_Editor : P3dEditor
+	public class P3dPaintReplace_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{

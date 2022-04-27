@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using CW.Common;
 
 namespace PaintIn3D
 {
 	/// <summary>This component enables or disables the specified ParticleSystem based on mouse or finger presses.</summary>
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dToggleParticles")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Toggle Particles")]
+	[HelpURL(P3dCommon.HelpUrlPrefix + "P3dToggleParticles")]
+	[AddComponentMenu(P3dCommon.ComponentMenuPrefix + "Toggle Particles")]
 	public class P3dToggleParticles : MonoBehaviour
 	{
 		/// <summary>Fingers that began touching the screen on top of these UI layers will be ignored.</summary>
@@ -29,7 +30,7 @@ namespace PaintIn3D
 					
 				}
 
-				if (P3dInputManager.IsPressed(key) == true)
+				if (CwInput.GetKeyIsHeld(key) == true)
 				{
 					if (storeStates == true && target.isPlaying == false)
 					{
@@ -55,7 +56,7 @@ namespace PaintIn3D
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TARGET))]
-	public class P3dToggleParticles_Editor : P3dEditor
+	public class P3dToggleParticles_Editor : CwEditor
 	{
 		protected override void OnInspector()
 		{
