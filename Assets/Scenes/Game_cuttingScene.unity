@@ -8394,7 +8394,7 @@ MonoBehaviour:
   topZ: 12.34
   bottomZ: 0.64
   follower: {fileID: 864653216}
-  sensitivity: 1
+  sensitivity: 0.05
   pathShapes:
   - {fileID: 5072335476067843513}
   pencil: {fileID: 1997248937}
