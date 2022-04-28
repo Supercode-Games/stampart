@@ -71,7 +71,7 @@ Material:
     - _UseUV2: 0
     - _UseUV2Alt: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.879162, b: 0.8160377, a: 1}
+    - _Color: {r: 0.9339623, g: 0.8206383, b: 0.76214844, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 1}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
