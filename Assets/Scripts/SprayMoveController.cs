@@ -22,7 +22,7 @@ public class SprayMoveController : MonoBehaviour
         var pos = Vector3.zero;
 
         RaycastHit raycastHit;
-        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition),out raycastHit,10f,1<<LayerMask.NameToLayer("TouchPlane")))
+        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition),out raycastHit,70f,1<<LayerMask.NameToLayer("TouchPlane")))
         {
             pos = raycastHit.point;
         }
@@ -47,7 +47,7 @@ public class SprayMoveController : MonoBehaviour
             var x = Input.GetAxis("Mouse X") * sensitivity;
             var y = Input.GetAxis("Mouse Y") * sensitivity;
 
-            var targetpos = transform.position + new Vector3(x, y, 0);
+            var targetpos = pointOnPlane();
             transform.position = Vector3.Lerp(transform.position, targetpos, Time.deltaTime * 20f);
 
             if(!myParticles.isPlaying)

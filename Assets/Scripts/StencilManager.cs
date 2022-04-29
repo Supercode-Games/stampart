@@ -24,6 +24,8 @@ public class StencilManager : MonoBehaviour
     void Start()
     {
         activatePhase(0);
+        sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+
     }
 
     // Update is called once per frame
@@ -34,12 +36,7 @@ public class StencilManager : MonoBehaviour
 
     void activatePhase(int index)
     {
-        foreach (var item in sheets)
-        {
-            item.SetActive(false);
-        }
-
-     
+        
         foreach (var item in sprayBottles)
         {
             item.SetActive(false);
@@ -51,6 +48,8 @@ public class StencilManager : MonoBehaviour
         paint_.LocalMaskTexture = innerTextures[index];
         paint_.LocalMaskChannel = P3dChannel.Alpha;
         sprayBottles[index].SetActive(true);
+
+
     }
 
     public void goToNextPhase()
@@ -58,21 +57,29 @@ public class StencilManager : MonoBehaviour
         currentIndex++;
         if (currentIndex == 3)
         {
-            foreach (var item in sheets)
-            {
-                item.SetActive(false);
-            }
-
-
+            
             foreach (var item in sprayBottles)
             {
                 item.SetActive(false);
             }
 
+            Camera.main.gameObject.GetComponent<Animator>().Play("finish", 0, 0);
+            sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+
         }
         else
         {
             activatePhase(currentIndex);
+            currentIndex = currentIndex % sheets.Count;
+
+
+            sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+
+            sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
         }
+
+         
+        
+
     }
 }
