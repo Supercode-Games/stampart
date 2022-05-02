@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LevelIndicator : MonoBehaviour
 {
-    public List<GameObject> levelDots;
+    public List<Image> levelDots;
+    public List<Sprite> brownVersion;
+    public List<Sprite> greenVersion;
+
+
 
     public int currentPhase;
 
@@ -22,10 +27,11 @@ public class LevelIndicator : MonoBehaviour
 
     void updatePhase()
     {
-        for (int i = 0; i < currentPhase; i++)
+        for (int i = 0; i < levelDots.Count; i++)
         {
-            levelDots[i].SetActive(true);
+            levelDots[i].sprite = brownVersion[i];
         }
-        
+
+        levelDots[currentPhase].sprite = greenVersion[currentPhase];
     }
 }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PaintIn3D;
+using UnityEngine.UI;
+
 
 public class StencilManager : MonoBehaviour
 {
@@ -18,11 +20,14 @@ public class StencilManager : MonoBehaviour
 
     int currentIndex;
 
+    public Text levelIndicator;
 
+    public GameObject nextButton;
 
     // Start is called before the first frame update
     void Start()
     {
+        levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString(); 
         activatePhase(0);
         sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
 
@@ -63,8 +68,9 @@ public class StencilManager : MonoBehaviour
                 item.SetActive(false);
             }
 
-            Camera.main.gameObject.GetComponent<Animator>().Play("finish", 0, 0);
             sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+            FindObjectOfType<StampRotator>().stamp();
+            nextButton.SetActive(false);
 
         }
         else
@@ -78,8 +84,6 @@ public class StencilManager : MonoBehaviour
             sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
         }
 
-         
-        
-
+      
     }
 }
