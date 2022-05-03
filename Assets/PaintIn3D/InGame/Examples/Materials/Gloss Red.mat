@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Gloss Red
-  m_Shader: {fileID: 4800000, guid: d2862e538ed34704297d434d0ab8c398, type: 3}
-  m_ShaderKeywords: _ALPHATEST_ON
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -87,6 +87,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _CW_DisableFog: 0
@@ -98,10 +99,10 @@ Material:
     - _EnableNormal: 0
     - _EnableOpacity: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.468
+    - _Glossiness: 0.206
     - _GlossyReflections: 1
-    - _Metallic: 1
-    - _Mode: 1
+    - _Metallic: 0.258
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0
     - _Rim: 2
@@ -116,10 +117,10 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Channel: {r: 1, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.066037714, g: 0.066037714, b: 0.066037714, a: 1}
+    - _Color: {r: 1, g: 0.1745283, b: 0.1745283, a: 1}
     - _Color1: {r: 0.824, g: 0.824, b: 0.8627451, a: 1}
     - _Color2: {r: 1, g: 1, b: 1, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
