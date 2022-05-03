@@ -95,7 +95,7 @@ public class DrillerManager2 : MonoBehaviour
                 smoke.Stop();
                 myAudioSource.Stop();
             }
-
+            
         }
 
         var closestPoint = pathCreator.path.GetClosestPointOnPath(transform.position);

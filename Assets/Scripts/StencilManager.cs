@@ -24,9 +24,17 @@ public class StencilManager : MonoBehaviour
 
     public GameObject nextButton;
 
+    public GameObject frame;
+    Vector3 frameInitPos;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        frameInitPos = frame.transform.position;
+        frame.transform.position -= new Vector3(20f, 0, 0);
+        
+
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString(); 
         activatePhase(0);
         sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
@@ -57,6 +65,23 @@ public class StencilManager : MonoBehaviour
 
     }
 
+    IEnumerator getFrame()
+    {
+        Vector3 currentPos = frame.transform.position;
+        Vector3 targetPos = frameInitPos;
+        float t = 0f;
+
+        while (true)
+        {
+            t += Time.deltaTime;
+            var x = Mathf.Clamp(t / .4f, 0f, 1f);
+            frame.transform.position = Vector3.Lerp(currentPos, targetPos, x);
+
+            yield return null;
+
+        }
+    }
+
     public void goToNextPhase()
     {
         currentIndex++;
@@ -70,6 +95,7 @@ public class StencilManager : MonoBehaviour
 
             sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
             FindObjectOfType<StampRotator>().stamp();
+            StartCoroutine(getFrame());
             nextButton.SetActive(false);
 
         }

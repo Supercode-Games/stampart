@@ -117,7 +117,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Channel: {r: 1, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 0.1745283, b: 0.1745283, a: 1}
+    - _Color: {r: 0.7735849, g: 0.18609823, b: 0.18609823, a: 1}
     - _Color1: {r: 0.824, g: 0.824, b: 0.8627451, a: 1}
     - _Color2: {r: 1, g: 1, b: 1, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
