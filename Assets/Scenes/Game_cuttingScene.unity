@@ -1970,7 +1970,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -102.34}
+  m_AnchoredPosition: {x: 0, y: -102.34009}
   m_SizeDelta: {x: 164.65, y: 56.599976}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &578692437
@@ -8464,7 +8464,8 @@ MonoBehaviour:
   topZ: 12.34
   bottomZ: 0.64
   follower: {fileID: 864653216}
-  sensitivity: 0.5
+  tutorial: {fileID: 1333944929}
+  sensitivity: 0.085
   pathShapes:
   - {fileID: 5072335476067843513}
   pencil: {fileID: 1997248937}
@@ -13833,7 +13834,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 9, y: -29.099976}
+  m_AnchoredPosition: {x: 9, y: -29.100098}
   m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1220394494
@@ -15821,6 +15822,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2dfd97e6b23349efb9ab275af8b45b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorial: {fileID: 1333944929}
   currentPhase: 0
   button: {fileID: 787970070}
   dirtWoodTerrain: {fileID: 1982019114}

@@ -12,6 +12,7 @@ public class DrillerManager2 : MonoBehaviour
     public float bottomZ = 0.64f;
 
     public GameObject follower;
+    public GameObject tutorial;
 
     public float sensitivity;
 
@@ -69,7 +70,7 @@ public class DrillerManager2 : MonoBehaviour
 
         if(Input.GetMouseButtonDown(0))
         {
-            FindObjectOfType<NextButton>().tapAndHold.SetActive(false);
+            tutorial.SetActive(false);
             
         }
         

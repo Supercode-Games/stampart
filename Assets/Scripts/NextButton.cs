@@ -7,6 +7,7 @@ using MoreMountains.NiceVibrations;
 public class NextButton : MonoBehaviour
 {
 
+    public GameObject tutorial;
     public int currentPhase;
     public GameObject button;
 
@@ -100,7 +101,7 @@ public class NextButton : MonoBehaviour
             case 2:
 
 
-                tapAndHold.SetActive(true);
+                tutorial.SetActive(true);
 
                 driller2_manager.SetActive(true);
 
