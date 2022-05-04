@@ -146,7 +146,7 @@ public class DrillerManager2 : MonoBehaviour
             }
 
 
-            if(current==(target-20))
+            if(current>=(target-20))
             {
                 finished = true;
                 smoke.gameObject.SetActive(false);
