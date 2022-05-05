@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using MoreMountains.NiceVibrations;
+using UnityEngine.UI;
+
 
 public class NextButton : MonoBehaviour
 {
@@ -41,6 +43,7 @@ public class NextButton : MonoBehaviour
 
     public GameObject loadingPanel;
 
+    public Text tapAndHoldText;
 
 
     // Start is called before the first frame update
@@ -84,12 +87,17 @@ public class NextButton : MonoBehaviour
                 clipperDirtWood.SetActive(false);
                 makeVacumeMovable();
                 dirtClipper.SetActive(false);
+                tapAndHold.SetActive(true);
+                tapAndHoldText.text = "TAP TO VACCUME";
+
 
                 break;
 
             case 1:
 
                 tapAndHold.SetActive(true);
+                tapAndHoldText.text = "HOLD HERE TO DRAW";
+
 
                 vacumeCleaner.gameObject.SetActive(false);
 

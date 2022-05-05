@@ -47,6 +47,8 @@ public class StencilManager : MonoBehaviour
 
     bool levelFinished;
 
+    public GameObject spraySelector;
+
 
     // Start is called before the first frame update
     void Start()
@@ -129,7 +131,9 @@ public class StencilManager : MonoBehaviour
                 foreach (var item in FindObjectOfType<SpraySelector>().sprayBottles)
                 {
                     item.SetActive(false);
-                } 
+                }
+                spraySelector.SetActive(false);
+
             }
             else
             {
