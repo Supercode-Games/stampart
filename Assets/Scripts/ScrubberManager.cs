@@ -25,12 +25,47 @@ public class ScrubberManager : MonoBehaviour
 
     public GameObject tut;
 
+    public bool lerped = false;
+
     // Start is called before the first frame update
     void Start()
     {
+
         startPos = transform.position;
+        transform.position += new Vector3(4f, 0, 0);
+        Invoke("getIn", 2f);
+
     }
 
+    void getIn()
+    {
+        StartCoroutine("getInCor");
+    }
+
+    IEnumerator getInCor()
+    {
+        bool reached = false;
+        Vector3 currentPos = transform.position;
+        
+
+        float t = 0f;
+
+        while (!reached)
+        {
+            t += Time.deltaTime;
+            var x = Mathf.Clamp(t / .4f, 0f, 1f);
+            transform.position = Vector3.Lerp(currentPos, startPos, x);
+
+            if(x>=1f)
+            {
+                lerped = true;
+                reached = true;
+            }
+
+            yield return null;
+        }
+
+    }
 
     public Vector3 pointOnPlane()
     {
@@ -132,7 +167,7 @@ public class ScrubberManager : MonoBehaviour
             }
 
         }
-        else
+        else if(lerped)
         {
             transform.position = Vector3.Lerp(transform.position, startPos, Time.deltaTime * 18f);
 

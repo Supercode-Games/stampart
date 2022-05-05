@@ -40,7 +40,7 @@ public class DrillerManager2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        follower.transform.position += new Vector3(5, 0, 0);
     }
 
     public void loadPath()
@@ -48,7 +48,7 @@ public class DrillerManager2 : MonoBehaviour
         myAudioSource = GetComponent<AudioSource>();
 
         var PATHS = new GameObject("PATHS");
-        pathCreator = pathShapes[0].createPathShape();
+        pathCreator = pathShapes[_Manager.currentLevel].createPathShape();
         float dist = 0f;
         while (dist<=pathCreator.path.length)
         {
@@ -127,7 +127,7 @@ public class DrillerManager2 : MonoBehaviour
 
             laserIndic.material = laserIndicMat;
 
-            follower.transform.position = Vector3.Lerp(follower.transform.position, p, Time.deltaTime * 20f);
+            follower.transform.position = Vector3.Lerp(follower.transform.position, p, Time.deltaTime * 5f);
             
 
         }

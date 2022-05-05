@@ -27,11 +27,19 @@ public class LevelIndicator : MonoBehaviour
 
     void updatePhase()
     {
-        for (int i = 0; i < levelDots.Count; i++)
+        for (int i = 0; i < currentPhase+1; i++)
         {
+            if (i < levelDots.Count)
+            {
+                levelDots[i].sprite = greenVersion[i];
+            }
+        }
+
+        for (int i = currentPhase+1; i < levelDots.Count; i++)
+        {  
             levelDots[i].sprite = brownVersion[i];
         }
 
-        levelDots[currentPhase].sprite = greenVersion[currentPhase];
+        //levelDots[currentPhase].sprite = greenVersion[currentPhase];
     }
 }

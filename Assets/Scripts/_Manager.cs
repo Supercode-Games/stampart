@@ -49,7 +49,8 @@ public class _Manager : MonoBehaviour
 
     void initialiseCurrentLevel()
     {
-        currentLevel = PlayerPrefs.GetInt("current_level", 0);
+        //currentLevel = PlayerPrefs.GetInt("current_level", 0);
+        currentLevel = 0;
         levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
     }
     

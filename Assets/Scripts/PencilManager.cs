@@ -5,29 +5,31 @@ using PathCreation;
 
 public class PencilManager : MonoBehaviour
 {
-    GameObject pencilAnimationObject;
-    Animator pencilAnimator;
+   GameObject pencilAnimationObject;
+   Animator pencilAnimator;
 
-    public List<string> animationNames;
+   public List<string> animationNames;
 
 
-    public float speedOfAnimation;
+   public float speedOfAnimation;
 
-    public float yPos;
+   public float yPos;
 
-    public float t = 0f;
-    float x;
+   public float t = 0f;
+   float x;
 
-    bool finished;
+   bool finished;
 
-    AudioSource myAudio;
-    public GameObject tapAndHold;
+   AudioSource myAudio;
+   public GameObject tapAndHold;
 
-    bool gameFinished;
+   bool gameFinished;
 
-    public List<PathCreatorForShape> pathShapes;
+   public List<PathCreatorForShape> pathShapes;
 
-    PathCreator currentPath;
+   public PathCreator currentPath;
+
+   public Vector3 initOffset = new Vector3(2f,0,0);
     
 
     // Start is called before the first frame update
@@ -45,7 +47,7 @@ public class PencilManager : MonoBehaviour
 
         pencilAnimator = GameObject.FindGameObjectWithTag("PencilAnimator").GetComponent<Animator>();
         pencilAnimationObject = GameObject.FindGameObjectWithTag("Pencil");
-        currentPath = pathShapes[0].createPathShape();
+        currentPath = pathShapes[_Manager.currentLevel].createPathShape();
 
 
     }
@@ -100,7 +102,7 @@ public class PencilManager : MonoBehaviour
 
             var targetPos = point;
             targetPos.y = yPos;
-            transform.position = targetPos;
+            transform.position = targetPos + initOffset;
 
             if (x >= 1f)
             {
@@ -147,6 +149,7 @@ public class PencilManager : MonoBehaviour
                 _Manager.Agent.stopVibration();
 
             }
+
         }
 
         if(!finished && x>=1)
@@ -154,5 +157,8 @@ public class PencilManager : MonoBehaviour
             finished = true;
             FindObjectOfType<NextButton>().activateButton(2);
         }
+
+
+        initOffset = Vector3.Lerp(initOffset, Vector3.zero, Time.deltaTime * 7f);
     }
 }

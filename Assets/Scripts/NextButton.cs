@@ -39,12 +39,19 @@ public class NextButton : MonoBehaviour
 
     public GameObject tapAndHold;
 
+    public GameObject loadingPanel;
+
 
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        Invoke("deActivateLoadingPanel", 2f);
+    }
+
+    void deActivateLoadingPanel()
+    {
+        loadingPanel.SetActive(false);
     }
 
     public void activateButton(int currentPhase)
@@ -72,6 +79,7 @@ public class NextButton : MonoBehaviour
                 manager.canCarve = false;
                 scrubber.SetActive(false);
                 vacumeCleaner.gameObject.SetActive(true);
+                FindObjectOfType<VacumeCleaner>().initOffset = 4f;
                 button.SetActive(false);
                 clipperDirtWood.SetActive(false);
                 makeVacumeMovable();
@@ -82,6 +90,7 @@ public class NextButton : MonoBehaviour
             case 1:
 
                 tapAndHold.SetActive(true);
+
                 vacumeCleaner.gameObject.SetActive(false);
 
                 foreach (var item in FindObjectsOfType<CarveParticle_prefab>())
@@ -91,9 +100,11 @@ public class NextButton : MonoBehaviour
 
                 }
                 pencil.SetActive(true);
-               
-                p3DHitBetween.gameObject.SetActive(true);
-                p3DHitBetween.enabled = true;
+
+                FindObjectOfType<PencilManager>().initOffset = new Vector3(2, 2, 0);
+
+
+                Invoke("panintablesActivate", 1f);
                 button.SetActive(false);
 
                 break;
@@ -137,6 +148,8 @@ public class NextButton : MonoBehaviour
                 drillerClipper.SetActive(false);
                 cut_block[_Manager.currentLevel].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
                 Invoke("deactivateCutBlockAnim", 1.5f);
+
+
                 break;
 
             case 4:
@@ -161,10 +174,10 @@ public class NextButton : MonoBehaviour
         paintPlane.SetActive(false);
         driller.SetActive(false);
         PlainTerrain.SetActive(false);
-        actualCutWood[0].enabled = true;
-        cut_block[0].SetActive(true);
+        actualCutWood[_Manager.currentLevel].enabled = true;
+        cut_block[_Manager.currentLevel].SetActive(true);
         drillerClipper.SetActive(false);
-        cut_block[0].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
+        cut_block[_Manager.currentLevel].GetComponent<Animator>().Play("BlockAnimation", 0, 0);
         Invoke("deactivateCutBlockAnim", 1.5f);
 
     }
@@ -198,5 +211,11 @@ public class NextButton : MonoBehaviour
 
 
         }
+    }
+
+    void panintablesActivate()
+    {
+        p3DHitBetween.gameObject.SetActive(true);
+        p3DHitBetween.enabled = true;
     }
 }

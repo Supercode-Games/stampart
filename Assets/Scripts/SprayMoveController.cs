@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SprayMoveController : MonoBehaviour
 {
@@ -10,12 +11,20 @@ public class SprayMoveController : MonoBehaviour
 
     public Vector3 startPos;
 
+   public Vector3 initOffset;
+
 
     public void Start()
     {
         transform.position = startPos;
     }
 
+
+    private void OnEnable()
+    {
+        initOffset = new Vector3(10f, 0f, 0f);
+
+    }
 
     Vector3 pointOnPlane()
     {
@@ -33,8 +42,33 @@ public class SprayMoveController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool touch_condition = false;
 
-        if(Input.GetMouseButtonDown(0))
+#if !UNITY_EDITOR
+
+        if (Input.touchCount > 0)
+        {
+            var touch = Input.GetTouch(0);
+
+            var touchid = touch.fingerId;
+
+            touch_condition =(!EventSystem.current.IsPointerOverGameObject(touchid));
+        }
+
+#endif
+
+
+
+#if UNITY_EDITOR
+
+
+
+      touch_condition = (!EventSystem.current.IsPointerOverGameObject());
+        
+
+#endif
+
+        if (Input.GetMouseButtonDown(0) && touch_condition)
         {
 
             var tp = pointOnPlane();
@@ -42,7 +76,7 @@ public class SprayMoveController : MonoBehaviour
             transform.position = tp;
         }
 
-        if(Input.GetMouseButton(0))
+        if(Input.GetMouseButton(0) && touch_condition)
         {
             var x = Input.GetAxis("Mouse X") * sensitivity;
             var y = Input.GetAxis("Mouse Y") * sensitivity;
@@ -56,11 +90,12 @@ public class SprayMoveController : MonoBehaviour
             }
 
         }
-        else if(myParticles.isPlaying)
+        else
         {
             myParticles.Stop();
-            transform.position = Vector3.Lerp(transform.position, startPos, Time.deltaTime * 20f);
-
+            transform.position = Vector3.Lerp(transform.position, startPos+initOffset, Time.deltaTime * 10f);
+            initOffset = Vector3.Lerp(initOffset, Vector3.zero, Time.deltaTime * 10f);
         }
+         
     }
 }

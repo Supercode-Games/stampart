@@ -8,14 +8,14 @@ public class PathCreatorForShape : MonoBehaviour
 
     // 0.55 , 0.75
 
-    PathCreator path;
+   PathCreator path;
    public List<Transform> childNodes = new List<Transform>();
 
     
 
     public PathCreator createPathShape()
     {
-        path = gameObject.GetComponent<PathCreator>();
+        path = this.gameObject.GetComponent<PathCreator>();
         childNodes.AddRange(GetComponentsInChildren<Transform>());
         List<Vector3> points = new List<Vector3>();
 

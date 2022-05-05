@@ -3,20 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using PaintIn3D;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class StencilManager : MonoBehaviour
 {
 
+    [System.Serializable]
+    public class LevelObjects
+    {
+        public List<Texture> outerTextures;
+        public List<Texture> innerTextures;
+        public GameObject sheetsParent;
+        public GameObject spraysParent;
+        public GameObject objectModelParent;
+    }
+
     public List<GameObject> sheets;
+
+
+    //public List<GameObject> sheets;
 
 
     public P3dPaintableTexture paint_;
 
 
-    public List<GameObject> sprayBottles;
+    //public List<GameObject> sprayBottles;
 
-    public List<Texture> innerTextures;
+    //public List<Texture> innerTextures;
 
     int currentIndex;
 
@@ -27,6 +41,12 @@ public class StencilManager : MonoBehaviour
     public GameObject frame;
     Vector3 frameInitPos;
 
+    public List<LevelObjects> levelObjects = new List<LevelObjects>();
+
+    int currentLevel;
+
+    bool levelFinished;
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,8 +55,11 @@ public class StencilManager : MonoBehaviour
         frame.transform.position -= new Vector3(20f, 0, 0);
         
 
-        levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString(); 
+        levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
+
+        currentLevel = 0;
         activatePhase(0);
+        
         sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
 
     }
@@ -49,18 +72,27 @@ public class StencilManager : MonoBehaviour
 
     void activatePhase(int index)
     {
-        
-        foreach (var item in sprayBottles)
-        {
-            item.SetActive(false);
-        }
+        levelObjects[currentLevel].sheetsParent.SetActive(true);
+        levelObjects[currentLevel].spraysParent.SetActive(true);
+        levelObjects[currentLevel].objectModelParent.SetActive(true);
+
+
 
 
         sheets[index].SetActive(true);
-        paint_.Texture = innerTextures[index];
-        paint_.LocalMaskTexture = innerTextures[index];
+
+        sheets[index].GetComponent<MeshRenderer>().materials[0].SetTexture("_MainTex", levelObjects[currentLevel].outerTextures[index]);
+
+        var p = sheets[index].GetComponent<P3dPaintableTexture>();
+        p.Texture = levelObjects[currentLevel].outerTextures[index];
+        p.LocalMaskTexture = levelObjects[currentLevel].outerTextures[index];
+        p.LocalMaskChannel = P3dChannel.Alpha;
+
+        sheets[index].GetComponent<P3dPaintable>().Activate();
+
+        paint_.Texture = levelObjects[currentLevel].innerTextures[index];
+        paint_.LocalMaskTexture = levelObjects[currentLevel].innerTextures[index];
         paint_.LocalMaskChannel = P3dChannel.Alpha;
-        sprayBottles[index].SetActive(true);
 
 
     }
@@ -84,32 +116,38 @@ public class StencilManager : MonoBehaviour
 
     public void goToNextPhase()
     {
-        currentIndex++;
-        if (currentIndex == 3)
+
+        if (!levelFinished)
         {
-            
-            foreach (var item in sprayBottles)
+            currentIndex++;
+            if (currentIndex == levelObjects[currentLevel].innerTextures.Count)
             {
-                item.SetActive(false);
+                sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+                FindObjectOfType<StampRotator>().stamp();
+                StartCoroutine(getFrame());
+                levelFinished = true;
+                foreach (var item in FindObjectOfType<SpraySelector>().sprayBottles)
+                {
+                    item.SetActive(false);
+                } 
             }
+            else
+            {
+                activatePhase(currentIndex);
+                currentIndex = currentIndex % levelObjects[currentLevel].innerTextures.Count;
 
-            sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
-            FindObjectOfType<StampRotator>().stamp();
-            StartCoroutine(getFrame());
-            nextButton.SetActive(false);
 
+                sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+
+                sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+            }
         }
         else
         {
-            activatePhase(currentIndex);
-            currentIndex = currentIndex % sheets.Count;
+            SceneManager.LoadScene(0);
 
-
-            sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
-
-            sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
         }
 
-      
+
     }
 }

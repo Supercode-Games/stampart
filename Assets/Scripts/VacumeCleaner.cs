@@ -23,6 +23,8 @@ public class VacumeCleaner : MonoBehaviour
 
     Vector3 startPos;
 
+    public float initOffset;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -148,7 +150,8 @@ public class VacumeCleaner : MonoBehaviour
 
         if(!touch_condition)
         {
-            transform.position = Vector3.Lerp(transform.position, startPos, Time.deltaTime * 18f);
+            initOffset = Mathf.Lerp(initOffset, 0f, Time.deltaTime * 10f);
+            transform.position = Vector3.Lerp(transform.position, startPos + new Vector3(initOffset,0,0), Time.deltaTime * 18f);
         }
 
         if (canMove && touch_condition)
