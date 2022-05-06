@@ -6,9 +6,10 @@ using UnityEngine.UI;
 public class LevelIndicator : MonoBehaviour
 {
     public List<Image> levelDots;
-    public List<Sprite> brownVersion;
-    public List<Sprite> greenVersion;
+    //public List<Sprite> brownVersion;
+    //public List<Sprite> greenVersion;
 
+    
 
 
     public int currentPhase;
@@ -29,16 +30,13 @@ public class LevelIndicator : MonoBehaviour
     {
         for (int i = 0; i < currentPhase+1; i++)
         {
-            if (i < levelDots.Count)
-            {
-                levelDots[i].sprite = greenVersion[i];
-            }
+            levelDots[i].enabled = true;
         }
 
-        for (int i = currentPhase+1; i < levelDots.Count; i++)
-        {  
-            levelDots[i].sprite = brownVersion[i];
-        }
+        //for (int i = currentPhase+1; i < levelDots.Count; i++)
+        //{  
+        //    levelDots[i].sprite = brownVersion[i];
+        //}
 
         //levelDots[currentPhase].sprite = greenVersion[currentPhase];
     }

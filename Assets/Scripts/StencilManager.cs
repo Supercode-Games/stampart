@@ -14,12 +14,12 @@ public class StencilManager : MonoBehaviour
     {
         public List<Texture> outerTextures;
         public List<Texture> innerTextures;
+        public List<GameObject> sheets;
         public GameObject sheetsParent;
         public GameObject spraysParent;
         public GameObject objectModelParent;
     }
 
-    public List<GameObject> sheets;
 
 
     //public List<GameObject> sheets;
@@ -62,7 +62,7 @@ public class StencilManager : MonoBehaviour
         currentLevel = 0;
         activatePhase(0);
         
-        sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+        levelObjects[currentLevel].sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
 
     }
 
@@ -81,16 +81,10 @@ public class StencilManager : MonoBehaviour
 
 
 
-        sheets[index].SetActive(true);
+        levelObjects[currentLevel].sheets[index].SetActive(true);
 
-        sheets[index].GetComponent<MeshRenderer>().materials[0].SetTexture("_MainTex", levelObjects[currentLevel].outerTextures[index]);
+        //sheets[index].GetComponent<MeshRenderer>().materials[0].SetTexture("_MainTex", levelObjects[currentLevel].outerTextures[index]);
 
-        var p = sheets[index].GetComponent<P3dPaintableTexture>();
-        p.Texture = levelObjects[currentLevel].outerTextures[index];
-        p.LocalMaskTexture = levelObjects[currentLevel].outerTextures[index];
-        p.LocalMaskChannel = P3dChannel.Alpha;
-
-        sheets[index].GetComponent<P3dPaintable>().Activate();
 
         paint_.Texture = levelObjects[currentLevel].innerTextures[index];
         paint_.LocalMaskTexture = levelObjects[currentLevel].innerTextures[index];
@@ -124,7 +118,10 @@ public class StencilManager : MonoBehaviour
             currentIndex++;
             if (currentIndex == levelObjects[currentLevel].innerTextures.Count)
             {
-                sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+                levelObjects[currentLevel].sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+
+
+
                 FindObjectOfType<StampRotator>().stamp();
                 StartCoroutine(getFrame());
                 levelFinished = true;
@@ -141,9 +138,11 @@ public class StencilManager : MonoBehaviour
                 currentIndex = currentIndex % levelObjects[currentLevel].innerTextures.Count;
 
 
-                sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+                levelObjects[currentLevel].sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
 
-                sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+                levelObjects[currentLevel].sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+
+
             }
         }
         else
