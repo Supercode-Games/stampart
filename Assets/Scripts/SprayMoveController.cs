@@ -36,7 +36,7 @@ public class SprayMoveController : MonoBehaviour
             pos = raycastHit.point;
         }
 
-        return pos;
+        return pos + new Vector3(0,1,0);
     }
 
     // Update is called once per frame

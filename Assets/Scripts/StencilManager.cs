@@ -54,6 +54,7 @@ public class StencilManager : MonoBehaviour
 
     public GameObject levelCompletedPage;
 
+    public Text level;
     // Start is called before the first frame update
     void Start()
     {
@@ -139,6 +140,7 @@ public class StencilManager : MonoBehaviour
                 spraySelector.SetActive(false);
                 gamePlayPage.SetActive(false);
                 levelCompletedPage.SetActive(true);
+                level.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1) + " COMPLETED!";
 
             }
             else

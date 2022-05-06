@@ -91,6 +91,7 @@ public class NextButton : MonoBehaviour
                 //tapAndHoldText.text = "TAP TO VACCUME";
 
                 tutorial.SetActive(true);
+                draggingText.text = "TAP TO VACCUME";
 
 
                 break;
