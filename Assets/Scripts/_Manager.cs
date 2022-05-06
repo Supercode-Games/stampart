@@ -50,15 +50,15 @@ public class _Manager : MonoBehaviour
     void initialiseCurrentLevel()
     {
         //currentLevel = PlayerPrefs.GetInt("current_level", 0);
-        currentLevel = 0;
-        levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
+        currentLevel = 1;
+        levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
     }
     
 
      void increaseLevel()
     {
-        currentLevel++;
-        currentLevel = currentLevel % 5;
+        //currentLevel++;
+        //currentLevel = currentLevel % 5;
         PlayerPrefs.SetInt("current_level", currentLevel);
     }
 

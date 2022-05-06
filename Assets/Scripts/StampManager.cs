@@ -8,6 +8,8 @@ public class StampManager : MonoBehaviour
 
 
     public MeshRenderer twoSided;
+    public MeshRenderer shine;
+
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +28,7 @@ public class StampManager : MonoBehaviour
 
     public void activateStamp()
     {
-
+        shine.enabled = true;
         twoSided.enabled = true;
         twoSided.material.mainTexture = finalStampMat.material.mainTexture;
 

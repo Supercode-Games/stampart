@@ -49,7 +49,10 @@ public class VacumeCleaner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(Input.GetMouseButtonDown(0))
+        {
+            FindObjectOfType<NextButton>().tutorial.SetActive(false);
+        }
 
         if (vaccumeBody.transform.localPosition.y <= 0f)
         {

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class NextButton : MonoBehaviour
 {
-
+    public Text draggingText;
     public GameObject tutorial;
     public int currentPhase;
     public GameObject button;
@@ -87,8 +87,10 @@ public class NextButton : MonoBehaviour
                 clipperDirtWood.SetActive(false);
                 makeVacumeMovable();
                 dirtClipper.SetActive(false);
-                tapAndHold.SetActive(true);
-                tapAndHoldText.text = "TAP TO VACCUME";
+                //tapAndHold.SetActive(true);
+                //tapAndHoldText.text = "TAP TO VACCUME";
+
+                tutorial.SetActive(true);
 
 
                 break;
@@ -121,6 +123,8 @@ public class NextButton : MonoBehaviour
 
 
                 tutorial.SetActive(true);
+
+                draggingText.text = "DRAG TO DRILL";
 
                 driller2_manager.SetActive(true);
 

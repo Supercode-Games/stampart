@@ -49,6 +49,10 @@ public class StencilManager : MonoBehaviour
 
     public GameObject spraySelector;
 
+    public GameObject dragToSPray;
+    public GameObject gamePlayPage;
+
+    public GameObject levelCompletedPage;
 
     // Start is called before the first frame update
     void Start()
@@ -69,7 +73,10 @@ public class StencilManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetMouseButtonDown(0))
+        {
+            dragToSPray.SetActive(false);
+        }
     }
 
     void activatePhase(int index)
@@ -130,6 +137,8 @@ public class StencilManager : MonoBehaviour
                     item.SetActive(false);
                 }
                 spraySelector.SetActive(false);
+                gamePlayPage.SetActive(false);
+                levelCompletedPage.SetActive(true);
 
             }
             else
@@ -147,6 +156,9 @@ public class StencilManager : MonoBehaviour
         }
         else
         {
+            var l = PlayerPrefs.GetInt("current_level", 0);
+            l++;
+            PlayerPrefs.SetInt("current_level", l);
             SceneManager.LoadScene(0);
 
         }
