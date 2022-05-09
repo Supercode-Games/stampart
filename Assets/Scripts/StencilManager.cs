@@ -14,15 +14,13 @@ public class StencilManager : MonoBehaviour
     {
         public List<Texture> outerTextures;
         public List<Texture> innerTextures;
-        public List<GameObject> sheets;
-        public GameObject sheetsParent;
-        public GameObject spraysParent;
         public GameObject objectModelParent;
+        public Texture finalTexture;
     }
 
+    public MeshRenderer finalTextureOverlay;
 
-
-    //public List<GameObject> sheets;
+    public List<GameObject> sheets;
 
 
     public P3dPaintableTexture paint_;
@@ -64,10 +62,22 @@ public class StencilManager : MonoBehaviour
 
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
 
-        currentLevel = 0;
+        currentLevel = PlayerPrefs.GetInt("current)level")%levelObjects.Count;
         activatePhase(0);
         
-        levelObjects[currentLevel].sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+        sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+
+        for (int i = 0; i < levelObjects[currentLevel].outerTextures.Count; i++)
+        {
+
+            sheets[i].GetComponent<MeshRenderer>().material.mainTexture = levelObjects[currentLevel].outerTextures[i];
+            var pt = sheets[i].GetComponent<P3dPaintableTexture>();
+            pt.LocalMaskTexture = levelObjects[currentLevel].outerTextures[i];
+            pt.Texture = levelObjects[currentLevel].outerTextures[i];
+            pt.Activate();
+            sheets[i].GetComponent<P3dPaintable>().DirtyMaterials();
+        }
+
 
     }
 
@@ -82,14 +92,13 @@ public class StencilManager : MonoBehaviour
 
     void activatePhase(int index)
     {
-        levelObjects[currentLevel].sheetsParent.SetActive(true);
-        levelObjects[currentLevel].spraysParent.SetActive(true);
+
+        finalTextureOverlay.material.mainTexture = levelObjects[currentLevel].finalTexture;
         levelObjects[currentLevel].objectModelParent.SetActive(true);
 
 
 
 
-        levelObjects[currentLevel].sheets[index].SetActive(true);
 
         //sheets[index].GetComponent<MeshRenderer>().materials[0].SetTexture("_MainTex", levelObjects[currentLevel].outerTextures[index]);
 
@@ -126,7 +135,7 @@ public class StencilManager : MonoBehaviour
             currentIndex++;
             if (currentIndex == levelObjects[currentLevel].innerTextures.Count)
             {
-                levelObjects[currentLevel].sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+                sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
 
 
 
@@ -149,9 +158,9 @@ public class StencilManager : MonoBehaviour
                 currentIndex = currentIndex % levelObjects[currentLevel].innerTextures.Count;
 
 
-                levelObjects[currentLevel].sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
+                sheets[currentIndex - 1].gameObject.GetComponent<Animator>().Play("out", 0, 0);
 
-                levelObjects[currentLevel].sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
+                sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
 
 
             }

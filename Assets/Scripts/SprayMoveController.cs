@@ -13,9 +13,11 @@ public class SprayMoveController : MonoBehaviour
 
    public Vector3 initOffset;
 
+    AudioSource audioSource;
 
     public void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         transform.position = startPos;
     }
 
@@ -87,14 +89,21 @@ public class SprayMoveController : MonoBehaviour
             if(!myParticles.isPlaying)
             {
                 myParticles.Play();
+                audioSource.Play();
             }
 
         }
         else
         {
+            if (myParticles.isPlaying)
+            {
+                audioSource.Stop();
+            }
             myParticles.Stop();
             transform.position = Vector3.Lerp(transform.position, startPos+initOffset, Time.deltaTime * 10f);
             initOffset = Vector3.Lerp(initOffset, Vector3.zero, Time.deltaTime * 10f);
+
+            
         }
          
     }

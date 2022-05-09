@@ -30,6 +30,19 @@ public class _Manager : MonoBehaviour
 
     public Text levelIndicator;
 
+    public Animator settingspanel;
+    bool settingsOff;
+
+    public Image soundImage;
+    public Sprite soundOnSprite;
+    public Sprite soundOffSprite;
+
+
+    public Image vibrationImage;
+    public Sprite vibrationOnSprite;
+    public Sprite vibrationOffSprite;
+
+
     private void Awake()
     {
         Agent = this;
@@ -39,17 +52,16 @@ public class _Manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+      settingsOff = true;
       initialiseCurrentLevel();
       diggableWood.transform.rotation = Quaternion.Euler(90, 0, 0);
       diggableWood.transform.position -= new Vector3(12.5f * .5f, 0, 0);
       loadVibrationAndSounds();
-
     }
 
     void initialiseCurrentLevel()
     {
-        //currentLevel = PlayerPrefs.GetInt("current_level", 0);
+        currentLevel = PlayerPrefs.GetInt("current_level") % FindObjectOfType<NextButton>().cut_block.Count;
         currentLevel = 1;
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
     }
@@ -239,21 +251,24 @@ public class _Manager : MonoBehaviour
         if (PlayerPrefs.GetInt("sound_")==1)
         {
             soundToggle.isOn = true;
+            soundImage.sprite = soundOnSprite;
         }
         else
         {
             soundToggle.isOn = false;
+            soundImage.sprite = soundOffSprite;
         }
-
 
 
         if (PlayerPrefs.GetInt("vibration_") == 1)
         {
             vibrationToggle.isOn = true;
+            vibrationImage.sprite = vibrationOnSprite;
         }
         else
         {
             vibrationToggle.isOn = false;
+            vibrationImage.sprite = vibrationOffSprite;
 
         }
 
@@ -293,7 +308,7 @@ public class _Manager : MonoBehaviour
    public void soundToggleButton()
     {
         //soundToggle.isOn = !soundToggle.isOn;
-        if(soundToggle.isOn)
+        if(soundImage.sprite != soundOnSprite)
         {
             PlayerPrefs.SetInt("sound_", 1);
         }
@@ -303,12 +318,14 @@ public class _Manager : MonoBehaviour
 
         }
         setToggles();
+        loadVibrationAndSounds();
+
     }
 
     public void vibrationToggleButton()
     {
         //vibrationToggle.isOn = !vibrationToggle.isOn;
-        if (vibrationToggle.isOn)
+        if (vibrationImage.sprite != vibrationOnSprite)
         {
             PlayerPrefs.SetInt("vibration_", 1);
         }
@@ -318,8 +335,24 @@ public class _Manager : MonoBehaviour
 
         }
         setToggles();
+        loadVibrationAndSounds();
+
     }
 
+    public void settingsClicked()
+    {
+        if(settingsOff)
+        {
+            settingsOff = false;
+            settingspanel.SetTrigger("out");
+        }
+        else
+        {
+            settingsOff = true;
 
+            settingspanel.SetTrigger("in");
+
+        }
+    }
 
 }
