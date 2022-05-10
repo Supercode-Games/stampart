@@ -62,7 +62,7 @@ public class StencilManager : MonoBehaviour
 
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
 
-        currentLevel = PlayerPrefs.GetInt("current)level")%levelObjects.Count;
+        currentLevel = PlayerPrefs.GetInt("current_level")%levelObjects.Count;
         activatePhase(0);
         
         sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
