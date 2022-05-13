@@ -48,7 +48,7 @@ public class NextButton : MonoBehaviour
 
     public Color pencilColor;
     public Color drillingColor;
-
+    public MeshRenderer pencilMesh;
 
 
     // Start is called before the first frame update
@@ -139,7 +139,7 @@ public class NextButton : MonoBehaviour
                 drillerClipper.SetActive(true);
 
                 FindObjectOfType<DrillerManager2>().loadPath();
-                pencil.GetComponentInChildren<MeshRenderer>().enabled = false;
+                pencilMesh.enabled = false;
                 pencil.GetComponent<PencilManager>().t = 0;
               //  pencil.GetComponent<PencilManager>().speedOfAnimation = FindObjectOfType<DrillerManager>().speedOfAnimation;
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class SprayMoveController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class SprayMoveController : MonoBehaviour
    public Vector3 initOffset;
 
     AudioSource audioSource;
+    public Button nextButt;
 
     public void Start()
     {
@@ -78,7 +80,12 @@ public class SprayMoveController : MonoBehaviour
             transform.position = tp;
         }
 
-        if(Input.GetMouseButton(0) && touch_condition)
+        if (Input.GetMouseButtonDown(0) &&  touch_condition)
+        {
+            nextButt.interactable = true;
+        }
+
+        if (Input.GetMouseButton(0) && touch_condition)
         {
             var x = Input.GetAxis("Mouse X") * sensitivity;
             var y = Input.GetAxis("Mouse Y") * sensitivity;

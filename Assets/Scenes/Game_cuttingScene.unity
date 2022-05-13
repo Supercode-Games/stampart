@@ -1437,7 +1437,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 45.91
-  field of view: 65.09141
+  field of view: 65.155685
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -9670,7 +9670,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 1fa22be2de12b4c86a5e36c657f039b6, type: 3}
+  m_audioClip: {fileID: 8300000, guid: dadcd86439ac149f49ad28ac9984c7ab, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -17479,7 +17479,7 @@ MonoBehaviour:
   - semiCircle
   - star2
   - batman
-  speedOfAnimation: 0.27
+  speedOfAnimation: 0.2
   yPos: 0.37
   t: 0
   tapAndHold: {fileID: 180678505}
@@ -17501,7 +17501,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: d0ab17ed4f0384be18df6d8a1a754717, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 70a7c3a8b35584519b6485aecbbe3a7b, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.916
   m_Pitch: 1
@@ -17989,6 +17989,7 @@ MonoBehaviour:
   tapAndHoldText: {fileID: 1317932115}
   pencilColor: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
   drillingColor: {r: 0.4433962, g: 0.123398006, b: 0.123398006, a: 1}
+  pencilMesh: {fileID: 5452678933589389165}
 --- !u!82 &2047051862
 AudioSource:
   m_ObjectHideFlags: 0

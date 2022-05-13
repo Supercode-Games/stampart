@@ -93,11 +93,7 @@ public class StencilManager : MonoBehaviour
             dragToSPray.SetActive(false);
         }
 
-        if(!interactable && Input.GetMouseButtonDown(0))
-        {
-            interactable = true;
-            nextButt.interactable = true;
-        }
+        
   
     }
 
@@ -161,6 +157,8 @@ public class StencilManager : MonoBehaviour
                 gamePlayPage.SetActive(false);
                 levelCompletedPage.SetActive(true);
                 level.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1) + " COMPLETED!";
+                nextButt.interactable = true;
+
 
             }
             else
@@ -173,11 +171,11 @@ public class StencilManager : MonoBehaviour
 
                 sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
 
-
+                nextButt.interactable = false;
+                interactable = false;
             }
 
-            nextButt.interactable = false;
-            interactable = false;
+           
 
         }
         else
