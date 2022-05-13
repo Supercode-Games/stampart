@@ -35,6 +35,7 @@ public class StencilManager : MonoBehaviour
     public Text levelIndicator;
 
     public GameObject nextButton;
+    public Button nextButt;
 
     public GameObject frame;
     Vector3 frameInitPos;
@@ -53,13 +54,16 @@ public class StencilManager : MonoBehaviour
     public GameObject levelCompletedPage;
 
     public Text level;
+    bool interactable;
+
+
     // Start is called before the first frame update
     void Start()
     {
         frameInitPos = frame.transform.position;
         frame.transform.position -= new Vector3(20f, 0, 0);
-        
 
+        nextButt.interactable = false;
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
 
         currentLevel = PlayerPrefs.GetInt("current_level")%levelObjects.Count;
@@ -88,6 +92,13 @@ public class StencilManager : MonoBehaviour
         {
             dragToSPray.SetActive(false);
         }
+
+        if(!interactable && Input.GetMouseButtonDown(0))
+        {
+            interactable = true;
+            nextButt.interactable = true;
+        }
+  
     }
 
     void activatePhase(int index)
@@ -164,6 +175,10 @@ public class StencilManager : MonoBehaviour
 
 
             }
+
+            nextButt.interactable = false;
+            interactable = false;
+
         }
         else
         {

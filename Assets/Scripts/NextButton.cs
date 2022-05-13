@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using MoreMountains.NiceVibrations;
 using UnityEngine.UI;
+using PaintIn3D;
 
 
 public class NextButton : MonoBehaviour
@@ -44,6 +45,10 @@ public class NextButton : MonoBehaviour
     public GameObject loadingPanel;
 
     public Text tapAndHoldText;
+
+    public Color pencilColor;
+    public Color drillingColor;
+
 
 
     // Start is called before the first frame update
@@ -113,6 +118,7 @@ public class NextButton : MonoBehaviour
                 pencil.SetActive(true);
 
                 FindObjectOfType<PencilManager>().initOffset = new Vector3(2, 2, 0);
+                paintAddituve.GetComponent<P3dPaintSphere>().Color = pencilColor;
 
 
                 Invoke("panintablesActivate", 1f);
@@ -137,7 +143,7 @@ public class NextButton : MonoBehaviour
                 pencil.GetComponent<PencilManager>().t = 0;
               //  pencil.GetComponent<PencilManager>().speedOfAnimation = FindObjectOfType<DrillerManager>().speedOfAnimation;
 
-                paintAddituve.GetComponent<PaintIn3D.P3dPaintSphere>().Color = Color.black;
+                paintAddituve.GetComponent<P3dPaintSphere>().Color = drillingColor;
                
 
 
@@ -182,6 +188,7 @@ public class NextButton : MonoBehaviour
 
     public void finishPhase1()
     {
+
         driller2_follower.SetActive(false);
         driller2_manager.SetActive(false);
         paintPlane.SetActive(false);

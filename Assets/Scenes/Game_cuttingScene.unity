@@ -17452,6 +17452,7 @@ Transform:
   - {fileID: 6161274221688493698}
   - {fileID: 588318305}
   - {fileID: 1033684643}
+  - {fileID: 6620540238530221058}
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -17986,6 +17987,8 @@ MonoBehaviour:
   tapAndHold: {fileID: 180678505}
   loadingPanel: {fileID: 2083468897}
   tapAndHoldText: {fileID: 1317932115}
+  pencilColor: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+  drillingColor: {r: 0.4433962, g: 0.123398006, b: 0.123398006, a: 1}
 --- !u!82 &2047051862
 AudioSource:
   m_ObjectHideFlags: 0
@@ -70677,7 +70680,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 294df6661c7044daaa83deb0fb420e63, type: 3}
+  m_audioClip: {fileID: 8300000, guid: eee780c752ecf4cbd8948e3dd2e1982b, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.226
   m_Pitch: 1
@@ -73963,7 +73966,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6830534492326972472}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -78515,6 +78518,48 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!23 &5452678933589389165
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5812795722649980600}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a7496951ffeee4d36be7609bec41731b, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &5454191819412605884
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -82426,6 +82471,24 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2932750126998332447}
   m_Mesh: {fileID: 6611990244428874992, guid: 253b3419233514838af2a1d3173069e9, type: 3}
+--- !u!1 &5812795722649980600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6620540238530221058}
+  - component: {fileID: 7804520246194805671}
+  - component: {fileID: 5452678933589389165}
+  m_Layer: 0
+  m_Name: PencilNew
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!23 &5813877247664679848
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -91871,6 +91934,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &6620540238530221058
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5812795722649980600}
+  m_LocalRotation: {x: 0.13426507, y: -0.34540638, z: -0.3233021, w: 0.8707142}
+  m_LocalPosition: {x: 0.652, y: 0.221, z: 0.43}
+  m_LocalScale: {x: 25, y: 25, z: 25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1997248938}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0.6, y: -43.5, z: -40.98}
 --- !u!23 &6623435107737264740
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -103938,6 +104016,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &7804520246194805671
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5812795722649980600}
+  m_Mesh: {fileID: -6561623048535504736, guid: 235f95b4c426b4273a4dbadf0ae0e295, type: 3}
 --- !u!4 &7805469689358699528
 Transform:
   m_ObjectHideFlags: 0
