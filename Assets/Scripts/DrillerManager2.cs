@@ -69,13 +69,13 @@ public class DrillerManager2 : MonoBehaviour
     void Update()
     {
 
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             tutorial.SetActive(false);
-            
+
         }
-        
-        
+
+
 
         if (Input.GetMouseButton(0))
         {
@@ -97,7 +97,7 @@ public class DrillerManager2 : MonoBehaviour
                 smoke.Stop();
                 myAudioSource.Stop();
             }
-            
+
         }
 
         var closestPoint = pathCreator.path.GetClosestPointOnPath(transform.position);
@@ -117,7 +117,7 @@ public class DrillerManager2 : MonoBehaviour
             pencil.transform.position = h;
 
             smoke.gameObject.transform.position = new Vector3(h.x, -0.29f, h.z);
-            
+
         }
         else
         {
@@ -129,25 +129,25 @@ public class DrillerManager2 : MonoBehaviour
             laserIndic.material = laserIndicMat;
 
             follower.transform.position = Vector3.Lerp(follower.transform.position, p, Time.deltaTime * 5f);
-            
+
 
         }
 
 
-        if(refs.Count>0 && !finished)
+        if (refs.Count > 0 && !finished)
         {
             int target = refs.Count;
             int current = 0;
             foreach (var item in refs)
             {
-                if(item.hit)
+                if (item.hit)
                 {
                     current++;
                 }
             }
 
 
-            if(current>=(target-10))
+            if (current >= (target - 10))
             {
                 finished = true;
                 smoke.gameObject.SetActive(false);
