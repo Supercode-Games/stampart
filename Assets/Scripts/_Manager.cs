@@ -62,7 +62,7 @@ public class _Manager : MonoBehaviour
     void initialiseCurrentLevel()
     {
         currentLevel = PlayerPrefs.GetInt("current_level") % FindObjectOfType<NextButton>().cut_block.Count;
-        currentLevel = FindObjectOfType<NextButton>().cut_block.Count - 1;
+        //currentLevel = 1;
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
     }
     

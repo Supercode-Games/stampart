@@ -179,7 +179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet_1_3
+      name: window
       rect:
         serializedVersion: 2
         x: 1024
@@ -662,7 +662,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet_1_26
+      name: Button2
       rect:
         serializedVersion: 2
         x: 47
@@ -851,7 +851,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet_1_35
+      name: Button
       rect:
         serializedVersion: 2
         x: 1296
@@ -1010,23 +1010,23 @@ TextureImporter:
       spritesheet_1_28: 1813886778
       spritesheet_1_39: 1243309736
       vibrationOff: -3291167
-      spritesheet_1_35: -698556151
       spritesheet_1_17: -1227060328
       spritesheet_1_10: -1061249531
       spritesheet_1_12: -442818438
       soundOff: 1953570567
       spritesheet_1_4: 1887005104
+      Button: -698556151
       spritesheet_1_6: 1889335868
       spritesheet_1_27: -1191744824
       spritesheet_1_8: 1561591312
       spritesheet_1_18: 1530688994
-      spritesheet_1_3: -1406871640
+      window: -1406871640
       spritesheet_1_2: 2082248594
       spritesheet_1_16: 960140305
       spritesheet_1_5: -1314190420
-      spritesheet_1_26: 976213842
       spritesheet_1_33: 1657986558
       spritesheet_1_9: -432807686
+      Button2: 976213842
       spritesheet_1_22: -180001264
   spritePackingTag: 
   pSDRemoveMatte: 0

@@ -66,6 +66,7 @@ public class StencilManager : MonoBehaviour
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
 
         currentLevel = PlayerPrefs.GetInt("current_level")%levelObjects.Count;
+        //currentLevel = levelObjects.Count - 1;
         activatePhase(0);
         
         sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
@@ -158,10 +159,9 @@ public class StencilManager : MonoBehaviour
                 }
                 spraySelector.SetActive(false);
                 gamePlayPage.SetActive(false);
-                levelCompletedPage.SetActive(true);
                 level.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1) + " COMPLETED!";
-                Invoke("activateButton", .4f);
-
+                nextButton.SetActive(false);
+                Invoke("LevelFinishedLevelPage", 2f);
             }
             else
             {
@@ -189,5 +189,19 @@ public class StencilManager : MonoBehaviour
         }
 
 
+    }
+
+    void LevelFinishedLevelPage()
+    {
+        levelCompletedPage.SetActive(true);
+
+    }
+
+    public void goToNextLevel()
+    {
+        var l = PlayerPrefs.GetInt("current_level", 0);
+        l++;
+        PlayerPrefs.SetInt("current_level", l);
+        SceneManager.LoadScene(0);
     }
 }
