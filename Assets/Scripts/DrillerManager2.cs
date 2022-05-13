@@ -50,6 +50,7 @@ public class DrillerManager2 : MonoBehaviour
         var PATHS = new GameObject("PATHS");
         pathCreator = pathShapes[_Manager.currentLevel].createPathShape();
         float dist = 0f;
+
         while (dist<=pathCreator.path.length)
         {
             var point = pathCreator.path.GetPointAtDistance(dist);

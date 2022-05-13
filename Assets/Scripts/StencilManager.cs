@@ -54,7 +54,6 @@ public class StencilManager : MonoBehaviour
     public GameObject levelCompletedPage;
 
     public Text level;
-    bool interactable;
 
 
     // Start is called before the first frame update
@@ -133,6 +132,10 @@ public class StencilManager : MonoBehaviour
 
         }
     }
+    void activateButton()
+    {
+        nextButt.interactable = true;
+    }
 
     public void goToNextPhase()
     {
@@ -157,8 +160,7 @@ public class StencilManager : MonoBehaviour
                 gamePlayPage.SetActive(false);
                 levelCompletedPage.SetActive(true);
                 level.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1) + " COMPLETED!";
-                nextButt.interactable = true;
-
+                Invoke("activateButton", .4f);
 
             }
             else
@@ -171,8 +173,7 @@ public class StencilManager : MonoBehaviour
 
                 sheets[currentIndex].gameObject.GetComponent<Animator>().Play("in", 0, 0);
 
-                nextButt.interactable = false;
-                interactable = false;
+               
             }
 
            
