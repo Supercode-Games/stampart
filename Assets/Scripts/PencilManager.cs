@@ -30,7 +30,10 @@ public class PencilManager : MonoBehaviour
    public PathCreator currentPath;
 
    public Vector3 initOffset = new Vector3(2f,0,0);
-    
+
+    public AudioClip pencilStart;
+    public AudioClip pencilLoop;
+    public AudioClip pencilEnd;
 
     // Start is called before the first frame update
     void Start()
@@ -124,7 +127,12 @@ public class PencilManager : MonoBehaviour
     void Update()
     {
 
-        if(Input.GetMouseButton(0) && !gameFinished)
+        if(Input.GetMouseButtonDown(0))
+        {
+            myAudio.PlayOneShot(pencilStart);
+        }
+
+        if (Input.GetMouseButton(0) && !gameFinished)
         {
 
             t += Time.deltaTime * speedOfAnimation;
@@ -141,18 +149,22 @@ public class PencilManager : MonoBehaviour
             
 
         }
-        else
+        else if(Input.GetMouseButtonUp(0))
         {
             if (myAudio.isPlaying)
             {
                 myAudio.Stop();
+                myAudio.PlayOneShot(pencilEnd);
+
                 _Manager.Agent.stopVibration();
 
             }
 
-        }
 
-        if(!finished && x>=1)
+        }
+        
+
+        if (!finished && x>=1)
         {
             finished = true;
             FindObjectOfType<NextButton>().activateButton(2);

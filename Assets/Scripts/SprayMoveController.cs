@@ -16,6 +16,8 @@ public class SprayMoveController : MonoBehaviour
 
     AudioSource audioSource;
     public Button nextButt;
+    bool up = false;
+    bool goBackToPlace;
 
     public void Start()
     {
@@ -74,7 +76,9 @@ public class SprayMoveController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && touch_condition)
         {
-
+            up = false;
+            goBackToPlace = false;
+            CancelInvoke("goBackToPlaceActivate");
             var tp = pointOnPlane();
             tp.z = startPos.z;
             transform.position = tp;
@@ -102,16 +106,31 @@ public class SprayMoveController : MonoBehaviour
         }
         else
         {
-            if (myParticles.isPlaying)
+            if (!up)
             {
-                audioSource.Stop();
+                up = true;
+                if (myParticles.isPlaying)
+                {
+                    audioSource.Stop();
+                }
+                myParticles.Stop();
+                CancelInvoke("goBackToPlaceActivate");
+                Invoke("goBackToPlaceActivate",.4f);
+                
             }
-            myParticles.Stop();
-            transform.position = Vector3.Lerp(transform.position, startPos+initOffset, Time.deltaTime * 10f);
-            initOffset = Vector3.Lerp(initOffset, Vector3.zero, Time.deltaTime * 10f);
 
+            if(goBackToPlace)
+            {
+                transform.position = Vector3.Lerp(transform.position, startPos + initOffset, Time.deltaTime * 10f);
+                initOffset = Vector3.Lerp(initOffset, Vector3.zero, Time.deltaTime * 10f);
+            }
             
         }
          
+    }
+
+    void goBackToPlaceActivate()
+    {
+        goBackToPlace = true;
     }
 }
