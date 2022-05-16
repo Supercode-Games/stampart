@@ -43,6 +43,7 @@ public class _Manager : MonoBehaviour
     public Sprite vibrationOffSprite;
 
 
+
     private void Awake()
     {
         Agent = this;
@@ -161,7 +162,7 @@ public class _Manager : MonoBehaviour
             frequnecy = true;
             MMVibrationManager.Vibrate();
             Invoke("freF", .2f);
-            Debug.Log("AAAA");
+            //Debug.Log("AAAA");
 
         }
         //scrubberAudio.Play(0);

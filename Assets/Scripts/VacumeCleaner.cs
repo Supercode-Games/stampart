@@ -59,7 +59,7 @@ public class VacumeCleaner : MonoBehaviour
 
             Collider[] colliders = Physics.OverlapSphere(transform.position, 2f, 1 << LayerMask.NameToLayer("CarveParticle"));
 
-            Debug.Log(colliders.Length);
+            //Debug.Log(colliders.Length);
 
             foreach (var item in colliders)
             {
@@ -131,7 +131,7 @@ public class VacumeCleaner : MonoBehaviour
                 vaccumeSuckingEffect.Play();
                 GetComponent<AudioSource>().Play(0);
                 _Manager.Agent.startVibrationSingle();
-                Debug.Log("Vibrating SInhle");
+               // Debug.Log("Vibrating SInhle");
             }
 
         }
@@ -182,7 +182,7 @@ public class VacumeCleaner : MonoBehaviour
 
         }
 
-        Debug.Log(totalParticlesSucked);
+//Debug.Log(totalParticlesSucked);
         if(!cleaned && isCleaned())
         {
 

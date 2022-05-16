@@ -84,6 +84,7 @@ public class StencilManager : MonoBehaviour
 
     }
 
+
     // Update is called once per frame
     void Update()
     {
@@ -160,7 +161,7 @@ public class StencilManager : MonoBehaviour
                 gamePlayPage.SetActive(false);
                 level.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1) + " COMPLETED!";
                 nextButton.SetActive(false);
-                Invoke("LevelFinishedLevelPage", 2f);
+                Invoke("LevelFinishedLevelPage", 4f);
             }
             else
             {
