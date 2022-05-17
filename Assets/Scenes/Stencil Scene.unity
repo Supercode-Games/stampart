@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.40758955, g: 0.39873123, b: 0.4123034, a: 1}
+  m_IndirectSpecularColor: {r: 0.40729132, g: 0.3983647, b: 0.41197678, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -31790,7 +31790,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1698065363}
   - component: {fileID: 1698065362}
-  - component: {fileID: 1698065361}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -31798,14 +31797,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1698065361
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1698065360}
-  m_Enabled: 1
 --- !u!20 &1698065362
 Camera:
   m_ObjectHideFlags: 0
@@ -36982,8 +36973,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -172}
-  m_SizeDelta: {x: 193.99, y: 9.61}
+  m_AnchoredPosition: {x: 19.3, y: -172}
+  m_SizeDelta: {x: 351.4, y: 12.44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1746884237
 MonoBehaviour:
@@ -37028,8 +37019,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 946735783}
   m_HandleRect: {fileID: 946735782}
   m_Direction: 0
-  m_Value: 0.0000005875918
-  m_Size: 0.5337187
+  m_Value: 0.00000041131435
+  m_Size: 0.5339243
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -49990,7 +49981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -50221,7 +50212,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 45.91
-  field of view: 65.082855
+  field of view: 64.99704
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
