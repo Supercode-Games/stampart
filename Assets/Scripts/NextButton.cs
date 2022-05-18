@@ -132,7 +132,7 @@ public class NextButton : MonoBehaviour
 
                 tutorial.SetActive(true);
 
-                draggingText.text = "DRAG TO DRILL";
+                draggingText.text = "DRAG TO CUT";
 
                 driller2_manager.SetActive(true);
 

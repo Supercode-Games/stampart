@@ -9,9 +9,7 @@ public class LevelIndicator : MonoBehaviour
     //public List<Sprite> brownVersion;
     //public List<Sprite> greenVersion;
 
-    
-
-
+   
     public int currentPhase;
 
     // Start is called before the first frame update

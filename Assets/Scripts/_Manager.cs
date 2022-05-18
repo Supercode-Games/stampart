@@ -355,4 +355,15 @@ public class _Manager : MonoBehaviour
         }
     }
 
+    IEnumerator changeCameraAngleCor()
+    {
+        var currentPos = transform.position;
+        var currentRot = transform.rotation;
+
+        while (true)
+        {
+            yield return null;
+        }
+    }
+
 }
