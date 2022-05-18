@@ -46,7 +46,7 @@ namespace MLSpace
             if (m_initialized) return;
 
             m_SunLight = GetComponentInChildren<Light>();
-            if (!m_SunLight) { Debug.LogError("object cannot be null"); return; }
+            if (!m_SunLight) { return; }
 
             m_rotation = transform.rotation.eulerAngles;
             for (int i = 0; i < m_NightLights.Length; i++)
@@ -64,12 +64,10 @@ namespace MLSpace
             Initialize();
         }
 
-        // unity update method
         void Update()
         {
             if (!m_initialized)
             {
-                Debug.LogError("component not initialized.");
                 return;
             }
 

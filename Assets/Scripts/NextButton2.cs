@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.NiceVibrations;
@@ -41,10 +40,8 @@ public class NextButton2 : MonoBehaviour
 
 
 
-    // Start is called before the first frame update
     void Start()
     {
-        //currentLevel = _Manager.currentLevel;
         currentLevel = 0;
         levelIndicator.text = "LEVEL " + (currentLevel + 1).ToString();
         levelPaintables[currentLevel].SetActive(true);
@@ -62,12 +59,6 @@ public class NextButton2 : MonoBehaviour
         currentLevel++;
         currentLevel = currentLevel % paintSprays.Count;
         PlayerPrefs.SetInt("current_level", currentLevel);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     void activateButtonInvoke()
@@ -118,7 +109,6 @@ public class NextButton2 : MonoBehaviour
         paperAnim.GetComponent<Animator>().Play("paperIn", 0, 0);
         blockAnim.Play("blockReverse", 0, 0);
         Invoke("stampRemove", 2.5f);
-        //Invoke("stamperActivate", .9f+1f);
         Invoke("stampTExtActivate", 2f);
 
     }

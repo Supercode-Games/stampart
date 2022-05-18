@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,12 +14,6 @@ public class CarveParticle_prefab : MonoBehaviour
         carveParticles[0].SetActive(false);
         carveParticles[1].SetActive(false);
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public List<T> Shuffle<T>(List<T> ts)

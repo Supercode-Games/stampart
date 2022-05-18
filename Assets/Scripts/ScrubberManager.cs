@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -27,7 +26,6 @@ public class ScrubberManager : MonoBehaviour
 
     public bool lerped = false;
 
-    // Start is called before the first frame update
     void Start()
     {
 
@@ -80,29 +78,11 @@ public class ScrubberManager : MonoBehaviour
         return Vector3.zero;
     }
 
-    // Update is called once per frame
     void Update()
     {
 
 
         bool touch_condition = false;
-
-//#if !UNITY_EDITOR
-
-//        var touch = Input.GetTouch(0);
-
-//        var touchid = touch.fingerId;
-
-//        touch_condition = Input.touches.Length > 0 && (EventSystem.current.IsPointerOverGameObject(touchid));
-
-
-//        if (touch_condition)
-//        {
-//            return;
-//        }
-
-
-//#endif
 
         touch_condition = Input.GetMouseButtonDown(0) && (!EventSystem.current.IsPointerOverGameObject());
 
@@ -138,8 +118,6 @@ public class ScrubberManager : MonoBehaviour
             {
                 isInAction = true;
                 myAnim.SetTrigger("InAction");
-                //_Manager.Agent.startVibration();
-                //GetComponent<AudioSource>().Play(0);
             }
 
             if (!scrubberDropped && scrubberBody.transform.position.y <= 1.05f)
@@ -153,11 +131,6 @@ public class ScrubberManager : MonoBehaviour
         {
             isInAction = false;
             myAnim.SetTrigger("Idl");
-            //_Manager.Agent.stopVibration();
-            //GetComponent<AudioSource>().Stop();
-
-
-
 
             if (scrubberDropped)
             {

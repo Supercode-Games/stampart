@@ -200,31 +200,4 @@ public class DrillerManager : MonoBehaviour
 
     }
 
-    //IEnumerator startDriller2()
-    //{
-
-
-    //    var reached = false;
-
-    //    while (!reached)
-    //    {
-           
-    //        pencilAnimator.Play(animationNames[_Manager.Agent.currentLevel], 0, x);
-
-    //        var targetPos = pencilAnimationObject.transform.position;
-    //        targetPos.y = scrubber.transform.position.y;
-    //        scrubber.transform.position = targetPos - new Vector3(0, 0, yDrillOffset);
-    //        if (x >= 1f)
-    //        {
-    //            reached = true;
-    //        }
-
-    //        yield return new WaitForSeconds(.2f);
-
-    //    }
-
-
-    //}
-
-
 }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
@@ -6,8 +5,6 @@ using PathCreation;
 [RequireComponent (typeof (PathCreator))]
 public class PathCreatorForShape : MonoBehaviour
 {
-
-    // 0.55 , 0.75
 
    PathCreator path;
    public List<Transform> childNodes = new List<Transform>();
@@ -32,9 +29,4 @@ public class PathCreatorForShape : MonoBehaviour
         return path;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -173,23 +173,15 @@ public class RuntimeCircleClipper : MonoBehaviour, IClip
             touchPhase = touch.phase;
             if (touch.phase == TouchPhase.Began)
             {
-               // Vector2 XOYPlaneLocation = mainCamera.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, -cameraZPos));
-
-                //XOYPlaneLocation.x = scrubber.transform.position.x;
-                //XOYPlaneLocation.y = scrubber.transform.position.z;
-                //XOYPlaneLocation = scrubber.transform.position + scrubberOffset;
 
                 currentTouchPoint = new Vector2f(scrubber.transform.position.x,scrubber.transform.position.z) - terrain.GetPositionOffset();
 
-                //Vector2 XOYPlaneLocation = mainCamera.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, -cameraZPos));
-                //currentTouchPoint = XOYPlaneLocation - terrain.GetPositionOffset();
 
                     BuildVertices(currentTouchPoint);
 
 
                     if (terrain.ExecuteClip(this,checkForCompletion))
                     {
-                        //Debug.Log("Carved!");
                     if (carveParticles)
                     {
                         Instantiate(carveParticlesPrefab, scrubber.transform.position - new Vector3(0, .2f, 0), carveParticlesPrefab.transform.rotation).transform.parent = carveParticlesParent.transform;
@@ -235,7 +227,6 @@ public class RuntimeCircleClipper : MonoBehaviour, IClip
 
                     if (terrain.ExecuteClip(this,checkForCompletion))
                     {
-                        //Debug.Log("Carved!");
                     if (carveParticles)
                     {
                         if(!_Manager.Agent.scrubberAudio.isPlaying)
@@ -246,17 +237,6 @@ public class RuntimeCircleClipper : MonoBehaviour, IClip
                         Instantiate(carveParticlesPrefab, scrubber.transform.position - new Vector3(0, .2f, 0), carveParticlesPrefab.transform.rotation).transform.parent = carveParticlesParent.transform;
                         _Manager.Agent.singleVibration();
                     }
-                }
-                else
-                {
-
-                    //if (_Manager.Agent.scrubberAudio.isPlaying)
-                    //{
-                    //    _Manager.Agent.scrubberAudio.Stop();
-                    //}
-
-                    //Debug.Log("NULL!");
-
                 }
                 
 

@@ -15,7 +15,7 @@ public class SpriteFlip : MonoBehaviour
     {
         if (m_Initialized) return;
         m_Sprite = GetComponent<SpriteRenderer>();
-        if(!m_Sprite) { Debug.LogError("Cannot find 'SpriteRenderer' component.");return; }
+        if(!m_Sprite) { return; }
         m_Initialized = true;
     }
 
@@ -41,7 +41,7 @@ public class SpriteFlip : MonoBehaviour
     public void flip(bool flipX)
     {
         if (!m_Sprite) m_Sprite = GetComponent<SpriteRenderer>();
-        if (!m_Sprite) { Debug.LogError("Cannot find 'SpriteRenderer' component."); return; }
+        if (!m_Sprite) { return; }
 
         flippedX = flipX;
 #if UNITY_5_1_1

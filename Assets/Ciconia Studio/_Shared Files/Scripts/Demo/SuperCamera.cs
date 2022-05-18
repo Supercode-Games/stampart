@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class SuperCamera : MonoBehaviour {
 
@@ -43,9 +42,6 @@ public class SuperCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        Debug.DrawRay(pivotPos, Vector3.up, Color.red);
-        Debug.DrawRay(pivotPos, Camera.main.transform.right, Color.green);
 
         if (Input.GetKeyDown(resetShortcut))
         {
@@ -95,18 +91,15 @@ public class SuperCamera : MonoBehaviour {
             if (Physics.Raycast(ray, out hit))
             {
                 pivotPos = hit.point;
-                Debug.Log(hit.point);
             }
             else
             {
                 pivotPos = pivot.transform.position;
-                Debug.Log("reset Pivot");
             }
         }
 
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(2))
         {
-            //Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = true;
             return;
         }

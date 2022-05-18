@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -25,7 +23,6 @@ public class VacumeCleaner : MonoBehaviour
 
     public float initOffset;
 
-    // Start is called before the first frame update
     void Start()
     {
         startPos = transform.position;
@@ -46,7 +43,6 @@ public class VacumeCleaner : MonoBehaviour
     }
 
 
-    // Update is called once per frame
     void Update()
     {
         if(Input.GetMouseButtonDown(0))
@@ -59,13 +55,11 @@ public class VacumeCleaner : MonoBehaviour
 
             Collider[] colliders = Physics.OverlapSphere(transform.position, 2f, 1 << LayerMask.NameToLayer("CarveParticle"));
 
-            //Debug.Log(colliders.Length);
 
             foreach (var item in colliders)
             {
                 item.GetComponent<CarveParticle>().setVacumeCenter(gameObject);
                 var rb = item.GetComponent<Rigidbody>();
-                //rb.drag = 15f;
                 var dist = Vector3.Distance(transform.position, rb.transform.position);
 
                 totalParticlesSucked++;
@@ -131,7 +125,6 @@ public class VacumeCleaner : MonoBehaviour
                 vaccumeSuckingEffect.Play();
                 GetComponent<AudioSource>().Play(0);
                 _Manager.Agent.startVibrationSingle();
-               // Debug.Log("Vibrating SInhle");
             }
 
         }
@@ -182,7 +175,6 @@ public class VacumeCleaner : MonoBehaviour
 
         }
 
-//Debug.Log(totalParticlesSucked);
         if(!cleaned && isCleaned())
         {
 
@@ -215,8 +207,6 @@ public class VacumeCleaner : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        //Check that it is being run in Play Mode, so it doesn't try to draw this in Editor mode
-            //Draw a cube where the OverlapBox is (positioned where your GameObject is as well as a size)
             Gizmos.DrawWireCube(new Vector3(0, -.31f, 5.79f), new Vector3(12f, 2f, 12f));
     }
 

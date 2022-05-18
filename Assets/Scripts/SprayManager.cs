@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.NiceVibrations;
 using UnityEngine.EventSystems;
@@ -94,7 +93,6 @@ public class SprayManager : MonoBehaviour
 
 #if UNITY_ANDROID
 
-               // StartCoroutine("vibrateCorMM");
 #endif
             }
             if(tut.activeInHierarchy)
@@ -111,7 +109,6 @@ public class SprayManager : MonoBehaviour
             {
                 spraying = false;
                 GetComponent<AudioSource>().Stop();
-               // StopCoroutine("vibrateCorMM");
             }
 
         }

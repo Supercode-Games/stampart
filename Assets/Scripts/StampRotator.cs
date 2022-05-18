@@ -1,14 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StampRotator : MonoBehaviour
 {
-
-    private void Start()
-    {
-        //StartCoroutine("stampMove");
-    }
 
     public void stamp()
     {

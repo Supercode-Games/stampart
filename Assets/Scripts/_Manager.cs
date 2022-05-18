@@ -1,12 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.NiceVibrations;
 using UnityEngine.UI;
+using GameAnalyticsSDK;
 
 public class _Manager : MonoBehaviour
 {
-
     public static _Manager Agent;
 
     public GameObject diggableWood;
@@ -50,7 +49,6 @@ public class _Manager : MonoBehaviour
         Application.targetFrameRate = 60;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
       settingsOff = true;
@@ -61,20 +59,21 @@ public class _Manager : MonoBehaviour
       diggableWood.transform.rotation = Quaternion.Euler(90, 0, 0);
       diggableWood.transform.position -= new Vector3(12.5f * .5f, 0, 0);
       loadVibrationAndSounds();
-
     }
 
     void initialiseCurrentLevel()
     {
         currentLevel = PlayerPrefs.GetInt("current_level") % FindObjectOfType<NextButton>().cut_block.Count;
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
+
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "level_start_" + PlayerPrefs.GetInt("current_level"));
+        AppMetrica.Instance.ReportEvent("level_start_levelnumber" + PlayerPrefs.GetInt("current_level"));
+        AppMetrica.Instance.SendEventsBuffer();
     }
     
 
      void increaseLevel()
     {
-        //currentLevel++;
-        //currentLevel = currentLevel % 5;
         PlayerPrefs.SetInt("current_level", currentLevel);
     }
 
@@ -91,7 +90,6 @@ public class _Manager : MonoBehaviour
         return Vector3.zero;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetMouseButton(0) && canCarve)
@@ -166,10 +164,8 @@ public class _Manager : MonoBehaviour
             frequnecy = true;
             MMVibrationManager.Vibrate();
             Invoke("freF", .2f);
-            //Debug.Log("AAAA");
 
         }
-        //scrubberAudio.Play(0);
 
 #endif
 
@@ -193,7 +189,6 @@ public class _Manager : MonoBehaviour
 #if UNITY_ANDROID
 
         StartCoroutine("vibrateCorMM");
-        //MMVibrationManager.ContinuousHaptic(.1f, .1f, 20f);
 
 #endif
 
@@ -311,7 +306,6 @@ public class _Manager : MonoBehaviour
 
    public void soundToggleButton()
     {
-        //soundToggle.isOn = !soundToggle.isOn;
         if(soundImage.sprite != soundOnSprite)
         {
             PlayerPrefs.SetInt("sound_", 1);
@@ -328,7 +322,6 @@ public class _Manager : MonoBehaviour
 
     public void vibrationToggleButton()
     {
-        //vibrationToggle.isOn = !vibrationToggle.isOn;
         if (vibrationImage.sprite != vibrationOnSprite)
         {
             PlayerPrefs.SetInt("vibration_", 1);

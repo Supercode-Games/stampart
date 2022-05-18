@@ -18,7 +18,7 @@ namespace MLSpace
         {
             if (m_initialized) return;
             m_textUI = GetComponent<UnityEngine.UI.Text>();
-            if (!m_textUI) { Debug.LogError("cannot find component 'Text'"); return; }
+            if (!m_textUI) { return; }
             m_initialized = true;
         }
 
@@ -33,7 +33,6 @@ namespace MLSpace
         {
             if (!m_initialized)
             {
-                Debug.LogError("component not initialized.");
                 return;
             }
 
@@ -51,7 +50,6 @@ namespace MLSpace
         {
             if (!m_textUI)
             {
-                Debug.LogError("object cannot be null.");
                 return;
             }
             
@@ -67,7 +65,6 @@ namespace MLSpace
         {
             if (!m_textUI)
             {
-                Debug.LogError("object cannot be null.");
                 return;
             }
 

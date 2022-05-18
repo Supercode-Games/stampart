@@ -1,13 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class MatchWidth : MonoBehaviour
 {
     public float horizontalFoV = 90.0f;
-
-    // ...
 
     void Update()
     {

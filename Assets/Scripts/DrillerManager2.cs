@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
@@ -37,7 +36,6 @@ public class DrillerManager2 : MonoBehaviour
     public float pencilY;
     public float drillerY;
 
-    // Start is called before the first frame update
     void Start()
     {
         follower.transform.position += new Vector3(5, 0, 0);
@@ -65,7 +63,6 @@ public class DrillerManager2 : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -153,7 +150,6 @@ public class DrillerManager2 : MonoBehaviour
                 smoke.gameObject.SetActive(false);
                 myAudioSource.Stop();
                 FindObjectOfType<NextButton>().finishPhase1();
-                Debug.LogWarning("FINISHED!!!!!!!!!");
             }
 
         }

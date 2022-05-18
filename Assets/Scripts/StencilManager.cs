@@ -4,7 +4,7 @@ using UnityEngine;
 using PaintIn3D;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+using GameAnalyticsSDK;
 
 public class StencilManager : MonoBehaviour
 {
@@ -25,10 +25,6 @@ public class StencilManager : MonoBehaviour
 
     public P3dPaintableTexture paint_;
 
-
-    //public List<GameObject> sprayBottles;
-
-    //public List<Texture> innerTextures;
 
     int currentIndex;
 
@@ -103,12 +99,6 @@ public class StencilManager : MonoBehaviour
 
         finalTextureOverlay.material.mainTexture = levelObjects[currentLevel].finalTexture;
         levelObjects[currentLevel].objectModelParent.SetActive(true);
-
-
-
-
-
-        //sheets[index].GetComponent<MeshRenderer>().materials[0].SetTexture("_MainTex", levelObjects[currentLevel].outerTextures[index]);
 
 
         paint_.Texture = levelObjects[currentLevel].innerTextures[index];
@@ -196,6 +186,9 @@ public class StencilManager : MonoBehaviour
     {
         levelCompletedPage.SetActive(true);
 
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "level_complete_" + PlayerPrefs.GetInt("current_level"));
+        AppMetrica.Instance.ReportEvent("level_finish_levelnumber" + PlayerPrefs.GetInt("current_level"));
+        AppMetrica.Instance.SendEventsBuffer();
     }
 
     public void goToNextLevel()

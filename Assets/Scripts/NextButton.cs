@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -93,8 +92,6 @@ public class NextButton : MonoBehaviour
                 clipperDirtWood.SetActive(false);
                 makeVacumeMovable();
                 dirtClipper.SetActive(false);
-                //tapAndHold.SetActive(true);
-                //tapAndHoldText.text = "TAP TO VACCUME";
 
                 tutorial.SetActive(true);
                 draggingText.text = "TAP TO VACCUME";
@@ -142,17 +139,8 @@ public class NextButton : MonoBehaviour
                 FindObjectOfType<DrillerManager2>().loadPath();
                 pencilMesh.enabled = false;
                 pencil.GetComponent<PencilManager>().t = 0;
-              //  pencil.GetComponent<PencilManager>().speedOfAnimation = FindObjectOfType<DrillerManager>().speedOfAnimation;
 
                 paintAddituve.GetComponent<P3dPaintSphere>().Color = drillingColor;
-               
-
-
-
-                // paintAddituve.SetActive(false);
-                // paintSubtractive.SetActive(true);
-
-                //pencil.GetComponent<PencilManager>().startCor();
                
                 button.SetActive(false);
 
