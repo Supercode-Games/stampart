@@ -81,6 +81,7 @@ public class StencilManager : MonoBehaviour
             sheets[i].GetComponent<P3dPaintable>().DirtyMaterials();
         }
 
+        FindObjectOfType<ThemeManager>().initialiseThemeBG();
 
     }
 

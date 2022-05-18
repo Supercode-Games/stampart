@@ -127,7 +127,7 @@ public class PencilManager : MonoBehaviour
     void Update()
     {
 
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && !gameFinished)
         {
             myAudio.PlayOneShot(pencilStart);
         }
@@ -154,8 +154,10 @@ public class PencilManager : MonoBehaviour
             if (myAudio.isPlaying)
             {
                 myAudio.Stop();
-                myAudio.PlayOneShot(pencilEnd);
-
+                if (!gameFinished)
+                {
+                    myAudio.PlayOneShot(pencilEnd);
+                }
                 _Manager.Agent.stopVibration();
 
             }

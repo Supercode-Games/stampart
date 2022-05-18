@@ -54,10 +54,14 @@ public class _Manager : MonoBehaviour
     void Start()
     {
       settingsOff = true;
+
       initialiseCurrentLevel();
+      FindObjectOfType<ThemeManager>().initialiseThemeBG();
+        
       diggableWood.transform.rotation = Quaternion.Euler(90, 0, 0);
       diggableWood.transform.position -= new Vector3(12.5f * .5f, 0, 0);
       loadVibrationAndSounds();
+
     }
 
     void initialiseCurrentLevel()

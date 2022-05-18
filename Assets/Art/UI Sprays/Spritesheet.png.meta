@@ -221,7 +221,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spritesheet_5
+      name: CoindBG
       rect:
         serializedVersion: 2
         x: 498
@@ -242,7 +242,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spritesheet_6
+      name: Coin
       rect:
         serializedVersion: 2
         x: 837
@@ -778,7 +778,6 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       Spritesheet_24: 1408125918
-      Spritesheet_5: -1221053199
       Spritesheet_29: 2000530771
       Spritesheet_20: -923097730
       Spritesheet_16: 251213605
@@ -795,8 +794,8 @@ TextureImporter:
       normal: 2585364
       Spritesheet_25: -1929990737
       Spritesheet_1: -836298442
-      Spritesheet_6: 1557505240
       Spritesheet_18: 1179575730
+      Coin: 1557505240
       Spritesheet_30: 1221424054
       Spritesheet_15: -575920109
       Spritesheet_19: -559481154
@@ -804,6 +803,7 @@ TextureImporter:
       Spritesheet_2: -1953187571
       Spritesheet_27: 211305715
       Spritesheet_14: 49186610
+      CoindBG: -1221053199
       shine: -1262872963
       Spritesheet_22: 1691276207
       Spritesheet_0: -1830523127
