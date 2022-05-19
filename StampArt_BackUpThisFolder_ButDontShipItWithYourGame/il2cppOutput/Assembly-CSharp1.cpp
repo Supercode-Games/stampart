@@ -3005,6 +3005,8 @@ struct _Manager_t16B57D48CDA114C874526EB27AC6492D8310565C  : public MonoBehaviou
 	Sprite_tAFF74BC83CD68037494CB0B4F28CBDF8971CAB99* ___vibrationOffSprite_24;
 	// System.Boolean _Manager::frequnecy
 	bool ___frequnecy_25;
+	// UnityEngine.UI.Text _Manager::levelNumber
+	Text_tD60B2346DAA6666BF0D822FF607F0B220C2B9E62* ___levelNumber_26;
 };
 
 struct _Manager_t16B57D48CDA114C874526EB27AC6492D8310565C_StaticFields
