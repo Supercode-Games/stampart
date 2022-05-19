@@ -52,9 +52,9 @@ public class _Manager : MonoBehaviour
     void Start()
     {
       settingsOff = true;
+        FindObjectOfType<ThemeManager>().initialiseThemeBG();
 
-      initialiseCurrentLevel();
-      FindObjectOfType<ThemeManager>().initialiseThemeBG();
+        initialiseCurrentLevel();
         
       diggableWood.transform.rotation = Quaternion.Euler(90, 0, 0);
       diggableWood.transform.position -= new Vector3(12.5f * .5f, 0, 0);
@@ -362,5 +362,10 @@ public class _Manager : MonoBehaviour
             yield return null;
         }
     }
-
+    public Text levelNumber;
+    public void LoadLevelTEST()
+    {
+        PlayerPrefs.SetInt("current_level", int.Parse(levelNumber.text.ToString()));
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
 }

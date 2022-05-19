@@ -4,36 +4,35 @@ using UnityEngine;
 public class ThemeManager : MonoBehaviour
 {
     public List<GameObject> themeObjects;
-    public bool setCurrent;
-
 
     public void initialiseThemeBG()
+    {
+        int currentLevel = PlayerPrefs.GetInt("current_level", 0);
+
+        if ((currentLevel % 3 == 0) && currentLevel != 0 && !Preferences.ThemeSelected)
+        {
+            Preferences.ThemeSelected = true;
+            Preferences.ThemeValue++;
+
+            if(Preferences.ThemeValue == themeObjects.Count)
+            {
+                Preferences.ThemeValue = 0;
+            }
+        }
+        else if((currentLevel % 3 != 0) && Preferences.ThemeSelected)
+        {
+            Preferences.ThemeSelected = false;
+        }
+        setTheme();
+
+    }
+    public void setTheme()
     {
         foreach (var item in themeObjects)
         {
             item.SetActive(false);
         }
 
-        int currentLevel = PlayerPrefs.GetInt("current_level", 0);
-        int currentTheme = PlayerPrefs.GetInt("current_theme", 0);
-        themeObjects[currentTheme].SetActive(true);
-
-
-        if ((currentLevel % 1 == 0) && currentLevel!=0)
-        {
-            themeObjects[currentTheme].SetActive(false);
-
-            currentTheme++;
-            if(currentTheme == themeObjects.Count)
-            {
-                currentTheme = 0;
-            }
-            themeObjects[currentTheme].SetActive(true);
-            PlayerPrefs.SetInt("current_theme", currentTheme);
-        }
+        themeObjects[Preferences.ThemeValue].SetActive(true);
     }
-
-
-   
-
 }

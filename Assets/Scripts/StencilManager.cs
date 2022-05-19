@@ -55,6 +55,8 @@ public class StencilManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        FindObjectOfType<ThemeManager>().initialiseThemeBG();
+
         frameInitPos = frame.transform.position;
         frame.transform.position -= new Vector3(20f, 0, 0);
 
@@ -77,7 +79,6 @@ public class StencilManager : MonoBehaviour
             sheets[i].GetComponent<P3dPaintable>().DirtyMaterials();
         }
 
-        FindObjectOfType<ThemeManager>().initialiseThemeBG();
 
     }
 
@@ -189,13 +190,14 @@ public class StencilManager : MonoBehaviour
         GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "level_complete_" + PlayerPrefs.GetInt("current_level"));
         AppMetrica.Instance.ReportEvent("level_finish_levelnumber" + PlayerPrefs.GetInt("current_level"));
         AppMetrica.Instance.SendEventsBuffer();
+
+        var l = PlayerPrefs.GetInt("current_level", 0);
+        l++;
+        PlayerPrefs.SetInt("current_level", l);
     }
 
     public void goToNextLevel()
     {
-        var l = PlayerPrefs.GetInt("current_level", 0);
-        l++;
-        PlayerPrefs.SetInt("current_level", l);
         SceneManager.LoadScene(0);
     }
 }
