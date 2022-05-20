@@ -84,7 +84,11 @@ public class SprayMoveController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) &&  touch_condition)
         {
-            nextButt.interactable = true;
+            if (!nextButt.gameObject.activeInHierarchy)
+                nextButt.gameObject.SetActive(true);
+
+            if (!nextButt.interactable)
+                nextButt.interactable = true;
         }
 
         if (Input.GetMouseButton(0) && touch_condition)

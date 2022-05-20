@@ -60,7 +60,7 @@ public class StencilManager : MonoBehaviour
         frameInitPos = frame.transform.position;
         frame.transform.position -= new Vector3(20f, 0, 0);
 
-        nextButt.interactable = false;
+        //nextButt.interactable = false;
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
 
         currentLevel = PlayerPrefs.GetInt("current_level")%levelObjects.Count;
@@ -88,6 +88,7 @@ public class StencilManager : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
+            if(dragToSPray.activeInHierarchy)
             dragToSPray.SetActive(false);
         }
 
@@ -125,7 +126,11 @@ public class StencilManager : MonoBehaviour
     }
     void activateButton()
     {
-        nextButt.interactable = true;
+        if(!nextButt.gameObject.activeInHierarchy)
+        nextButt.gameObject.SetActive(true);
+
+        if (!nextButt.interactable)
+            nextButt.interactable = true;
     }
 
     public void goToNextPhase()
@@ -150,7 +155,7 @@ public class StencilManager : MonoBehaviour
                 spraySelector.SetActive(false);
                 gamePlayPage.SetActive(false);
                 level.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1) + " COMPLETED!";
-                nextButton.SetActive(false);
+                nextButt.gameObject.SetActive(false);
                 Invoke("LevelFinishedLevelPage", 4f);
             }
             else
