@@ -13,7 +13,7 @@ public class StampRotator : MonoBehaviour
     {
         GameObject.FindWithTag("PaintedTex").transform.SetParent(this.transform);
 
-        Vector3 initialPos = transform.position;
+        Vector3 initialPos = transform.position + new Vector3(0, 0.4f, 0); ;
         float velocity = 20f;
         float gravity = 45f;
         float timeOFlight = (2 * velocity) / gravity;
@@ -22,7 +22,7 @@ public class StampRotator : MonoBehaviour
         Quaternion targetRot = initRot * Quaternion.Euler(0, 0, 180);
 
 
-        while (t<timeOFlight)
+        while (t<(timeOFlight))
         {
             var x = Mathf.Clamp(t / timeOFlight, 0f, 1f);
             transform.rotation = Quaternion.Lerp(initRot, targetRot, x);
@@ -33,7 +33,7 @@ public class StampRotator : MonoBehaviour
             yield return null;
         }
 
-        transform.position = initialPos;
+        transform.position = initialPos+new Vector3(0,0.4f,0);
         transform.rotation = targetRot;
 
 
