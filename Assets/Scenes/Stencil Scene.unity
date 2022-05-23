@@ -38598,8 +38598,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 946735783}
   m_HandleRect: {fileID: 946735782}
   m_Direction: 0
-  m_Value: 0.00000052883274
-  m_Size: 0.59639275
+  m_Value: 0.0000005288326
+  m_Size: 0.5694499
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -44314,6 +44314,7 @@ MonoBehaviour:
   levelCompletedPage: {fileID: 1264345895}
   level: {fileID: 1116064046}
   testLevel: 11
+  isTest: 0
 --- !u!4 &1810255924
 Transform:
   m_ObjectHideFlags: 0
@@ -52326,7 +52327,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 45.91
-  field of view: 41.901653
+  field of view: 51.087105
   orthographic: 0
   orthographic size: 5
   m_Depth: -1

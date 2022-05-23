@@ -36,6 +36,9 @@ public class DrillerManager2 : MonoBehaviour
     public float pencilY;
     public float drillerY;
 
+    public GameObject carveParticlePrefab;
+
+
     void Start()
     {
         follower.transform.position += new Vector3(5, 0, 0);
@@ -144,7 +147,7 @@ public class DrillerManager2 : MonoBehaviour
             }
 
 
-            if ((current >= (target - 10)))
+            if ((current >= (target - 5)))
             {
                 finished = true;
                 smoke.gameObject.SetActive(false);

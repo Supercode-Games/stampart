@@ -52,6 +52,7 @@ public class StencilManager : MonoBehaviour
     public Text level;
 
     public int testLevel;
+    public bool isTest;
 
     // Start is called before the first frame update
     void Start()
@@ -65,6 +66,11 @@ public class StencilManager : MonoBehaviour
         levelIndicator.text = "LEVEL " + (PlayerPrefs.GetInt("current_level", 0) + 1).ToString();
 
         currentLevel = PlayerPrefs.GetInt("current_level")%levelObjects.Count;
+        if(isTest)
+        {
+            currentLevel = testLevel;
+        }
+
         activatePhase(0);
         
         sheets[0].gameObject.GetComponent<Animator>().Play("in", 0, 0);
