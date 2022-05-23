@@ -849,18 +849,18 @@ extern void StencilManager_goToNextLevel_m55F1CE3CFEEEDED0CE25FCF41A9526D7376483
 extern void StencilManager__ctor_m4D27170835B127FE11C23578735A047AAE0FD960 (void);
 // 0x000001BB System.Void StencilManager/LevelObjects::.ctor()
 extern void LevelObjects__ctor_m95162AD318C97087E94E15DB3940EB5E2C994DFD (void);
-// 0x000001BC System.Void StencilManager/<getFrame>d__21::.ctor(System.Int32)
-extern void U3CgetFrameU3Ed__21__ctor_mA0E5D7007148B302F490FD524922187F3D8C3113 (void);
-// 0x000001BD System.Void StencilManager/<getFrame>d__21::System.IDisposable.Dispose()
-extern void U3CgetFrameU3Ed__21_System_IDisposable_Dispose_m0930308701F2F2414B4F94B88387700910A8C03E (void);
-// 0x000001BE System.Boolean StencilManager/<getFrame>d__21::MoveNext()
-extern void U3CgetFrameU3Ed__21_MoveNext_m6C5A7A1713C1A7442CFE93FEB34669CA73D61108 (void);
-// 0x000001BF System.Object StencilManager/<getFrame>d__21::System.Collections.Generic.IEnumerator<System.Object>.get_Current()
-extern void U3CgetFrameU3Ed__21_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m0862C880A2F6548C75BDA0151EFE40407F77837A (void);
-// 0x000001C0 System.Void StencilManager/<getFrame>d__21::System.Collections.IEnumerator.Reset()
-extern void U3CgetFrameU3Ed__21_System_Collections_IEnumerator_Reset_mC2219BBA7C93EB5553E9CF25FDC2C218BAD86F38 (void);
-// 0x000001C1 System.Object StencilManager/<getFrame>d__21::System.Collections.IEnumerator.get_Current()
-extern void U3CgetFrameU3Ed__21_System_Collections_IEnumerator_get_Current_mD3312A15DF36B4A83A37C0C80F1A7FD35E147742 (void);
+// 0x000001BC System.Void StencilManager/<getFrame>d__23::.ctor(System.Int32)
+extern void U3CgetFrameU3Ed__23__ctor_mAC2F412199221A714ABCEC02CD12B5E4F1421D5F (void);
+// 0x000001BD System.Void StencilManager/<getFrame>d__23::System.IDisposable.Dispose()
+extern void U3CgetFrameU3Ed__23_System_IDisposable_Dispose_mF894AD21F738D085F2C2CF24BFFDDCD00071B5D5 (void);
+// 0x000001BE System.Boolean StencilManager/<getFrame>d__23::MoveNext()
+extern void U3CgetFrameU3Ed__23_MoveNext_m8289DAEEA959D4FF1F8922D45DA6647D891ABBE9 (void);
+// 0x000001BF System.Object StencilManager/<getFrame>d__23::System.Collections.Generic.IEnumerator<System.Object>.get_Current()
+extern void U3CgetFrameU3Ed__23_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_mD899B0ED29D8597997750DFF0D64A966EFA50BE5 (void);
+// 0x000001C0 System.Void StencilManager/<getFrame>d__23::System.Collections.IEnumerator.Reset()
+extern void U3CgetFrameU3Ed__23_System_Collections_IEnumerator_Reset_mBA7966CBFE30044E7FE52ED059E1563D56E29EA3 (void);
+// 0x000001C1 System.Object StencilManager/<getFrame>d__23::System.Collections.IEnumerator.get_Current()
+extern void U3CgetFrameU3Ed__23_System_Collections_IEnumerator_get_Current_m0632B3449BDA62C260C4F2B4920270869FED99FD (void);
 // 0x000001C2 System.Void ThemeManager::initialiseThemeBG()
 extern void ThemeManager_initialiseThemeBG_m9B1C4B4CB88151EC9B094FBEA483E49EF2252E03 (void);
 // 0x000001C3 System.Void ThemeManager::setTheme()
@@ -2983,12 +2983,12 @@ static Il2CppMethodPointer s_methodPointers[1293] =
 	StencilManager_goToNextLevel_m55F1CE3CFEEEDED0CE25FCF41A9526D73764833D,
 	StencilManager__ctor_m4D27170835B127FE11C23578735A047AAE0FD960,
 	LevelObjects__ctor_m95162AD318C97087E94E15DB3940EB5E2C994DFD,
-	U3CgetFrameU3Ed__21__ctor_mA0E5D7007148B302F490FD524922187F3D8C3113,
-	U3CgetFrameU3Ed__21_System_IDisposable_Dispose_m0930308701F2F2414B4F94B88387700910A8C03E,
-	U3CgetFrameU3Ed__21_MoveNext_m6C5A7A1713C1A7442CFE93FEB34669CA73D61108,
-	U3CgetFrameU3Ed__21_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m0862C880A2F6548C75BDA0151EFE40407F77837A,
-	U3CgetFrameU3Ed__21_System_Collections_IEnumerator_Reset_mC2219BBA7C93EB5553E9CF25FDC2C218BAD86F38,
-	U3CgetFrameU3Ed__21_System_Collections_IEnumerator_get_Current_mD3312A15DF36B4A83A37C0C80F1A7FD35E147742,
+	U3CgetFrameU3Ed__23__ctor_mAC2F412199221A714ABCEC02CD12B5E4F1421D5F,
+	U3CgetFrameU3Ed__23_System_IDisposable_Dispose_mF894AD21F738D085F2C2CF24BFFDDCD00071B5D5,
+	U3CgetFrameU3Ed__23_MoveNext_m8289DAEEA959D4FF1F8922D45DA6647D891ABBE9,
+	U3CgetFrameU3Ed__23_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_mD899B0ED29D8597997750DFF0D64A966EFA50BE5,
+	U3CgetFrameU3Ed__23_System_Collections_IEnumerator_Reset_mBA7966CBFE30044E7FE52ED059E1563D56E29EA3,
+	U3CgetFrameU3Ed__23_System_Collections_IEnumerator_get_Current_m0632B3449BDA62C260C4F2B4920270869FED99FD,
 	ThemeManager_initialiseThemeBG_m9B1C4B4CB88151EC9B094FBEA483E49EF2252E03,
 	ThemeManager_setTheme_mCC3784635BF10A913D1051CE9136DA322849E19F,
 	ThemeManager__ctor_m1B15A16D3C500F39D01E5B302126CC3BFC819FF7,
