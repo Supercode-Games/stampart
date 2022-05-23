@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.40729132, g: 0.3983647, b: 0.41197678, a: 1}
+  m_IndirectSpecularColor: {r: 0.40758955, g: 0.39873123, b: 0.4123034, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -13696,7 +13696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 1903868832}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!1 &736386841
@@ -14863,7 +14863,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 1074119459}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!82 &900976562
@@ -31114,7 +31114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 6985078}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!82 &1278859109
@@ -31261,7 +31261,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 926129345}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!82 &1300206509
@@ -31935,7 +31935,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 595764771}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!82 &1404232476
@@ -32844,7 +32844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 1807306523}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!82 &1514663351
@@ -38598,8 +38598,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 946735783}
   m_HandleRect: {fileID: 946735782}
   m_Direction: 0
-  m_Value: 0.0000006463507
-  m_Size: 0.5339124
+  m_Value: 0.00000052883274
+  m_Size: 0.59639275
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -44601,7 +44601,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 1116434525}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!1 &1874995055
@@ -50809,7 +50809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 2
   myParticles: {fileID: 1713972859}
-  startPos: {x: 4.7, y: 0.63, z: 1.71}
+  startPos: {x: 4.7, y: 4, z: 1.71}
   initOffset: {x: 0, y: 0, z: 0}
   nextButt: {fileID: 2130426347}
 --- !u!1 &2054513692
@@ -52325,7 +52325,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 45.91
-  field of view: 65.001945
+  field of view: 41.901653
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
