@@ -108,7 +108,7 @@ public class SprayMoveController : MonoBehaviour
         }
         else
         {
-            if (!up)
+            if (!up || myParticles.isPlaying)
             {
                 up = true;
                 if (myParticles.isPlaying)

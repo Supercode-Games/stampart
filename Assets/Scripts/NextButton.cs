@@ -141,7 +141,9 @@ public class NextButton : MonoBehaviour
                 pencil.GetComponent<PencilManager>().t = 0;
 
                 paintAddituve.GetComponent<P3dPaintSphere>().Color = drillingColor;
-               
+                paintAddituve.GetComponent<P3dPaintSphere>().Radius += .07f;
+
+
                 button.SetActive(false);
 
                 break;

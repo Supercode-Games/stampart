@@ -56,7 +56,7 @@ public class DrillerManager2 : MonoBehaviour
             var k = Instantiate(refObjPrefab, point, Quaternion.identity);
             k.transform.SetParent(PATHS.transform);
            refs.Add(k.GetComponent<Ref>());
-            dist += .1f;
+            dist += .2f;
         }
         isPencil = false;
         transform.position = refs[0].transform.position;
@@ -144,7 +144,7 @@ public class DrillerManager2 : MonoBehaviour
             }
 
 
-            if (current >= (target - 10))
+            if ((current >= (target - 10)))
             {
                 finished = true;
                 smoke.gameObject.SetActive(false);
